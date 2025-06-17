@@ -231,8 +231,8 @@ void LedgerCalculation::sellIntegral(int integral, int transactionCoins)
 
 	ans += ")";
 
-	_qsell_int.push({ integral + cost, transactionCoins });
-	_sell_int.push(ans);
+	_qsell_int.push({ integral + cost, transactionCoins, ans});
+	//_sell_int.push(ans);
 }
 
 void LedgerCalculation::sellTransactionCoins(int integral, int transactionCoins)
@@ -256,8 +256,8 @@ void LedgerCalculation::sellTransactionCoins(int integral, int transactionCoins)
 
 	ans += ")";
 
-	_qsell_tra.push({ integral - cost, transactionCoins });
-	_sell_tra.push(ans);
+	_qsell_tra.push({ integral - cost, transactionCoins, ans });
+	//_sell_tra.push(ans);
 }
 
 void LedgerCalculation::calculate()
@@ -266,34 +266,35 @@ void LedgerCalculation::calculate()
 
 	while (_qsell_int.size() && _qsell_tra.size())				// ½»Ò×±ÒÆ¥Åä¼ÆËã
 	{
-		std::pair<int, int> sellMore = _qsell_tra.front();
-		//std::pair<int, int> sellMore = _qsell_tra.top();
+		//std::pair<int, int> sellMore = _qsell_tra.front();
+		LCpair sell_tra_info = _qsell_tra.top();
 		_qsell_tra.pop();
-		std::pair<int, int> sellLess = _qsell_int.front();
-		//std::pair<int, int> sellLess = _qsell_int.top();
+		//std::pair<int, int> sellLess = _qsell_int.front();
+		LCpair sell_int_info = _qsell_int.top();
 		_qsell_int.pop();
-		if (sellMore.second != sellLess.second)
+		if (sell_tra_info.second != sell_int_info.second)
 		{
 			//std::cout << "´íÎó£¬½»Ò×±ÒÊýÁ¿²»Æ¥Åä" << std::endl;
 
-			_leftover.push_back(_sell_int.front());
-			_sell_int.pop();
+			_leftover.push_back(sell_int_info.third);
+			//_sell_int.pop();
 
-			_leftover.push_back(_sell_tra.front());
-			_sell_tra.pop();
+			_leftover.push_back(sell_tra_info.third);
+			//_sell_tra.pop();
 			
 			continue;
 		}
 
-		int profit = sellMore.first - sellLess.first;
+		int profit = sell_tra_info.first - sell_int_info.first;
 
 
+		//_sell_ans.push_back(_sell_int.front());
+		//_sell_int.pop();
+		_sell_ans.push_back(sell_int_info.third);
 
-		_sell_ans.push_back(_sell_int.front());
-		_sell_int.pop();
-
-		std::string sell_tra = _sell_tra.front();
-		_sell_tra.pop();
+		//std::string sell_tra = _sell_tra.front();
+		//_sell_tra.pop();
+		std::string sell_tra = sell_tra_info.third;
 
 		sell_tra += "           ";
 		sell_tra += (profit >= 0 ? "+" : "");
@@ -305,19 +306,25 @@ void LedgerCalculation::calculate()
 
 	_sell_ans.push_back("×Ü×¬£º" + std::to_string(sum) + "»ý·Ö");
 
-	while (_sell_int.size() || _sell_tra.size())			// Ê£ÓàÎ´Æ¥Åä¼ÇÂ¼
+	while (_qsell_int.size() || _qsell_tra.size())			// Ê£ÓàÎ´Æ¥Åä¼ÇÂ¼
 	{
 		std::string other;
 
-		if (_sell_int.size())
+		if (_qsell_int.size())
 		{
-			other = _sell_int.front();
-			_sell_int.pop();
+			//other = _qsell_int.front();
+			//_sell_int.pop();
+
+			other = _qsell_int.top().third;
+			_qsell_int.pop();
 		}
 		else
 		{
-			other = _sell_tra.front();
-			_sell_tra.pop();
+			//other = _qsell_tra.front();
+			//_sell_tra.pop();
+
+			other = _qsell_tra.top().third;
+			_qsell_tra.pop();
 		}
 
 		_leftover.push_back(other);
