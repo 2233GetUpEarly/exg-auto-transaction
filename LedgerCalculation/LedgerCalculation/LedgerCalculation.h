@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 #include <queue>
 #include <cassert>
 
@@ -72,6 +73,8 @@ public:
 
 	void showOtherResult();
 
+	void showSpecialResult();
+
 	static void consoleNumberInput();
 
 	static void consoleStringInput();
@@ -79,6 +82,20 @@ public:
 	static void consoleStringInputForEXG_Format();
 	
 	static void consoleComprehensiveFormatMatching();
+
+	std::pair<int, int> consoleStringEXG_FormatSolve(std::string& str);
+
+	bool specialStringSolve(const std::string&);
+
+	void reclaimSolve(std::pair<int, int>&);
+
+	size_t& getSolveCount();
+
+	size_t& getNoSolveCount();
+
+	void checkAns();
+
+	void calculationAndMerging();
 
 private:
 
@@ -89,12 +106,21 @@ private:
 	//std::priority_queue<LCpair, std::vector<LCpair>, secondFront> _qsell_int;
 	std::priority_queue<LCpair, std::vector<LCpair>, secondFront> _qsell_tra;
 
+	std::queue<int> _qspecial_int;
+	std::queue<std::string> _special_int;
+
 	//std::queue<std::pair<int, int>> _qsell_int;
 	//std::queue<std::pair<int, int>> _qsell_tra;
 
 	//std::queue<std::string> _sell_int;
 	//std::queue<std::string> _sell_tra;
 
+	std::vector<std::string> _special_ans;
+
 	std::vector<std::string> _sell_ans;
 	std::vector<std::string> _leftover;
+
+	size_t _solveCount = 0;
+	size_t _noSolveCount = 0;
+	int _sum = 0;
 };
