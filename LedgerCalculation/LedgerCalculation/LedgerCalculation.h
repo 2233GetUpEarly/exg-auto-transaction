@@ -17,7 +17,19 @@ public:
 	T3 third;		// 字符串信息
 };
 
-using LCpair = three_pair<int, int, std::string>;
+template<class T1, class T2, class T3, class T4>
+class four_pair
+{
+public:
+
+	T1 first;		// 积分
+	T2 second;		// 交易币
+	T3 third;		// 字符串信息
+	T4 four;		// 花费的手续费积分
+};
+
+//using LCpair = three_pair<int, int, std::string>;
+using LCpair = four_pair<int, int, std::string, int>;
 
 struct firstFront
 {
@@ -96,6 +108,14 @@ public:
 	void checkAns();
 
 	void calculationAndMerging();
+
+	void merging(std::multimap<int, LCpair, std::greater<int>>&, std::multimap<int, LCpair>&);
+
+	template<class T1, class T2>
+	bool solveTraExcess(T1& intMax, T2& traMin, std::multimap<int, LCpair, std::greater<int>>& qsell_int);
+
+	template<class T1, class T2>
+	bool solveIntExcess(T1& intMax, T2& traMin, std::multimap<int, LCpair>& qsell_tra);
 
 private:
 

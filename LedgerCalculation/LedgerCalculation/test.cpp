@@ -34,8 +34,38 @@ void test2()
 	}
 }
 
+void test3()
+{
+	multimap<int, int> t1 = { { 1, 1 }, {2, 2}, {3, 3} };
+
+	//auto it = t1.rbegin();
+	auto it = t1.rend();
+	while (it != t1.rend())
+	{
+		bool is_back = false;
+
+		std::cout << it->first << " " << it->second << std::endl;
+		int key = it->first;
+		if (it == t1.rbegin())
+		{
+			is_back = true;
+		}
+		else
+		{
+			++it;
+		}
+		t1.erase(t1.find(key));
+		if (is_back == true)
+		{
+			it = t1.rbegin();
+		}
+	}
+	std::cout << (t1.rbegin() == t1.rend()) << std::endl;
+}
+
 int main()
 {
+	//test3();
 	test1();
 	//test2();
 
