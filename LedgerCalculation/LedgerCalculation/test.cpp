@@ -1,4 +1,7 @@
 #include "LedgerCalculation.h"
+#include "LedgerCalculation2.h"
+#include "BaseFunction.h"
+#include <fstream>
 
 using namespace std;
 
@@ -63,11 +66,67 @@ void test3()
 	std::cout << (t1.rbegin() == t1.rend()) << std::endl;
 }
 
+void test4()
+{
+	LCUnit one(24000, 30, SellType::SellInt);
+	LCUnit two(45000, 50, SellType::SellTra);
+
+	std::cout << one.getStringInfo() << std::endl;
+	std::cout << two.getStringInfo() << std::endl;
+	std::cout << std::endl;
+
+	auto info = LCUnit::calIntProfit(one, two);
+
+	std::cout << info.first << std::endl;
+	std::cout << info.second.first.getStringInfo() << std::endl;
+	std::cout << info.second.second << std::endl;
+	std::cout << std::endl;
+
+	std::cout << one.getStringInfo() << std::endl;
+	std::cout << std::endl;
+
+	std::cout << two.getStringInfo() << std::endl;
+	std::cout << std::endl;
+
+	std::cout << "-------------" << std::endl;
+	std::cout << std::endl;
+
+	auto ans = collationSellUnit(one.getStringInfo(), info.second.first.getStringInfo() , info.second.second, "            ");
+	std::cout << ans.first << std::endl;
+	std::cout << ans.second << std::endl;
+	std::cout << std::endl;
+	std::cout << std::endl;
+
+	LCUnit a1(40001, 50, SellType::SellInt);
+	LCUnit a2(24000, 30, SellType::SellInt);
+
+	auto ans2 = LCUnit::mergeSameProportionSellType(a1, a2);
+	std::cout << ans2.first << std::endl;
+	std::cout << ans2.second.getStringInfo() << std::endl;
+}
+
+void test5()
+{
+	LedgerCalculation2 testget;
+
+	std::fstream file;
+	//file.open("C:\\Users\\33049\\Desktop\\ÕË±¾.txt", std::ios::in);
+	file.open("test.txt", std::ios::in);
+
+	//testget.input(file);
+	testget.input(std::cin);
+	testget.output(std::cout);
+
+	file.close();
+}
+
 int main()
 {
 	//test3();
-	test1();
+	//test1();
 	//test2();
+	//test4();
+	test5();
 
 	return 0;
 }

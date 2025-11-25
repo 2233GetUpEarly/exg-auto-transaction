@@ -583,7 +583,7 @@ void LedgerCalculation::calculationAndMerging()
 
 	// 将积分交易币比例相同的交易合成
 
-	std::multimap<int, LCpair, std::greater<int>> qsell_int2;
+	std::multimap<double, LCpair, std::greater<int>> qsell_int2;
 	for (auto& e : qsell_int1)
 	{
 		qsell_int2.insert({ (e.second.first + e.second.four) / e.second.second, e.second });
@@ -616,7 +616,7 @@ void LedgerCalculation::calculationAndMerging()
 		qsell_int2.insert({ ratio, temp } );
 	}
 
-	std::multimap<int, LCpair> qsell_tra2;
+	std::multimap<double, LCpair> qsell_tra2;
 	for (auto& e : qsell_tra1)
 	{
 		qsell_tra2.insert({ (e.second.first + e.second.four) / e.second.second, e.second });
@@ -676,7 +676,7 @@ void LedgerCalculation::calculationAndMerging()
 }
 
 template<class T1, class T2>
-bool LedgerCalculation::solveTraExcess(T1& intMax, T2& traMin, std::multimap<int, LCpair, std::greater<int>>& qsell_int)
+bool LedgerCalculation::solveTraExcess(T1& intMax, T2& traMin, std::multimap<double, LCpair, std::greater<int>>& qsell_int)
 {
 	if (traMin->second.second - intMax->second.second < 10)			// 保持交易币记录中的交易币大于等于 10
 	{
@@ -711,15 +711,18 @@ bool LedgerCalculation::solveTraExcess(T1& intMax, T2& traMin, std::multimap<int
 }
 
 template<class T1, class T2>
-bool LedgerCalculation::solveIntExcess(T1& intMax, T2& traMin, std::multimap<int, LCpair>& qsell_tra)
+bool LedgerCalculation::solveIntExcess(T1& intMax, T2& traMin, std::multimap<double, LCpair>& qsell_tra)
 {
 	if (intMax->second.first - traMin->second.first < 5000)			// 保持积分记录中的积分大于等于 5000
 	{
 		return false;
 	}
 
-	//// 获利 = 卖交易币的积分总数 - 卖积分对齐卖交易币个数的积分成本
-	int profit = traMin->second.first - (intMax->first * traMin->second.second);
+	////// 获利 = 卖交易币的积分总数 - 卖交易币的手续费 - 卖的积分 - 卖积分成本
+	//int profit = traMin->second.first + traMin->second.four - (intMax->second.first + intMax->second.four);
+
+	//// 获利 = 卖交易币的积分总数 - 卖交易币的手续费 - 卖积分对齐卖交易币个数的积分成本
+	int profit = traMin->second.first + traMin->second.four - (intMax->first * traMin->second.second);
 
 	this->_sell_ans.push_back(sell_int_to_LCpair(intMax->second.first / intMax->second.second * traMin->second.second, traMin->second.second).third);
 
@@ -742,7 +745,39 @@ bool LedgerCalculation::solveIntExcess(T1& intMax, T2& traMin, std::multimap<int
 	return true;
 }
 
-void LedgerCalculation::merging(std::multimap<int, LCpair, std::greater<int>>& qsell_int, std::multimap<int, LCpair>& qsell_tra)
+template<class T1, class T2>
+bool LedgerCalculation::solveEqual(T1& intMax, T2& traMin, std::multimap<double, LCpair, std::greater<int>>& qsell_int, std::multimap<double, LCpair>& qsell_tra)
+{
+	if (traMin->second.second != intMax->second.second)
+	{
+		return false;
+	}
+
+	//// 获利 = 卖交易币的积分总数 - 卖交易币的手续费 - 卖的积分 - 卖积分成本
+	int profit = traMin->second.first + traMin->second.four - (intMax->second.first + intMax->second.four);
+
+	this->_sell_ans.push_back(sell_int_to_LCpair(intMax->second.first / intMax->second.second * traMin->second.second, traMin->second.second).third);
+
+	std::string sell_tra = traMin->second.third;
+	sell_tra += "[合成算法]        ";
+	sell_tra += (profit >= 0 ? "+" : "");
+	sell_tra += std::to_string(profit);
+	this->_sum += profit;
+
+	this->_sell_ans.push_back(sell_tra);
+
+	int ratio1 = traMin->first;
+	auto tempIt1 = qsell_tra.find(ratio1);
+	qsell_tra.erase(tempIt1);
+
+	int ratio2 = intMax->first;
+	auto tempIt2 = qsell_int.find(ratio2);
+	qsell_int.erase(tempIt2);
+
+	return true;
+}
+
+void LedgerCalculation::merging(std::multimap<double, LCpair, std::greater<int>>& qsell_int, std::multimap<double, LCpair>& qsell_tra)
 {
 	auto intMax = qsell_int.begin();
 	while (intMax != qsell_int.end())
@@ -760,6 +795,12 @@ void LedgerCalculation::merging(std::multimap<int, LCpair, std::greater<int>>& q
 			auto tempNextInt = intMax;
 			++tempNextInt;
 			if (solveTraExcess(intMax, traMin, qsell_int) == true)
+			{
+				intMax = tempNextInt;
+				traMin = qsell_tra.begin();
+			}
+
+			if (solveEqual(intMax, traMin, qsell_int, qsell_tra) == true)
 			{
 				intMax = tempNextInt;
 				traMin = qsell_tra.begin();

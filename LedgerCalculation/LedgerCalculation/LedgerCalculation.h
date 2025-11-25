@@ -109,13 +109,16 @@ public:
 
 	void calculationAndMerging();
 
-	void merging(std::multimap<int, LCpair, std::greater<int>>&, std::multimap<int, LCpair>&);
+	void merging(std::multimap<double, LCpair, std::greater<int>>&, std::multimap<double, LCpair>&);
 
 	template<class T1, class T2>
-	bool solveTraExcess(T1& intMax, T2& traMin, std::multimap<int, LCpair, std::greater<int>>& qsell_int);
+	bool solveTraExcess(T1& intMax, T2& traMin, std::multimap<double, LCpair, std::greater<int>>& qsell_int);
 
 	template<class T1, class T2>
-	bool solveIntExcess(T1& intMax, T2& traMin, std::multimap<int, LCpair>& qsell_tra);
+	bool solveIntExcess(T1& intMax, T2& traMin, std::multimap<double, LCpair>& qsell_tra);
+
+	template<class T1, class T2>
+	bool solveEqual(T1& intMax, T2& traMin, std::multimap<double, LCpair, std::greater<int>>& qsell_int, std::multimap<double, LCpair>& qsell_tra);
 
 private:
 
