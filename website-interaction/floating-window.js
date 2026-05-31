@@ -18,9 +18,20 @@
         password: ''
     };
 
+    // 存储输入框的值 - 积分
+    window.darkrp.ui.pointsForm = {
+        points: '',      // 积分数量
+        tradingCoin: '', // 交易币单价
+        password: ''
+    };
+
     // 用于保存原始函数（包装模式）
     window.darkrp.ui._originalSellTradingCoinFill = null;
     window.darkrp.ui._originalSellTradingCoinFillPassword = null;
+
+    // 用于保存原始函数（包装模式）- 积分
+    window.darkrp.ui._originalSellPointsFill = null;
+    window.darkrp.ui._originalSellPointsFillPassword = null;
 
     // 创建浮动面板
     const panel = document.createElement('div');
@@ -236,6 +247,92 @@
                         📌 当前: 交易币=<span id="dp-trading-coin-display">100</span> | 积分=<span id="dp-points-price-display">500</span> | 密码已填
                     </div>
                 </div>
+
+                <!-- ========== 积分参数输入区 ========== -->
+                <div id="dp-points-params" style="
+                    margin-bottom: ${isMobile ? '16px' : '12px'};
+                    background: #252530;
+                    border-radius: ${isMobile ? '10px' : '8px'};
+                    padding: ${isMobile ? '12px' : '10px'};
+                    border-left: 3px solid #4caf50;
+                ">
+                    <div style="color: #4caf50; font-size: ${isMobile ? '13px' : '12px'}; margin-bottom: 10px; font-weight: 500;">
+                        💎 卖积分参数
+                    </div>
+                    
+                    <!-- 积分数量 -->
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
+                            📊 积分数量 <span style="color: #4caf50;">(sell 输入框)</span>
+                        </label>
+                        <input type="number" id="dp-points-amount" placeholder="例: 1000" value="1000" step="1" style="
+                            width: 100%;
+                            padding: ${isMobile ? '12px' : '8px'};
+                            background: #1e1e2f;
+                            color: #fff;
+                            border: 1px solid #3a3a4a;
+                            border-radius: ${isMobile ? '8px' : '4px'};
+                            font-family: inherit;
+                            font-size: ${isMobile ? '14px' : '12px'};
+                            touch-action: manipulation;
+                            box-sizing: border-box;
+                        ">
+                        <div style="color: #888; font-size: 10px; margin-top: 4px;">填入你要出售的积分数量</div>
+                    </div>
+                    
+                    <!-- 交易币单价 -->
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
+                            🪙 交易币单价 <span style="color: #4caf50;">(price 输入框)</span>
+                        </label>
+                        <input type="number" id="dp-tradingcoin-price" placeholder="例: 10" value="10" step="1" style="
+                            width: 100%;
+                            padding: ${isMobile ? '12px' : '8px'};
+                            background: #1e1e2f;
+                            color: #fff;
+                            border: 1px solid #3a3a4a;
+                            border-radius: ${isMobile ? '8px' : '4px'};
+                            font-family: inherit;
+                            font-size: ${isMobile ? '14px' : '12px'};
+                            touch-action: manipulation;
+                            box-sizing: border-box;
+                        ">
+                        <div style="color: #888; font-size: 10px; margin-top: 4px;">每个积分要卖多少交易币</div>
+                    </div>
+                    
+                    <!-- 交易密码 -->
+                    <div>
+                        <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
+                            🔐 交易密码 <span style="color: #4caf50;">(密码输入框)</span>
+                        </label>
+                        <input type="password" id="dp-points-password" placeholder="输入交易密码" style="
+                            width: 100%;
+                            padding: ${isMobile ? '12px' : '8px'};
+                            background: #1e1e2f;
+                            color: #fff;
+                            border: 1px solid #3a3a4a;
+                            border-radius: ${isMobile ? '8px' : '4px'};
+                            font-family: inherit;
+                            font-size: ${isMobile ? '14px' : '12px'};
+                            touch-action: manipulation;
+                            box-sizing: border-box;
+                        ">
+                        <div style="color: #888; font-size: 10px; margin-top: 4px;">出售积分时需要的安全密码</div>
+                    </div>
+                    
+                    <!-- 显示当前值状态 -->
+                    <div style="
+                        margin-top: 10px; 
+                        padding: 6px 8px; 
+                        background: #1a1a28; 
+                        border-radius: 6px; 
+                        font-size: 11px; 
+                        color: #aaa;
+                        word-break: break-all;
+                    ">
+                        📌 当前: 积分=<span id="dp-points-amount-display">1000</span> | 单价=<span id="dp-tradingcoin-price-display">10</span> | 密码已填
+                    </div>
+                </div>
                 
                 <!-- 快捷步骤区（滚动） -->
                 <div style="margin-bottom: ${isMobile ? '16px' : '12px'}">
@@ -284,12 +381,19 @@
     const stepButtonsDiv = document.getElementById('dp-step-buttons');
     const resizeHandle = document.getElementById('dp-resize-handle');
     
-    // 输入框元素
+    // 输入框元素 - 交易币
     const tradingCoinInput = document.getElementById('dp-trading-coin');
     const pointsPriceInput = document.getElementById('dp-points-price');
     const passwordInput = document.getElementById('dp-password');
     const tradingCoinDisplay = document.getElementById('dp-trading-coin-display');
     const pointsPriceDisplay = document.getElementById('dp-points-price-display');
+
+    // 输入框元素 - 积分
+    const pointsAmountInput = document.getElementById('dp-points-amount');
+    const tradingcoinPriceInput = document.getElementById('dp-tradingcoin-price');
+    const pointsPasswordInput = document.getElementById('dp-points-password');
+    const pointsAmountDisplay = document.getElementById('dp-points-amount-display');
+    const tradingcoinPriceDisplay = document.getElementById('dp-tradingcoin-price-display');
 
     // 日志函数
     function addLog(msg, isError = false) {
@@ -331,6 +435,32 @@
     
     // 初始化一次
     updateTradingParams();
+
+    // 更新卖积分参数显示和全局存储
+    function updatePointsParams() {
+        const pointsAmount = pointsAmountInput.value;
+        const tradingcoinPrice = tradingcoinPriceInput.value;
+        const pointsPassword = pointsPasswordInput.value;
+        
+        // 更新显示
+        pointsAmountDisplay.textContent = pointsAmount || '0';
+        tradingcoinPriceDisplay.textContent = tradingcoinPrice || '0';
+        
+        // 更新全局存储
+        window.darkrp.ui.pointsForm = {
+            points: pointsAmount || '0',
+            tradingCoin: tradingcoinPrice || '0',
+            password: pointsPassword || ''
+        };
+    }
+
+    // 监听卖积分输入框变化
+    pointsAmountInput.addEventListener('input', updatePointsParams);
+    tradingcoinPriceInput.addEventListener('input', updatePointsParams);
+    pointsPasswordInput.addEventListener('input', updatePointsParams);
+
+    // 初始化卖积分参数
+    updatePointsParams();
 
     // ========== 包装步骤函数，使其读取 UI 输入框的值 ==========
     // 采用包装模式，保留原始函数，避免覆盖丢失
@@ -393,6 +523,46 @@
             }
             addLog('🔁 已恢复原始步骤函数');
         };
+
+        // 包装：卖积分填入积分和交易币
+        if (!window.darkrp.ui._originalSellPointsFill && steps['卖积分填入积分和交易币']) {
+            window.darkrp.ui._originalSellPointsFill = steps['卖积分填入积分和交易币'];
+        }
+        if (steps['卖积分填入积分和交易币']) {
+            steps['卖积分填入积分和交易币'] = async function() {
+                const params = window.darkrp.ui.pointsForm;
+                const points = params.points;
+                const tradingCoin = params.tradingCoin;
+                
+                addLog(`📝 从UI读取积分参数: 积分数量=${points}, 交易币单价=${tradingCoin}`);
+                
+                const originalFn = window.darkrp.ui._originalSellPointsFill;
+                if (originalFn) {
+                    await originalFn(points, tradingCoin);
+                } else {
+                    addLog('❌ 原始步骤函数 卖积分填入积分和交易币 不存在', true);
+                }
+            };
+        }
+
+        // 包装：卖积分填入密码
+        if (!window.darkrp.ui._originalSellPointsFillPassword && steps['卖积分填入密码']) {
+            window.darkrp.ui._originalSellPointsFillPassword = steps['卖积分填入密码'];
+        }
+        if (steps['卖积分填入密码']) {
+            steps['卖积分填入密码'] = async function() {
+                const password = window.darkrp.ui.pointsForm.password;
+                
+                addLog(`🔐 从UI读取积分密码: 已填 (长度 ${password.length})`);
+                
+                const originalFn = window.darkrp.ui._originalSellPointsFillPassword;
+                if (originalFn) {
+                    await originalFn(password);
+                } else {
+                    addLog('❌ 原始步骤函数 卖积分填入密码 不存在', true);
+                }
+            };
+        }
         
         addLog('🔧 已包装交易币步骤函数（从UI读取参数，原始函数已保留）');
         return true;
@@ -727,6 +897,7 @@
             loadStepButtons();
             patchStepFunctions();  // 注入参数读取逻辑
             addLog('📌 请在"卖交易币参数"区域填写交易币数量、积分单价和密码');
+            addLog('📌 请在"卖积分参数"区域填写积分数量、交易币单价和密码');
         } else if (checkCount < 30) {
             checkCount++;
             setTimeout(checkAndUpdate, 500);

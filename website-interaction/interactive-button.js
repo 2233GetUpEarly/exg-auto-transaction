@@ -100,6 +100,13 @@ var button = (function()
         darkrp.util.selectAndFindToClick("button.btn.btn-primary.bg-primary-subtle", '卖积分');
     }
 
+    // 卖积分输入框交易币、积分填入
+    function 卖积分填入积分和交易币(points, tradingCoin)
+    {
+        darkrp.util.findAndFill("input[title=\"sell\"]", points);
+        darkrp.util.findAndFill("input[title=\"price\"]", tradingCoin);
+    }
+
     // 卖积分提交
     function 卖积分提交()
     {
@@ -112,6 +119,12 @@ var button = (function()
     {
         // darkrp.util.selectAndFindToClick("button.btn.btn-primary.bg-primary-subtle", '确认上架');
         darkrp.util.findAndClick("button.btn.btn-primary.bg-primary-subtle");
+    }
+
+    // 卖积分填入密码
+    function 卖积分填入密码(password)
+    {
+        darkrp.util.findAndFill("input.form-control.my-1", password);
     }
 
     // 卖积分弹窗提交
@@ -146,8 +159,10 @@ var button = (function()
         卖交易币通知成功弹窗关闭: 卖交易币通知成功弹窗关闭,
         买积分: 买积分,
         卖积分: 卖积分,
+        卖积分填入积分和交易币: 卖积分填入积分和交易币,
         卖积分提交: 卖积分提交,
         卖积分确认上架: 卖积分确认上架,
+        卖积分填入密码: 卖积分填入密码,
         卖积分弹窗提交: 卖积分弹窗提交,
         卖积分通知成功弹窗关闭: 卖积分通知成功弹窗关闭
     };

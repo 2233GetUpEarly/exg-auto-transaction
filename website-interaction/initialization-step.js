@@ -100,41 +100,55 @@ T.step('卖交易币通知成功弹窗关闭', async function()
 T.step('买积分', async function()
 {
     darkrp.button.买积分();
-    console.log('✅ 步骤执行：' + '买积分' + '，等待 1500 ms');
-    await darkrp.util.sleepMillisecond(1500);
+    console.log('✅ 步骤 买积分() 执行完毕，开始等待');
+    await darkrp.util.stepPause(10000, 20000, 10);
 });
 
 T.step('卖积分', async function()
 {
     darkrp.button.卖积分();
-    console.log('✅ 步骤执行：' + '卖积分' + '，等待 1300 ms');
-    await darkrp.util.sleepMillisecond(1300);
+    console.log('✅ 步骤 卖积分() 执行完毕，开始等待');
+    await darkrp.util.stepPause(10000, 20000, 10);
+});
+
+T.step('卖积分填入积分和交易币', async function(points, tradingCoin)
+{
+    darkrp.button.卖积分填入积分和交易币(points, tradingCoin);
+    console.log('✅ 步骤 卖积分填入积分和交易币() 执行完毕，开始等待');
+    await darkrp.util.stepPause(5000, 10000, 5);
 });
 
 T.step('卖积分提交', async function()
 {
     darkrp.button.卖积分提交();
-    console.log('✅ 步骤执行：' + '卖积分提交' + '，等待 1300 ms');
-    await darkrp.util.sleepMillisecond(1300);
+    console.log('✅ 步骤 卖积分提交() 执行完毕，开始等待');
+    await darkrp.util.stepPause(10000, 20000, 10);
 });
 
 T.step('卖积分确认上架', async function()
 {
     darkrp.button.卖积分确认上架();
-    console.log('✅ 步骤执行：' + '卖积分确认上架' + '，等待 2000 ms');
-    await darkrp.util.sleepMillisecond(2000);
+    console.log('✅ 步骤 卖积分确认上架() 执行完毕，开始等待');
+    await darkrp.util.stepPause(10000, 20000, 10);
+});
+
+T.step('卖积分填入密码', async function(password)
+{
+    darkrp.button.卖积分填入密码(password);
+    console.log('✅ 步骤 卖积分填入密码() 执行完毕，开始等待');
+    await darkrp.util.stepPause(5000, 10000, 5);
 });
 
 T.step('卖积分弹窗提交', async function()
 {
     darkrp.button.卖积分弹窗提交();
-    console.log('✅ 步骤执行：' + '卖积分弹窗提交' + '，等待 2000 ms');
-    await darkrp.util.sleepMillisecond(2000);
+   console.log('✅ 步骤 卖积分弹窗提交() 执行完毕，开始等待');
+    await darkrp.util.stepPause(6000, 10000, 5);
 });
 
 T.step('卖积分通知成功弹窗关闭', async function()
 {
     darkrp.button.卖积分通知成功弹窗关闭();
-    console.log('✅ 步骤执行：' + '卖积分通知成功弹窗关闭' + '，等待 2000 ms');
-    await darkrp.util.sleepMillisecond(2000);
+   console.log('✅ 步骤 卖交易币通知成功弹窗关闭() 执行完毕，开始等待');
+    await darkrp.util.stepPause(6000, 10000, 5);
 });
