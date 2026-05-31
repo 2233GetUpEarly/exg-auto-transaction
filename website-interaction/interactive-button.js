@@ -47,6 +47,13 @@ var button = (function()
         darkrp.util.selectAndFindToClick("button.btn.btn-primary.bg-primary-subtle", '卖交易币');
     }
 
+    // 卖交易币输入框交易币、积分填入
+    function 卖交易币填入交易币和积分(tradingCoin, points)
+    {
+        darkrp.util.findAndFill("input[title=\"sell\"]", tradingCoin);
+        darkrp.util.findAndFill("input[title=\"price\"]", points);
+    }
+
     // 卖交易币提交
     function 卖交易币提交()
     {
@@ -59,6 +66,12 @@ var button = (function()
     {
         // darkrp.util.selectAndFindToClick("button.btn.btn-primary.bg-primary-subtle", '确认上架');
         darkrp.util.findAndClick("button.btn.btn-primary.bg-primary-subtle");
+    }
+
+    // 卖交易币填入密码
+    function 卖交易币填入密码(password)
+    {
+        darkrp.util.findAndFill("input.form-control.my-1", password);
     }
 
     // 卖交易币弹窗提交
@@ -125,8 +138,10 @@ var button = (function()
         交易市场: 交易市场,
         买交易币: 买交易币,
         卖交易币: 卖交易币,
+        卖交易币填入交易币和积分: 卖交易币填入交易币和积分,
         卖交易币提交: 卖交易币提交,
         卖交易币确认上架: 卖交易币确认上架,
+        卖交易币填入密码: 卖交易币填入密码,
         卖交易币弹窗提交: 卖交易币弹窗提交,
         卖交易币通知成功弹窗关闭: 卖交易币通知成功弹窗关闭,
         买积分: 买积分,

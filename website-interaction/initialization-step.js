@@ -5,36 +5,36 @@ var T = darkrp.trigger;
 T.step('登录', async function()
 {
     darkrp.button.登录();
-    console.log('✅ 步骤执行：' + '登录' + '，等待 2000 ms');
-    await darkrp.util.sleepMillisecond(2000);
+    console.log('✅ 步骤 登录() 执行完毕，开始等待');
+    await darkrp.util.stepPause(1500, 2000, 2);
 });
 
 T.step('离线登录', async function()
 {
     darkrp.button.离线登录();
-    console.log('✅ 步骤执行：' + '离线登录' + '，等待 1000 ms');
-    await darkrp.util.sleepMillisecond(1000);
+    console.log('✅ 步骤 离线登录() 执行完毕，开始等待');
+    await darkrp.util.stepPause(1000, 1500, 2);
 });
 
 T.step('弹窗确定', async function()
 {
     darkrp.button.弹窗确定();
-    console.log('✅ 步骤执行：' + '弹窗确定' + '，等待 3000 ms');
-    await darkrp.util.sleepMillisecond(3000);
+    console.log('✅ 步骤 弹窗确定() 执行完毕，开始等待');
+    await darkrp.util.stepPause(4000, 10000, 5);
 });
 
 T.step('积分商城', async function()
 {
     darkrp.button.积分商城();
-    console.log('✅ 步骤执行：' + '积分商城' + '，等待 2000 ms');
-    await darkrp.util.sleepMillisecond(2000);
+    console.log('✅ 步骤 积分商城() 执行完毕，开始等待');
+    await darkrp.util.stepPause(4000, 10000, 5);
 });
 
 T.step('交易市场', async function()
 {
     darkrp.button.交易市场();
-    console.log('✅ 步骤执行：' + '交易市场' + '，等待 2000 ms');
-    await darkrp.util.sleepMillisecond(2000);
+    console.log('✅ 步骤 交易市场() 执行完毕，开始等待');
+    await darkrp.util.stepPause(4000, 10000, 5);
 });
 
 // ------------------ 买交易币操作部分 -----------------------
@@ -42,43 +42,57 @@ T.step('交易市场', async function()
 T.step('买交易币', async function()
 {
     darkrp.button.买交易币();
-    console.log('✅ 步骤执行：' + '买交易币' + '，等待 2500 ms');
-    await darkrp.util.sleepMillisecond(2500);
+    console.log('✅ 步骤 买交易币() 执行完毕，开始等待');
+    await darkrp.util.stepPause(10000, 20000, 10);
 });
 
 T.step('卖交易币', async function()
 {
     darkrp.button.卖交易币();
-    console.log('✅ 步骤执行：' + '卖交易币' + '，等待 1000 ms');
-    await darkrp.util.sleepMillisecond(1000);
+    console.log('✅ 步骤 卖交易币() 执行完毕，开始等待');
+    await darkrp.util.stepPause(10000, 20000, 10);
+});
+
+T.step('卖交易币填入交易币和积分', async function(tradingCoin, points)
+{
+    darkrp.button.卖交易币填入交易币和积分(tradingCoin, points);
+    console.log('✅ 步骤 卖交易币填入交易币和积分() 执行完毕，开始等待');
+    await darkrp.util.stepPause(5000, 10000, 5);
 });
 
 T.step('卖交易币提交', async function()
 {
     darkrp.button.卖交易币提交();
-    console.log('✅ 步骤执行：' + '卖交易币提交' + '，等待 1000 ms');
-    await darkrp.util.sleepMillisecond(1000);
+    console.log('✅ 步骤 卖交易币提交() 执行完毕，开始等待');
+    await darkrp.util.stepPause(10000, 20000, 10);
 });
 
 T.step('卖交易币确认上架', async function()
 {
     darkrp.button.卖交易币确认上架();
-    console.log('✅ 步骤执行：' + '卖交易币确认上架' + '，等待 2000 ms');
-    await darkrp.util.sleepMillisecond(2000);
+    console.log('✅ 步骤 卖交易币确认上架() 执行完毕，开始等待');
+    await darkrp.util.stepPause(10000, 20000, 10);
+});
+
+T.step('卖交易币填入密码', async function(password)
+{
+    darkrp.button.卖交易币填入密码(password);
+    console.log('✅ 步骤 卖交易币填入密码() 执行完毕，开始等待');
+    await darkrp.util.stepPause(5000, 10000, 5);
 });
 
 T.step('卖交易币弹窗提交', async function()
 {
     darkrp.button.卖交易币弹窗提交();
-    console.log('✅ 步骤执行：' + '卖交易币弹窗提交' + '，等待 2000 ms');
-    await darkrp.util.sleepMillisecond(2000);
+    console.log('✅ 步骤 卖交易币弹窗提交() 执行完毕，开始等待');
+    await darkrp.util.stepPause(6000, 10000, 5);
 });
 
 T.step('卖交易币通知成功弹窗关闭', async function()
 {
     darkrp.button.卖交易币通知成功弹窗关闭();
-    console.log('✅ 步骤执行：' + '卖交易币通知成功弹窗关闭' + '，等待 2000 ms');
-    await darkrp.util.sleepMillisecond(2000);
+    console.log('✅ 步骤 卖交易币通知成功弹窗关闭() 执行完毕，开始等待');
+    await darkrp.util.stepPause(6000, 10000, 5);
 });
 
 // --------------------- 买积分操作部分 -------------------

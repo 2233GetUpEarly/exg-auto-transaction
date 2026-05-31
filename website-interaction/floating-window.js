@@ -7,25 +7,60 @@
     // 检测是否为移动端
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
 
+    // 初始化存储位置
+    if (!window.darkrp) window.darkrp = {};
+    if (!window.darkrp.ui) window.darkrp.ui = {};
+    
+    // 存储输入框的值（供步骤函数读取）
+    window.darkrp.ui.tradingCoinForm = {
+        tradingCoin: '',
+        points: '',
+        password: ''
+    };
+
+    // 用于保存原始函数（包装模式）
+    window.darkrp.ui._originalSellTradingCoinFill = null;
+    window.darkrp.ui._originalSellTradingCoinFillPassword = null;
+
     // 创建浮动面板
     const panel = document.createElement('div');
     panel.id = 'darkrp-control-panel';
     panel.innerHTML = `
-        <div style="
+        <div id="dp-main-container" style="
             position: fixed;
             bottom: ${isMobile ? '10px' : '20px'};
             right: ${isMobile ? '10px' : '20px'};
             left: ${isMobile ? '10px' : 'auto'};
             width: ${isMobile ? 'calc(100% - 20px)' : '360px'};
-            max-width: ${isMobile ? 'none' : '90vw'};
+            min-width: 280px;
+            min-height: 400px;
+            max-width: ${isMobile ? 'none' : '80vw'};
+            max-height: ${isMobile ? '90vh' : '80vh'};
             background: #1e1e2f;
             border-radius: ${isMobile ? '16px' : '12px'};
             box-shadow: 0 4px 20px rgba(0,0,0,0.4);
             z-index: 999999;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             font-size: ${isMobile ? '14px' : '13px'};
-            transition: all 0.2s ease;
+            transition: none;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            resize: both;
         ">
+            <!-- 拉伸手柄（右下角） -->
+            <div id="dp-resize-handle" style="
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                width: 20px;
+                height: 20px;
+                cursor: nw-resize;
+                background: linear-gradient(135deg, transparent 50%, #5a5a7a 50%);
+                border-bottom-right-radius: ${isMobile ? '16px' : '12px'};
+                z-index: 10;
+            "></div>
+            
             <!-- 标题栏 -->
             <div id="dp-title-bar" style="
                 background: #2a2a3a;
@@ -37,8 +72,9 @@
                 align-items: center;
                 touch-action: ${isMobile ? 'none' : 'auto'};
                 ${isMobile ? 'min-height: 48px;' : ''}
+                flex-shrink: 0;
             ">
-                <span style="font-weight: 500;">🎮 DarkRP 控制台</span>
+                <span style="font-weight: 500;">🎮 EXG 游戏菜单控制台</span>
                 <div style="display: flex; gap: ${isMobile ? '16px' : '8px'}">
                     <button id="dp-minimize" style="
                         background: none;
@@ -61,8 +97,13 @@
                 </div>
             </div>
             
-            <!-- 内容区 -->
-            <div id="dp-content" style="padding: ${isMobile ? '14px' : '12px'}; background: #2d2d3a; border-radius: 0 0 ${isMobile ? '16px' : '8px'} ${isMobile ? '16px' : '8px'};">
+            <!-- 可滚动内容区 -->
+            <div id="dp-content" style="
+                padding: ${isMobile ? '14px' : '12px'}; 
+                background: #2d2d3a; 
+                overflow-y: auto;
+                flex: 1;
+            ">
                 <!-- 流程选择 -->
                 <div style="margin-bottom: ${isMobile ? '16px' : '12px'}">
                     <select id="dp-flow-select" style="
@@ -110,6 +151,92 @@
                     ">📋 列表</button>
                 </div>
                 
+                <!-- ========== 交易币参数输入区 ========== -->
+                <div id="dp-trading-params" style="
+                    margin-bottom: ${isMobile ? '16px' : '12px'};
+                    background: #252530;
+                    border-radius: ${isMobile ? '10px' : '8px'};
+                    padding: ${isMobile ? '12px' : '10px'};
+                    border-left: 3px solid #ff9800;
+                ">
+                    <div style="color: #ff9800; font-size: ${isMobile ? '13px' : '12px'}; margin-bottom: 10px; font-weight: 500;">
+                        💰 卖交易币参数
+                    </div>
+                    
+                    <!-- 交易币数量 -->
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
+                            📊 交易币数量 <span style="color: #ff9800;">(sell 输入框)</span>
+                        </label>
+                        <input type="number" id="dp-trading-coin" placeholder="例: 100" value="100" step="1" style="
+                            width: 100%;
+                            padding: ${isMobile ? '12px' : '8px'};
+                            background: #1e1e2f;
+                            color: #fff;
+                            border: 1px solid #3a3a4a;
+                            border-radius: ${isMobile ? '8px' : '4px'};
+                            font-family: inherit;
+                            font-size: ${isMobile ? '14px' : '12px'};
+                            touch-action: manipulation;
+                            box-sizing: border-box;
+                        ">
+                        <div style="color: #888; font-size: 10px; margin-top: 4px;">填入你要出售的交易币数量</div>
+                    </div>
+                    
+                    <!-- 积分价格 -->
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
+                            💎 积分单价 <span style="color: #ff9800;">(price 输入框)</span>
+                        </label>
+                        <input type="number" id="dp-points-price" placeholder="例: 500" value="500" step="1" style="
+                            width: 100%;
+                            padding: ${isMobile ? '12px' : '8px'};
+                            background: #1e1e2f;
+                            color: #fff;
+                            border: 1px solid #3a3a4a;
+                            border-radius: ${isMobile ? '8px' : '4px'};
+                            font-family: inherit;
+                            font-size: ${isMobile ? '14px' : '12px'};
+                            touch-action: manipulation;
+                            box-sizing: border-box;
+                        ">
+                        <div style="color: #888; font-size: 10px; margin-top: 4px;">每个交易币要卖多少积分</div>
+                    </div>
+                    
+                    <!-- 交易密码 -->
+                    <div>
+                        <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
+                            🔐 交易密码 <span style="color: #ff9800;">(密码输入框)</span>
+                        </label>
+                        <input type="password" id="dp-password" placeholder="输入交易密码" style="
+                            width: 100%;
+                            padding: ${isMobile ? '12px' : '8px'};
+                            background: #1e1e2f;
+                            color: #fff;
+                            border: 1px solid #3a3a4a;
+                            border-radius: ${isMobile ? '8px' : '4px'};
+                            font-family: inherit;
+                            font-size: ${isMobile ? '14px' : '12px'};
+                            touch-action: manipulation;
+                            box-sizing: border-box;
+                        ">
+                        <div style="color: #888; font-size: 10px; margin-top: 4px;">出售商品时需要的安全密码</div>
+                    </div>
+                    
+                    <!-- 显示当前值状态 -->
+                    <div style="
+                        margin-top: 10px; 
+                        padding: 6px 8px; 
+                        background: #1a1a28; 
+                        border-radius: 6px; 
+                        font-size: 11px; 
+                        color: #aaa;
+                        word-break: break-all;
+                    ">
+                        📌 当前: 交易币=<span id="dp-trading-coin-display">100</span> | 积分=<span id="dp-points-price-display">500</span> | 密码已填
+                    </div>
+                </div>
+                
                 <!-- 快捷步骤区（滚动） -->
                 <div style="margin-bottom: ${isMobile ? '16px' : '12px'}">
                     <div style="color: #aaa; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 8px;">⚡ 快捷步骤</div>
@@ -145,7 +272,7 @@
     document.body.appendChild(panel);
 
     // 获取元素
-    const mainDiv = panel.querySelector('div:first-child');
+    const mainDiv = document.getElementById('dp-main-container');
     const titleBar = document.getElementById('dp-title-bar');
     const closeBtn = document.getElementById('dp-close');
     const minimizeBtn = document.getElementById('dp-minimize');
@@ -155,6 +282,14 @@
     const listBtn = document.getElementById('dp-list');
     const logDiv = document.getElementById('dp-log');
     const stepButtonsDiv = document.getElementById('dp-step-buttons');
+    const resizeHandle = document.getElementById('dp-resize-handle');
+    
+    // 输入框元素
+    const tradingCoinInput = document.getElementById('dp-trading-coin');
+    const pointsPriceInput = document.getElementById('dp-points-price');
+    const passwordInput = document.getElementById('dp-password');
+    const tradingCoinDisplay = document.getElementById('dp-trading-coin-display');
+    const pointsPriceDisplay = document.getElementById('dp-points-price-display');
 
     // 日志函数
     function addLog(msg, isError = false) {
@@ -168,9 +303,104 @@
         console.log(msg);
     }
 
+    // 更新显示和全局存储
+    function updateTradingParams() {
+        const tradingCoin = tradingCoinInput.value;
+        const points = pointsPriceInput.value;
+        const password = passwordInput.value;
+        
+        // 更新显示
+        tradingCoinDisplay.textContent = tradingCoin || '0';
+        pointsPriceDisplay.textContent = points || '0';
+        
+        // 更新全局存储
+        window.darkrp.ui.tradingCoinForm = {
+            tradingCoin: tradingCoin || '0',
+            points: points || '0',
+            password: password || ''
+        };
+        
+        // 可选：在控制台输出更新日志（调试用）
+        // console.log('📝 UI参数已更新:', window.darkrp.ui.tradingCoinForm);
+    }
+    
+    // 监听输入框变化
+    tradingCoinInput.addEventListener('input', updateTradingParams);
+    pointsPriceInput.addEventListener('input', updateTradingParams);
+    passwordInput.addEventListener('input', updateTradingParams);
+    
+    // 初始化一次
+    updateTradingParams();
+
+    // ========== 包装步骤函数，使其读取 UI 输入框的值 ==========
+    // 采用包装模式，保留原始函数，避免覆盖丢失
+    function patchStepFunctions() {
+        if (!window.darkrp || !window.darkrp.trigger || !window.darkrp.trigger._steps) {
+            return false;
+        }
+        
+        const steps = window.darkrp.trigger._steps;
+        
+        // 保存原始函数引用（如果还没保存过）
+        if (!window.darkrp.ui._originalSellTradingCoinFill) {
+            window.darkrp.ui._originalSellTradingCoinFill = steps['卖交易币填入交易币和积分'];
+        }
+        if (!window.darkrp.ui._originalSellTradingCoinFillPassword) {
+            window.darkrp.ui._originalSellTradingCoinFillPassword = steps['卖交易币填入密码'];
+        }
+        
+        // 包装：卖交易币填入交易币和积分 - 从 UI 读取参数后调用原始函数
+        steps['卖交易币填入交易币和积分'] = async function() {
+            const params = window.darkrp.ui.tradingCoinForm;
+            const tradingCoin = params.tradingCoin;
+            const points = params.points;
+            
+            addLog(`📝 从UI读取参数: 交易币=${tradingCoin}, 积分单价=${points}`);
+            console.log(`✅ 步骤 卖交易币填入交易币和积分(${tradingCoin}, ${points}) 执行`);
+            
+            const originalFn = window.darkrp.ui._originalSellTradingCoinFill;
+            if (originalFn) {
+                // 调用原始函数，传入从 UI 读取的参数
+                await originalFn(tradingCoin, points);
+            } else {
+                addLog('❌ 原始函数 卖交易币填入交易币和积分 不存在', true);
+            }
+        };
+        
+        // 包装：卖交易币填入密码 - 从 UI 读取密码后调用原始函数
+        steps['卖交易币填入密码'] = async function() {
+            const password = window.darkrp.ui.tradingCoinForm.password;
+            
+            addLog(`🔐 从UI读取密码: 已填 (长度 ${password.length})`);
+            console.log(`✅ 步骤 卖交易币填入密码(${'*'.repeat(password.length)}) 执行`);
+            
+            const originalFn = window.darkrp.ui._originalSellTradingCoinFillPassword;
+            if (originalFn) {
+                // 调用原始函数，传入从 UI 读取的密码
+                await originalFn(password);
+            } else {
+                addLog('❌ 原始函数 卖交易币填入密码 不存在', true);
+            }
+        };
+        
+        // 可选：提供一个恢复原始函数的方法
+        window.darkrp.ui.restoreOriginalSteps = function() {
+            if (window.darkrp.ui._originalSellTradingCoinFill) {
+                steps['卖交易币填入交易币和积分'] = window.darkrp.ui._originalSellTradingCoinFill;
+            }
+            if (window.darkrp.ui._originalSellTradingCoinFillPassword) {
+                steps['卖交易币填入密码'] = window.darkrp.ui._originalSellTradingCoinFillPassword;
+            }
+            addLog('🔁 已恢复原始步骤函数');
+        };
+        
+        addLog('🔧 已包装交易币步骤函数（从UI读取参数，原始函数已保留）');
+        return true;
+    }
+
     // 动态加载流程选项
     function loadFlowOptions() {
-        if (!window.darkrp || !window.darkrp.trigger || !window.darkrp.trigger._flows) return;
+        if (!window.darkrp || !window.darkrp.trigger || !window.darkrp.trigger._flows) return false;
         
         const flows = window.darkrp.trigger._flows;
         flowSelect.innerHTML = '<option value="">-- 选择流程 --</option>';
@@ -180,6 +410,7 @@
             option.textContent = `${name} → ${flows[name].join(' → ')}`;
             flowSelect.appendChild(option);
         });
+        return true;
     }
 
     // 动态加载快捷步骤按钮
@@ -188,7 +419,6 @@
         
         const steps = window.darkrp.trigger._steps;
         const stepNames = Object.keys(steps);
-        // 只显示前12个常用步骤，避免过多
         const displaySteps = stepNames.slice(0, 12);
         
         stepButtonsDiv.innerHTML = '';
@@ -256,27 +486,12 @@
         }
     }
 
-    // 拖动功能（手机端适配）
+    // 拖动功能
     let isDragging = false;
     let startX = 0, startY = 0;
     let startLeft = 0, startTop = 0;
 
-    function getPanelPosition() {
-        const rect = mainDiv.getBoundingClientRect();
-        let left = rect.left;
-        let top = rect.top;
-        // 如果使用了bottom/right定位，转换为left/top
-        if (mainDiv.style.right !== 'auto' && mainDiv.style.left === 'auto') {
-            left = window.innerWidth - rect.right;
-        }
-        if (mainDiv.style.bottom !== 'auto' && mainDiv.style.top === 'auto') {
-            top = window.innerHeight - rect.bottom;
-        }
-        return { left, top };
-    }
-
     function onTouchStart(e) {
-        // 只允许标题栏拖动
         if (!titleBar.contains(e.target)) return;
         if (e.target.tagName === 'BUTTON') return;
         
@@ -304,7 +519,6 @@
         let newLeft = startLeft + (touch.clientX - startX);
         let newTop = startTop + (touch.clientY - startY);
         
-        // 边界限制
         newLeft = Math.min(window.innerWidth - mainDiv.offsetWidth, Math.max(0, newLeft));
         newTop = Math.min(window.innerHeight - mainDiv.offsetHeight, Math.max(0, newTop));
         
@@ -369,6 +583,74 @@
         window.addEventListener('mouseup', onMouseUp);
     }
 
+    // ========== 拉伸缩放功能 ==========
+    let isResizing = false;
+    let resizeStartX = 0, resizeStartY = 0;
+    let resizeStartWidth = 0, resizeStartHeight = 0;
+    let resizeStartLeft = 0, resizeStartTop = 0;
+    
+    function onResizeStart(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        isResizing = true;
+        
+        const clientX = e.clientX ?? (e.touches?.[0]?.clientX ?? 0);
+        const clientY = e.clientY ?? (e.touches?.[0]?.clientY ?? 0);
+        resizeStartX = clientX;
+        resizeStartY = clientY;
+        
+        const rect = mainDiv.getBoundingClientRect();
+        resizeStartWidth = rect.width;
+        resizeStartHeight = rect.height;
+        resizeStartLeft = rect.left;
+        resizeStartTop = rect.top;
+        
+        document.body.style.userSelect = 'none';
+    }
+    
+    function onResizeMove(e) {
+        if (!isResizing) return;
+        e.preventDefault();
+        
+        const clientX = e.clientX ?? (e.touches?.[0]?.clientX ?? 0);
+        const clientY = e.clientY ?? (e.touches?.[0]?.clientY ?? 0);
+        
+        let deltaX = clientX - resizeStartX;
+        let deltaY = clientY - resizeStartY;
+        
+        let newWidth = resizeStartWidth + deltaX;
+        let newHeight = resizeStartHeight + deltaY;
+        
+        // 限制最小最大尺寸
+        newWidth = Math.min(window.innerWidth - 20, Math.max(280, newWidth));
+        newHeight = Math.min(window.innerHeight - 50, Math.max(350, newHeight));
+        
+        mainDiv.style.width = newWidth + 'px';
+        mainDiv.style.height = newHeight + 'px';
+        mainDiv.style.left = resizeStartLeft + 'px';
+        mainDiv.style.top = resizeStartTop + 'px';
+        mainDiv.style.right = 'auto';
+        mainDiv.style.bottom = 'auto';
+    }
+    
+    function onResizeEnd() {
+        isResizing = false;
+        document.body.style.userSelect = '';
+    }
+    
+    // 注册拉伸事件
+    if (resizeHandle) {
+        if (isMobile) {
+            resizeHandle.addEventListener('touchstart', onResizeStart, { passive: false });
+            window.addEventListener('touchmove', onResizeMove, { passive: false });
+            window.addEventListener('touchend', onResizeEnd);
+        } else {
+            resizeHandle.addEventListener('mousedown', onResizeStart);
+            window.addEventListener('mousemove', onResizeMove);
+            window.addEventListener('mouseup', onResizeEnd);
+        }
+    }
+
     // 关闭面板
     closeBtn.addEventListener('click', () => {
         panel.remove();
@@ -381,15 +663,18 @@
         if (isMinimized) {
             contentDiv.style.display = 'none';
             minimizeBtn.textContent = '□';
-            mainDiv.style.width = 'auto';
+            mainDiv.style.height = 'auto';
         } else {
             contentDiv.style.display = 'block';
             minimizeBtn.textContent = '−';
-            mainDiv.style.width = isMobile ? 'calc(100% - 20px)' : '360px';
+            // 恢复之前保存的尺寸或默认
+            if (mainDiv.style.height === 'auto') {
+                mainDiv.style.height = '500px';
+            }
         }
     });
 
-    // 执行流程
+    // 执行流程（增强版，执行前先注入）
     runBtn.addEventListener('click', async () => {
         const flowName = flowSelect.value;
         if (!flowName) {
@@ -401,6 +686,12 @@
             addLog('❌ darkrp.trigger 未加载', true);
             return;
         }
+        
+        // 执行前确保步骤函数已被 patch
+        patchStepFunctions();
+        
+        // 显示当前参数
+        addLog(`📋 当前参数: 交易币=${window.darkrp.ui.tradingCoinForm.tradingCoin}, 积分=${window.darkrp.ui.tradingCoinForm.points}, 密码已填`);
         
         addLog(`🚀 开始执行流程: ${flowName}`);
         try {
@@ -431,18 +722,20 @@
     let checkCount = 0;
     function checkAndUpdate() {
         if (window.darkrp && window.darkrp.trigger) {
-            addLog('✅ DarkRP 已就绪');
+            addLog('✅ EXG 游戏菜单控制台 已就绪');
             loadFlowOptions();
             loadStepButtons();
+            patchStepFunctions();  // 注入参数读取逻辑
+            addLog('📌 请在"卖交易币参数"区域填写交易币数量、积分单价和密码');
         } else if (checkCount < 30) {
             checkCount++;
             setTimeout(checkAndUpdate, 500);
         } else {
-            addLog('⚠️ DarkRP 未加载，请确保相关脚本已执行', true);
+            addLog('⚠️ EXG 游戏菜单控制台未加载，请确保相关脚本已执行', true);
         }
     }
     
     checkAndUpdate();
 
-    console.log('✅ DarkRP 控制面板已添加（已适配手机端）');
+    console.log('✅ EXG 游戏菜单控制台控制面板已添加（已适配手机端，支持拉伸，已集成交易币参数输入）');
 })();

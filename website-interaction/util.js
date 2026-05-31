@@ -36,6 +36,66 @@ window.darkrp.util = {
             }
         }
         return false;
+    },
+
+    sleepMillisecondAndIntervalDisplay: async function(millisecond, interval, isInSeconds = true)
+    {
+        let unitString = " ms";
+        let unit = 1;
+        if (isInSeconds == true)
+        {
+            unit = 1000;
+            unitString = " s";
+        }
+
+        let sumTime = 0;
+        const line = millisecond / interval;
+        for (let i = 0; i < line; ++i)
+        {
+            await this.sleepMillisecond(interval);
+            sumTime += interval;
+            console.log("⏰️总休眠：" + millisecond / unit + unitString + "，已休眠：" + sumTime / unit + unitString);
+        }
+        console.log("⏰️休眠完毕");
+    },
+
+    randomRangeInteger: function(min, max)
+    {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    },
+
+    stepPause: async function(minMillisecond, maxMillisecond, notificationCount)
+    {
+        const random = this.randomRangeInteger(minMillisecond, maxMillisecond);
+        const interval = random / notificationCount;
+        await this.sleepMillisecondAndIntervalDisplay(random, interval);
+    },
+
+    findAndFill: function(text, value)
+    {
+        var tempInput;
+        try
+        {
+            tempInput = document.querySelector(text);
+        }
+        catch(e)
+        {
+            return false;
+        }
+        if (tempInput == null)
+        {
+            return false;
+        }
+
+        var tempSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set;
+        if (tempSetter == null)
+        {
+            return false;
+        }
+
+        tempSetter.call(tempInput, value);
+        tempInput.dispatchEvent(new Event("input", { bubbles: true }));
+        return true;
     }
 };
 
