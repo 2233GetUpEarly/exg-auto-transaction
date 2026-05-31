@@ -139,6 +139,19 @@ var button = (function()
         darkrp.util.findAndClick("button.btn-close");
     }
 
+    // -------------------- 验证码相关 ----------------
+
+    // 验证码输入框填入内容
+    function 验证码输入框填入内容(text)
+    {
+        darkrp.util.findAndFill('input.form-control.my-1', text);
+    }
+
+    // 验证码弹窗确认
+    function 验证码弹窗确认()
+    {
+        darkrp.util.findAndClick("div.modal-footer > button.btn.btn-primary");
+    }
     
     // ... 其他函数
     
@@ -164,6 +177,8 @@ var button = (function()
         卖积分确认上架: 卖积分确认上架,
         卖积分填入密码: 卖积分填入密码,
         卖积分弹窗提交: 卖积分弹窗提交,
-        卖积分通知成功弹窗关闭: 卖积分通知成功弹窗关闭
+        卖积分通知成功弹窗关闭: 卖积分通知成功弹窗关闭,
+        验证码输入框填入内容: 验证码输入框填入内容,
+        验证码弹窗确认: 验证码弹窗确认
     };
 })();

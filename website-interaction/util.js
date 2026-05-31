@@ -96,6 +96,19 @@ window.darkrp.util = {
         tempSetter.call(tempInput, value);
         tempInput.dispatchEvent(new Event("input", { bubbles: true }));
         return true;
+    },
+
+    // 验证码解析
+    captchaAnalysis: async function(text)
+    {
+        const captchaImg = document.querySelector(text);
+        if (!captchaImg)
+        {
+            console.error('[验证码解析] 未找到验证码图片');
+            return { success: false, error: '未找到验证码图片', result: null };
+        }
+
+        return await ddddocr.recognizeCaptchaByElement(captchaImg);
     }
 };
 

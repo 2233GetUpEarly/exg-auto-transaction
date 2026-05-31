@@ -152,3 +152,36 @@ T.step('卖积分通知成功弹窗关闭', async function()
    console.log('✅ 步骤 卖交易币通知成功弹窗关闭() 执行完毕，开始等待');
     await darkrp.util.stepPause(6000, 10000, 5);
 });
+
+// ----------------- 验证码处理 ------------------
+
+T.step('验证码窗口探测并解析处理', async function()
+{
+    const message = document.querySelectorAll("请输入验证码");
+    if (message == null)
+    {
+        console.log("✅ 未检测到验证码相关信息");
+        return;
+    }
+
+    console.log("✅ 检测到验证码，尝试处理");
+
+    const ans = await darkrp.util.captchaAnalysis('img[src*="base64"]');
+    if (ans.success == false)
+    {
+        console.log("❌️ 验证码解析失败");
+        return;
+    }
+
+    console.log('✅ 验证码解析成功，开始等待');
+    await darkrp.util.stepPause(6000, 10000, 5);
+
+    darkrp.button.验证码输入框填入内容(ans.result);
+   console.log('✅ 步骤 验证码输入框填入内容() 执行完毕，开始等待');
+    await darkrp.util.stepPause(2000, 4000, 2);
+
+    darkrp.button.验证码弹窗确认();
+   console.log('✅ 步骤 验证码弹窗确认() 执行完毕，开始等待');
+    await darkrp.util.stepPause(6000, 10000, 5);
+});
+
