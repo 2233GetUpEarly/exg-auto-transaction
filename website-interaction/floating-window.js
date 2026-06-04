@@ -409,6 +409,7 @@
     darkrp.util.appendHTML('浮动窗口快速步骤信息区', '#dp-content', dpStep);
 
     // 获取元素
+    const panel = document.getElementById('darkrp-control-panel');
     const mainDiv = document.getElementById('dp-main-container');
     const titleBar = document.getElementById('dp-title-bar');
     const closeBtn = document.getElementById('dp-close');
