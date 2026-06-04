@@ -33,6 +33,12 @@ var button = (function()
         darkrp.util.findAndClick("i.bi.bi-buildings.d-block.text-center.align-middle.mx-auto");
     }
 
+    // 上架我的
+    function 上架我的()
+    {
+        darkrp.util.findAndClick("i.bi-database-up.d-block.text-center.align-middle.mx-auto");
+    }
+
 // --------------------- 买交易币按钮操作部分 -------------------
 
     // 买交易币
@@ -153,6 +159,8 @@ var button = (function()
         darkrp.util.findAndClick("div.modal-footer > button.btn.btn-primary");
     }
     
+    // -------------------- 交易相关数据获取 ---------------------
+
     // ... 其他函数
     
     // ========== 暴露接口 ==========
@@ -162,6 +170,7 @@ var button = (function()
         弹窗确定: 弹窗确定,
         积分商城: 积分商城,
         交易市场: 交易市场,
+        上架我的: 上架我的,
         买交易币: 买交易币,
         卖交易币: 卖交易币,
         卖交易币填入交易币和积分: 卖交易币填入交易币和积分,
