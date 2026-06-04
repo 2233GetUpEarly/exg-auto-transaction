@@ -109,6 +109,36 @@ window.darkrp.util = {
         }
 
         return await ddddocr.recognizeCaptchaByElement(captchaImg);
+    },
+
+    /**
+     * 在指定元素内添加HTML内容
+     * @param {string|HTMLElement} selector - CSS选择器或DOM元素
+     * @param {string} html - 要添加的HTML内容
+     * @param {string} position - 添加位置：'beforeend'(默认，内部末尾), 'afterbegin'(内部开头), 'beforebegin'(元素之前), 'afterend'(元素之后)
+     * @returns {boolean} - 是否添加成功
+     */
+    appendHTML: function(name, selector, html, debug = true, position = 'beforeend')
+    {
+        try
+        {
+            const element = typeof selector === 'string' ? document.querySelector(selector) : selector;
+            
+            if (!element)
+            {
+                if (debug == true) console.error(`未找到元素: ${selector}`);
+                return false;
+            }
+            
+            element.insertAdjacentHTML(position, html);
+            if (debug == true) console.log(`已添加到 ${element.tagName} HTML中，名称为: ${name}`);
+            return true;
+        }
+        catch (error)
+        {
+            if (debug == true) console.error('添加HTML失败：', error);
+            return false;
+        }
     }
 };
 

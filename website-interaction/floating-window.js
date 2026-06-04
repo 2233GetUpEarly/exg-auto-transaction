@@ -1,3 +1,4 @@
+
 (function() {
     'use strict';
 
@@ -15,14 +16,16 @@
     window.darkrp.ui.tradingCoinForm = {
         tradingCoin: '',
         points: '',
-        password: ''
+        password: '',
+        pointsToTradingCoin: '',
     };
 
     // 存储输入框的值 - 积分
     window.darkrp.ui.pointsForm = {
         points: '',      // 积分数量
         tradingCoin: '', // 交易币单价
-        password: ''
+        password: '',
+        pointsToTradingCoin: '',
     };
 
     // 用于保存原始函数（包装模式）
@@ -34,339 +37,376 @@
     window.darkrp.ui._originalSellPointsFillPassword = null;
 
     // 创建浮动面板
-    const panel = document.createElement('div');
-    panel.id = 'darkrp-control-panel';
-    panel.innerHTML = `
-        <div id="dp-main-container" style="
-            position: fixed;
-            bottom: ${isMobile ? '10px' : '20px'};
-            right: ${isMobile ? '10px' : '20px'};
-            left: ${isMobile ? '10px' : 'auto'};
-            width: ${isMobile ? 'calc(100% - 20px)' : '360px'};
-            min-width: 280px;
-            min-height: 400px;
-            max-width: ${isMobile ? 'none' : '80vw'};
-            max-height: ${isMobile ? '90vh' : '80vh'};
-            background: #1e1e2f;
-            border-radius: ${isMobile ? '16px' : '12px'};
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            z-index: 999999;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-size: ${isMobile ? '14px' : '13px'};
-            transition: none;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            resize: both;
-        ">
-            <!-- 拉伸手柄（右下角） -->
-            <div id="dp-resize-handle" style="
-                position: absolute;
-                bottom: 0;
-                right: 0;
-                width: 20px;
-                height: 20px;
-                cursor: nw-resize;
-                background: linear-gradient(135deg, transparent 50%, #5a5a7a 50%);
-                border-bottom-right-radius: ${isMobile ? '16px' : '12px'};
-                z-index: 10;
-            "></div>
-            
-            <!-- 标题栏 -->
-            <div id="dp-title-bar" style="
-                background: #2a2a3a;
-                color: #fff;
-                padding: ${isMobile ? '14px 16px' : '10px 12px'};
-                border-radius: ${isMobile ? '16px 16px 0 0' : '12px 12px 0 0'};
+    const floatingWindow = `
+        <div id="darkrp-control-panel">
+            <div id="dp-main-container" style="
+                bottom: ${isMobile ? '10px' : '40px'};
+                right: ${isMobile ? '10px' : '20px'};
+                left: ${isMobile ? '10px' : 'auto'};
+                width: ${isMobile ? 'calc(100% - 20px)' : '600px'};
+                max-width: ${isMobile ? 'none' : '80vw'};
+                max-height: ${isMobile ? '90vh' : '80vh'};
+                border-radius: ${isMobile ? '16px' : '12px'};
+                font-size: ${isMobile ? '14px' : '14px'};
+                position: fixed;
+                min-width: 300px;
+                min-height: 400px;
+                background: #1e1e2f;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+                z-index: 999999;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                transition: none;
                 display: flex;
-                justify-content: space-between;
-                align-items: center;
-                touch-action: ${isMobile ? 'none' : 'auto'};
-                ${isMobile ? 'min-height: 48px;' : ''}
-                flex-shrink: 0;
+                flex-direction: column;
+                overflow: hidden;
+                resize: both;
             ">
-                <span style="font-weight: 500;">🎮 EXG 游戏菜单控制台</span>
-                <div style="display: flex; gap: ${isMobile ? '16px' : '8px'}">
-                    <button id="dp-minimize" style="
-                        background: none;
-                        border: none;
-                        color: #fff;
-                        cursor: pointer;
-                        font-size: ${isMobile ? '20px' : '16px'};
-                        padding: ${isMobile ? '8px 12px' : '4px 8px'};
-                        touch-action: manipulation;
-                    ">−</button>
-                    <button id="dp-close" style="
-                        background: none;
-                        border: none;
-                        color: #fff;
-                        cursor: pointer;
-                        font-size: ${isMobile ? '20px' : '16px'};
-                        padding: ${isMobile ? '8px 12px' : '4px 8px'};
-                        touch-action: manipulation;
-                    ">✕</button>
-                </div>
             </div>
-            
-            <!-- 可滚动内容区 -->
-            <div id="dp-content" style="
-                padding: ${isMobile ? '14px' : '12px'}; 
-                background: #2d2d3a; 
-                overflow-y: auto;
-                flex: 1;
-            ">
-                <!-- 流程选择 -->
-                <div style="margin-bottom: ${isMobile ? '16px' : '12px'}">
-                    <select id="dp-flow-select" style="
-                        width: 100%;
-                        padding: ${isMobile ? '12px' : '8px'};
-                        background: #1e1e2f;
-                        color: #fff;
-                        border: 1px solid #3a3a4a;
-                        border-radius: ${isMobile ? '10px' : '6px'};
-                        font-family: inherit;
-                        font-size: ${isMobile ? '16px' : '13px'};
-                        touch-action: manipulation;
-                    ">
-                        <option value="">-- 选择流程 --</option>
-                    </select>
-                </div>
-                
-                <!-- 按钮区 -->
-                <div style="display: flex; gap: ${isMobile ? '12px' : '8px'}; margin-bottom: ${isMobile ? '16px' : '12px'}">
-                    <button id="dp-run" style="
-                        flex: 1;
-                        padding: ${isMobile ? '12px' : '8px'};
-                        background: #4caf50;
-                        color: white;
-                        border: none;
-                        border-radius: ${isMobile ? '10px' : '6px'};
-                        cursor: pointer;
-                        font-family: inherit;
-                        font-size: ${isMobile ? '16px' : '13px'};
-                        font-weight: 500;
-                        touch-action: manipulation;
-                    ">▶ 执行流程</button>
-                    <button id="dp-list" style="
-                        flex: 1;
-                        padding: ${isMobile ? '12px' : '8px'};
-                        background: #2196f3;
-                        color: white;
-                        border: none;
-                        border-radius: ${isMobile ? '10px' : '6px'};
-                        cursor: pointer;
-                        font-family: inherit;
-                        font-size: ${isMobile ? '16px' : '13px'};
-                        font-weight: 500;
-                        touch-action: manipulation;
-                    ">📋 列表</button>
-                </div>
-                
-                <!-- ========== 交易币参数输入区 ========== -->
-                <div id="dp-trading-params" style="
-                    margin-bottom: ${isMobile ? '16px' : '12px'};
-                    background: #252530;
-                    border-radius: ${isMobile ? '10px' : '8px'};
-                    padding: ${isMobile ? '12px' : '10px'};
-                    border-left: 3px solid #ff9800;
-                ">
-                    <div style="color: #ff9800; font-size: ${isMobile ? '13px' : '12px'}; margin-bottom: 10px; font-weight: 500;">
-                        💰 卖交易币参数
-                    </div>
-                    
-                    <!-- 交易币数量 -->
-                    <div style="margin-bottom: 12px;">
-                        <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
-                            📊 交易币数量 <span style="color: #ff9800;">(sell 输入框)</span>
-                        </label>
-                        <input type="number" id="dp-trading-coin" placeholder="例: 100" value="100" step="1" style="
-                            width: 100%;
-                            padding: ${isMobile ? '12px' : '8px'};
-                            background: #1e1e2f;
-                            color: #fff;
-                            border: 1px solid #3a3a4a;
-                            border-radius: ${isMobile ? '8px' : '4px'};
-                            font-family: inherit;
-                            font-size: ${isMobile ? '14px' : '12px'};
-                            touch-action: manipulation;
-                            box-sizing: border-box;
-                        ">
-                        <div style="color: #888; font-size: 10px; margin-top: 4px;">填入你要出售的交易币数量</div>
-                    </div>
-                    
-                    <!-- 积分价格 -->
-                    <div style="margin-bottom: 12px;">
-                        <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
-                            💎 积分单价 <span style="color: #ff9800;">(price 输入框)</span>
-                        </label>
-                        <input type="number" id="dp-points-price" placeholder="例: 500" value="500" step="1" style="
-                            width: 100%;
-                            padding: ${isMobile ? '12px' : '8px'};
-                            background: #1e1e2f;
-                            color: #fff;
-                            border: 1px solid #3a3a4a;
-                            border-radius: ${isMobile ? '8px' : '4px'};
-                            font-family: inherit;
-                            font-size: ${isMobile ? '14px' : '12px'};
-                            touch-action: manipulation;
-                            box-sizing: border-box;
-                        ">
-                        <div style="color: #888; font-size: 10px; margin-top: 4px;">每个交易币要卖多少积分</div>
-                    </div>
-                    
-                    <!-- 交易密码 -->
-                    <div>
-                        <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
-                            🔐 交易密码 <span style="color: #ff9800;">(密码输入框)</span>
-                        </label>
-                        <input type="password" id="dp-password" placeholder="输入交易密码" style="
-                            width: 100%;
-                            padding: ${isMobile ? '12px' : '8px'};
-                            background: #1e1e2f;
-                            color: #fff;
-                            border: 1px solid #3a3a4a;
-                            border-radius: ${isMobile ? '8px' : '4px'};
-                            font-family: inherit;
-                            font-size: ${isMobile ? '14px' : '12px'};
-                            touch-action: manipulation;
-                            box-sizing: border-box;
-                        ">
-                        <div style="color: #888; font-size: 10px; margin-top: 4px;">出售商品时需要的安全密码</div>
-                    </div>
-                    
-                    <!-- 显示当前值状态 -->
-                    <div style="
-                        margin-top: 10px; 
-                        padding: 6px 8px; 
-                        background: #1a1a28; 
-                        border-radius: 6px; 
-                        font-size: 11px; 
-                        color: #aaa;
-                        word-break: break-all;
-                    ">
-                        📌 当前: 交易币=<span id="dp-trading-coin-display">100</span> | 积分=<span id="dp-points-price-display">500</span> | 密码已填
-                    </div>
-                </div>
+        <div>
+    `;
 
-                <!-- ========== 积分参数输入区 ========== -->
-                <div id="dp-points-params" style="
-                    margin-bottom: ${isMobile ? '16px' : '12px'};
-                    background: #252530;
-                    border-radius: ${isMobile ? '10px' : '8px'};
-                    padding: ${isMobile ? '12px' : '10px'};
-                    border-left: 3px solid #4caf50;
-                ">
-                    <div style="color: #4caf50; font-size: ${isMobile ? '13px' : '12px'}; margin-bottom: 10px; font-weight: 500;">
-                        💎 卖积分参数
-                    </div>
-                    
-                    <!-- 积分数量 -->
-                    <div style="margin-bottom: 12px;">
-                        <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
-                            📊 积分数量 <span style="color: #4caf50;">(sell 输入框)</span>
-                        </label>
-                        <input type="number" id="dp-points-amount" placeholder="例: 1000" value="1000" step="1" style="
-                            width: 100%;
-                            padding: ${isMobile ? '12px' : '8px'};
-                            background: #1e1e2f;
-                            color: #fff;
-                            border: 1px solid #3a3a4a;
-                            border-radius: ${isMobile ? '8px' : '4px'};
-                            font-family: inherit;
-                            font-size: ${isMobile ? '14px' : '12px'};
-                            touch-action: manipulation;
-                            box-sizing: border-box;
-                        ">
-                        <div style="color: #888; font-size: 10px; margin-top: 4px;">填入你要出售的积分数量</div>
-                    </div>
-                    
-                    <!-- 交易币单价 -->
-                    <div style="margin-bottom: 12px;">
-                        <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
-                            🪙 交易币单价 <span style="color: #4caf50;">(price 输入框)</span>
-                        </label>
-                        <input type="number" id="dp-tradingcoin-price" placeholder="例: 10" value="10" step="1" style="
-                            width: 100%;
-                            padding: ${isMobile ? '12px' : '8px'};
-                            background: #1e1e2f;
-                            color: #fff;
-                            border: 1px solid #3a3a4a;
-                            border-radius: ${isMobile ? '8px' : '4px'};
-                            font-family: inherit;
-                            font-size: ${isMobile ? '14px' : '12px'};
-                            touch-action: manipulation;
-                            box-sizing: border-box;
-                        ">
-                        <div style="color: #888; font-size: 10px; margin-top: 4px;">每个积分要卖多少交易币</div>
-                    </div>
-                    
-                    <!-- 交易密码 -->
-                    <div>
-                        <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
-                            🔐 交易密码 <span style="color: #4caf50;">(密码输入框)</span>
-                        </label>
-                        <input type="password" id="dp-points-password" placeholder="输入交易密码" style="
-                            width: 100%;
-                            padding: ${isMobile ? '12px' : '8px'};
-                            background: #1e1e2f;
-                            color: #fff;
-                            border: 1px solid #3a3a4a;
-                            border-radius: ${isMobile ? '8px' : '4px'};
-                            font-family: inherit;
-                            font-size: ${isMobile ? '14px' : '12px'};
-                            touch-action: manipulation;
-                            box-sizing: border-box;
-                        ">
-                        <div style="color: #888; font-size: 10px; margin-top: 4px;">出售积分时需要的安全密码</div>
-                    </div>
-                    
-                    <!-- 显示当前值状态 -->
-                    <div style="
-                        margin-top: 10px; 
-                        padding: 6px 8px; 
-                        background: #1a1a28; 
-                        border-radius: 6px; 
-                        font-size: 11px; 
-                        color: #aaa;
-                        word-break: break-all;
-                    ">
-                        📌 当前: 积分=<span id="dp-points-amount-display">1000</span> | 单价=<span id="dp-tradingcoin-price-display">10</span> | 密码已填
-                    </div>
-                </div>
-                
-                <!-- 快捷步骤区（滚动） -->
-                <div style="margin-bottom: ${isMobile ? '16px' : '12px'}">
-                    <div style="color: #aaa; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 8px;">⚡ 快捷步骤</div>
-                    <div id="dp-step-buttons" style="
-                        display: flex;
-                        flex-wrap: wrap;
-                        gap: ${isMobile ? '8px' : '6px'};
-                        max-height: ${isMobile ? '160px' : 'none'};
-                        overflow-y: ${isMobile ? 'auto' : 'visible'};
-                    "></div>
-                </div>
-                
-                <!-- 日志区 -->
-                <div>
-                    <div style="color: #aaa; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 6px;">📝 执行日志</div>
-                    <div id="dp-log" style="
-                        background: #1e1e2f;
-                        height: ${isMobile ? '150px' : '120px'};
-                        overflow-y: auto;
-                        padding: ${isMobile ? '10px' : '8px'};
-                        border-radius: ${isMobile ? '10px' : '6px'};
-                        font-size: ${isMobile ? '12px' : '11px'};
-                        color: #0f0;
-                        font-family: 'Courier New', monospace;
-                        word-break: break-all;
-                        white-space: pre-wrap;
-                    "></div>
-                </div>
+    darkrp.util.appendHTML('浮动窗口HTML', 'body', floatingWindow);
+
+    const dpResizeHandle = `
+        <!-- 拉伸手柄（右下角） -->
+        <div id="dp-resize-handle" style="
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            cursor: nw-resize;
+            background: linear-gradient(135deg, transparent 50%, #5a5a7a 50%);
+            border-bottom-right-radius: ${isMobile ? '16px' : '12px'};
+            z-index: 10;
+        "></div>
+    `;
+
+    darkrp.util.appendHTML('浮动窗口拉伸手柄', '#dp-main-container', dpResizeHandle);
+
+    const dpTitleBar = `
+        <!-- 标题栏 -->
+        <div id="dp-title-bar" style="
+            background: #2a2a3a;
+            color: #fff;
+            padding: ${isMobile ? '14px 16px' : '10px 12px'};
+            border-radius: ${isMobile ? '16px 16px 0 0' : '12px 12px 0 0'};
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            touch-action: ${isMobile ? 'none' : 'auto'};
+            ${isMobile ? 'min-height: 48px;' : ''}
+            flex-shrink: 0;
+        ">
+            <span style="font-weight: 500;">🎮 EXG 游戏菜单控制台</span>
+            <div style="display: flex; gap: ${isMobile ? '16px' : '8px'}">
+                <button id="dp-minimize" style="
+                    background: none;
+                    border: none;
+                    color: #fff;
+                    cursor: pointer;
+                    font-size: ${isMobile ? '20px' : '16px'};
+                    padding: ${isMobile ? '8px 12px' : '4px 8px'};
+                    touch-action: manipulation;
+                ">−</button>
+                <button id="dp-close" style="
+                    background: none;
+                    border: none;
+                    color: #fff;
+                    cursor: pointer;
+                    font-size: ${isMobile ? '20px' : '16px'};
+                    padding: ${isMobile ? '8px 12px' : '4px 8px'};
+                    touch-action: manipulation;
+                ">✕</button>
             </div>
         </div>
     `;
 
-    document.body.appendChild(panel);
+    darkrp.util.appendHTML('浮动窗口标题栏', '#dp-main-container', dpTitleBar);
+
+    const dpContent = `
+        <!-- 可滚动内容区 -->
+        <div id="dp-content" style="
+            padding: ${isMobile ? '14px' : '12px'}; 
+            background: #2d2d3a; 
+            overflow-y: auto;
+            flex: 1;
+        ">
+        </div>
+    `;
+    
+    darkrp.util.appendHTML('浮动窗口内容', '#dp-main-container', dpContent);
+    
+    const dpLog = `
+        <!-- 日志区 -->
+        <div>
+            <div style="color: #aaa; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 6px;">📝 执行日志</div>
+            <div id="dp-log" style="
+                background: #1e1e2f;
+                height: ${isMobile ? '150px' : '120px'};
+                overflow-y: auto;
+                padding: ${isMobile ? '10px' : '8px'};
+                border-radius: ${isMobile ? '10px' : '6px'};
+                font-size: ${isMobile ? '12px' : '11px'};
+                color: #0f0;
+                font-family: 'Courier New', monospace;
+                word-break: break-all;
+                white-space: pre-wrap;
+                padding: 10 10 10 10;
+            "></div>
+        </div>`;
+
+    darkrp.util.appendHTML('浮动窗口日志信息区', '#dp-content', dpLog);
+
+    const dpFlowSelect = `
+        <!-- 流程选择 -->
+        <div style="margin-bottom: ${isMobile ? '16px' : '12px'}">
+            <select id="dp-flow-select" style="
+                width: 100%;
+                padding: ${isMobile ? '12px' : '8px'};
+                background: #1e1e2f;
+                color: #fff;
+                border: 1px solid #3a3a4a;
+                border-radius: ${isMobile ? '10px' : '6px'};
+                font-family: inherit;
+                font-size: ${isMobile ? '16px' : '13px'};
+                touch-action: manipulation;
+            ">
+                <option value="">-- 选择流程 --</option>
+            </select>
+        </div>`;
+
+    darkrp.util.appendHTML('浮动窗口选择流程区', '#dp-content', dpFlowSelect);
+        
+    const dpButton = `
+        <!-- 按钮区 -->
+        <div style="display: flex; gap: ${isMobile ? '12px' : '8px'}; margin-bottom: ${isMobile ? '16px' : '12px'}">
+            <button id="dp-run" style="
+                flex: 1;
+                padding: ${isMobile ? '12px' : '8px'};
+                background: #4caf50;
+                color: white;
+                border: none;
+                border-radius: ${isMobile ? '10px' : '6px'};
+                cursor: pointer;
+                font-family: inherit;
+                font-size: ${isMobile ? '16px' : '13px'};
+                font-weight: 500;
+                touch-action: manipulation;
+            ">▶ 执行流程</button>
+            <button id="dp-list" style="
+                flex: 1;
+                padding: ${isMobile ? '12px' : '8px'};
+                background: #2196f3;
+                color: white;
+                border: none;
+                border-radius: ${isMobile ? '10px' : '6px'};
+                cursor: pointer;
+                font-family: inherit;
+                font-size: ${isMobile ? '16px' : '13px'};
+                font-weight: 500;
+                touch-action: manipulation;
+            ">📋 列表</button>
+        </div>`;
+    
+    darkrp.util.appendHTML('浮动窗口选择流程执行区', '#dp-content', dpButton);
+        
+    const dpTradingParams = `
+        <!-- ========== 交易币参数输入区 ========== -->
+        <div id="dp-trading-params" style="
+            margin-bottom: ${isMobile ? '16px' : '12px'};
+            background: #252530;
+            border-radius: ${isMobile ? '10px' : '8px'};
+            padding: ${isMobile ? '12px' : '10px'};
+            border-left: 3px solid #ff9800;
+        ">
+            <div style="color: #ff9800; font-size: ${isMobile ? '13px' : '12px'}; margin-bottom: 10px; font-weight: 500;">
+                💰 卖交易币参数
+            </div>
+            
+            <!-- 交易币数量 -->
+            <div style="margin-bottom: 12px;">
+                <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
+                    📊 交易币数量 <span style="color: #ff9800;">(sell 输入框)</span>
+                </label>
+                <input type="number" id="dp-trading-coin" placeholder="例: 100" value="100" step="1" style="
+                    width: 100%;
+                    padding: ${isMobile ? '12px' : '8px'};
+                    background: #1e1e2f;
+                    color: #fff;
+                    border: 1px solid #3a3a4a;
+                    border-radius: ${isMobile ? '8px' : '4px'};
+                    font-family: inherit;
+                    font-size: ${isMobile ? '14px' : '12px'};
+                    touch-action: manipulation;
+                    box-sizing: border-box;
+                ">
+                <div style="color: #888; font-size: 10px; margin-top: 4px;">填入你要出售的交易币数量</div>
+            </div>
+            
+            <!-- 积分价格 -->
+            <div style="margin-bottom: 12px;">
+                <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
+                    💎 积分单价 <span style="color: #ff9800;">(price 输入框)</span>
+                </label>
+                <input type="number" id="dp-points-price" placeholder="例: 500" value="500" step="1" style="
+                    width: 100%;
+                    padding: ${isMobile ? '12px' : '8px'};
+                    background: #1e1e2f;
+                    color: #fff;
+                    border: 1px solid #3a3a4a;
+                    border-radius: ${isMobile ? '8px' : '4px'};
+                    font-family: inherit;
+                    font-size: ${isMobile ? '14px' : '12px'};
+                    touch-action: manipulation;
+                    box-sizing: border-box;
+                ">
+                <div style="color: #888; font-size: 10px; margin-top: 4px;">每个交易币要卖多少积分</div>
+            </div>
+            
+            <!-- 交易密码 -->
+            <div>
+                <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
+                    🔐 交易密码 <span style="color: #ff9800;">(密码输入框)</span>
+                </label>
+                <input type="password" id="dp-password" placeholder="输入交易密码" style="
+                    width: 100%;
+                    padding: ${isMobile ? '12px' : '8px'};
+                    background: #1e1e2f;
+                    color: #fff;
+                    border: 1px solid #3a3a4a;
+                    border-radius: ${isMobile ? '8px' : '4px'};
+                    font-family: inherit;
+                    font-size: ${isMobile ? '14px' : '12px'};
+                    touch-action: manipulation;
+                    box-sizing: border-box;
+                ">
+                <div style="color: #888; font-size: 10px; margin-top: 4px;">出售商品时需要的安全密码</div>
+            </div>
+            
+            <!-- 显示当前值状态 -->
+            <div style="
+                margin-top: 10px; 
+                padding: 6px 8px; 
+                background: #1a1a28; 
+                border-radius: 6px; 
+                font-size: 11px; 
+                color: #aaa;
+                word-break: break-all;
+            ">
+                📌 当前: 交易币=<span id="dp-trading-coin-display">100</span>
+                | 积分=<span id="dp-points-price-display">500</span>
+                | 比例=<span id="dp-points-to-trading-coin-display1">?</span>
+                | 密码已填
+            </div>
+        </div>`;
+    darkrp.util.appendHTML('浮动窗口交易币信息区', '#dp-content', dpTradingParams);
+
+    const dpPointsParams = `
+        <!-- ========== 积分参数输入区 ========== -->
+        <div id="dp-points-params" style="
+            margin-bottom: ${isMobile ? '16px' : '12px'};
+            background: #252530;
+            border-radius: ${isMobile ? '10px' : '8px'};
+            padding: ${isMobile ? '12px' : '10px'};
+            border-left: 3px solid #4caf50;
+        ">
+            <div style="color: #4caf50; font-size: ${isMobile ? '13px' : '12px'}; margin-bottom: 10px; font-weight: 500;">
+                💎 卖积分参数
+            </div>
+            
+            <!-- 积分数量 -->
+            <div style="margin-bottom: 12px;">
+                <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
+                    📊 积分数量 <span style="color: #4caf50;">(sell 输入框)</span>
+                </label>
+                <input type="number" id="dp-points-amount" placeholder="例: 1000" value="1000" step="1" style="
+                    width: 100%;
+                    padding: ${isMobile ? '12px' : '8px'};
+                    background: #1e1e2f;
+                    color: #fff;
+                    border: 1px solid #3a3a4a;
+                    border-radius: ${isMobile ? '8px' : '4px'};
+                    font-family: inherit;
+                    font-size: ${isMobile ? '14px' : '12px'};
+                    touch-action: manipulation;
+                    box-sizing: border-box;
+                ">
+                <div style="color: #888; font-size: 10px; margin-top: 4px;">填入你要出售的积分数量</div>
+            </div>
+            
+            <!-- 交易币单价 -->
+            <div style="margin-bottom: 12px;">
+                <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
+                    🪙 交易币单价 <span style="color: #4caf50;">(price 输入框)</span>
+                </label>
+                <input type="number" id="dp-tradingcoin-price" placeholder="例: 10" value="10" step="1" style="
+                    width: 100%;
+                    padding: ${isMobile ? '12px' : '8px'};
+                    background: #1e1e2f;
+                    color: #fff;
+                    border: 1px solid #3a3a4a;
+                    border-radius: ${isMobile ? '8px' : '4px'};
+                    font-family: inherit;
+                    font-size: ${isMobile ? '14px' : '12px'};
+                    touch-action: manipulation;
+                    box-sizing: border-box;
+                ">
+                <div style="color: #888; font-size: 10px; margin-top: 4px;">每个积分要卖多少交易币</div>
+            </div>
+            
+            <!-- 交易密码 -->
+            <div>
+                <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
+                    🔐 交易密码 <span style="color: #4caf50;">(密码输入框)</span>
+                </label>
+                <input type="password" id="dp-points-password" placeholder="输入交易密码" style="
+                    width: 100%;
+                    padding: ${isMobile ? '12px' : '8px'};
+                    background: #1e1e2f;
+                    color: #fff;
+                    border: 1px solid #3a3a4a;
+                    border-radius: ${isMobile ? '8px' : '4px'};
+                    font-family: inherit;
+                    font-size: ${isMobile ? '14px' : '12px'};
+                    touch-action: manipulation;
+                    box-sizing: border-box;
+                ">
+                <div style="color: #888; font-size: 10px; margin-top: 4px;">出售积分时需要的安全密码</div>
+            </div>
+            
+            <!-- 显示当前值状态 -->
+            <div style="
+                margin-top: 10px; 
+                padding: 6px 8px; 
+                background: #1a1a28; 
+                border-radius: 6px; 
+                font-size: 11px; 
+                color: #aaa;
+                word-break: break-all;
+            ">
+                📌 当前: 积分=<span id="dp-points-amount-display">1000</span> 
+                | 单价=<span id="dp-tradingcoin-price-display">10</span> 
+                | 比例=<span id="dp-points-to-trading-coin-display2">?</span>
+                | 密码已填
+            </div>
+        </div>`;
+    darkrp.util.appendHTML('浮动窗口积分信息区', '#dp-content', dpPointsParams);
+
+    const dpStep = `
+        <!-- 快捷步骤区（滚动） -->
+        <div style="margin-bottom: ${isMobile ? '16px' : '12px'}">
+            <div style="color: #aaa; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 8px;">⚡ 快捷步骤</div>
+            <div id="dp-step-buttons" style="
+                display: flex;
+                flex-wrap: wrap;
+                gap: ${isMobile ? '8px' : '6px'};
+                max-height: ${isMobile ? '160px' : 'none'};
+                overflow-y: ${isMobile ? 'auto' : 'visible'};
+            "></div>
+        </div>`;
+
+    darkrp.util.appendHTML('浮动窗口快速步骤信息区', '#dp-content', dpStep);
 
     // 获取元素
     const mainDiv = document.getElementById('dp-main-container');
@@ -387,6 +427,7 @@
     const passwordInput = document.getElementById('dp-password');
     const tradingCoinDisplay = document.getElementById('dp-trading-coin-display');
     const pointsPriceDisplay = document.getElementById('dp-points-price-display');
+    const pointsToTradingCoinDisplay1 = document.getElementById('dp-points-to-trading-coin-display1');
 
     // 输入框元素 - 积分
     const pointsAmountInput = document.getElementById('dp-points-amount');
@@ -394,9 +435,11 @@
     const pointsPasswordInput = document.getElementById('dp-points-password');
     const pointsAmountDisplay = document.getElementById('dp-points-amount-display');
     const tradingcoinPriceDisplay = document.getElementById('dp-tradingcoin-price-display');
+    const pointsToTradingCoinDisplay2 = document.getElementById('dp-points-to-trading-coin-display2');
 
     // 日志函数
-    function addLog(msg, isError = false) {
+    function addLog(msg, isError = false)
+    {
         const logEntry = document.createElement('div');
         logEntry.textContent = `> ${new Date().toLocaleTimeString()} ${msg}`;
         logEntry.style.color = isError ? '#f66' : '#8f8';
@@ -408,20 +451,24 @@
     }
 
     // 更新显示和全局存储
-    function updateTradingParams() {
+    function updateTradingParams()
+    {
         const tradingCoin = tradingCoinInput.value;
         const points = pointsPriceInput.value;
         const password = passwordInput.value;
+        const pointsToTradingCoin = points / tradingCoin;
         
         // 更新显示
         tradingCoinDisplay.textContent = tradingCoin || '0';
         pointsPriceDisplay.textContent = points || '0';
+        pointsToTradingCoinDisplay1.textContent = pointsToTradingCoin || '0';
         
         // 更新全局存储
         window.darkrp.ui.tradingCoinForm = {
             tradingCoin: tradingCoin || '0',
             points: points || '0',
-            password: password || ''
+            password: password || '',
+            pointsToTradingCoin: pointsToTradingCoin || '0',
         };
         
         // 可选：在控制台输出更新日志（调试用）
@@ -437,20 +484,24 @@
     updateTradingParams();
 
     // 更新卖积分参数显示和全局存储
-    function updatePointsParams() {
+    function updatePointsParams()
+    {
         const pointsAmount = pointsAmountInput.value;
         const tradingcoinPrice = tradingcoinPriceInput.value;
         const pointsPassword = pointsPasswordInput.value;
+        const pointsToTradingCoin = pointsAmount / tradingcoinPrice;
         
         // 更新显示
         pointsAmountDisplay.textContent = pointsAmount || '0';
         tradingcoinPriceDisplay.textContent = tradingcoinPrice || '0';
+        pointsToTradingCoinDisplay2.textContent = pointsToTradingCoin || '0';
         
         // 更新全局存储
         window.darkrp.ui.pointsForm = {
             points: pointsAmount || '0',
             tradingCoin: tradingcoinPrice || '0',
-            password: pointsPassword || ''
+            password: pointsPassword || '',
+            pointsToTradingCoin: pointsToTradingCoin || '0',
         };
     }
 
@@ -464,7 +515,8 @@
 
     // ========== 包装步骤函数，使其读取 UI 输入框的值 ==========
     // 采用包装模式，保留原始函数，避免覆盖丢失
-    function patchStepFunctions() {
+    function patchStepFunctions()
+    {
         if (!window.darkrp || !window.darkrp.trigger || !window.darkrp.trigger._steps) {
             return false;
         }
@@ -569,7 +621,8 @@
     }
 
     // 动态加载流程选项
-    function loadFlowOptions() {
+    function loadFlowOptions()
+    {
         if (!window.darkrp || !window.darkrp.trigger || !window.darkrp.trigger._flows) return false;
         
         const flows = window.darkrp.trigger._flows;
@@ -584,7 +637,8 @@
     }
 
     // 动态加载快捷步骤按钮
-    function loadStepButtons() {
+    function loadStepButtons()
+    {
         if (!window.darkrp || !window.darkrp.trigger || !window.darkrp.trigger._steps) return;
         
         const steps = window.darkrp.trigger._steps;
@@ -635,7 +689,8 @@
     }
 
     // 执行单个步骤
-    async function executeStep(stepName) {
+    async function executeStep(stepName)
+    {
         if (!window.darkrp || !window.darkrp.trigger) {
             addLog('❌ darkrp.trigger 未加载', true);
             return;
@@ -661,7 +716,8 @@
     let startX = 0, startY = 0;
     let startLeft = 0, startTop = 0;
 
-    function onTouchStart(e) {
+    function onTouchStart(e)
+    {
         if (!titleBar.contains(e.target)) return;
         if (e.target.tagName === 'BUTTON') return;
         
@@ -681,7 +737,8 @@
         mainDiv.style.bottom = 'auto';
     }
 
-    function onTouchMove(e) {
+    function onTouchMove(e)
+    {
         if (!isDragging) return;
         e.preventDefault();
         
@@ -696,7 +753,8 @@
         mainDiv.style.top = newTop + 'px';
     }
 
-    function onTouchEnd(e) {
+    function onTouchEnd(e)
+    {
         isDragging = false;
     }
 
@@ -705,7 +763,8 @@
     let mouseStartX = 0, mouseStartY = 0;
     let mouseStartLeft = 0, mouseStartTop = 0;
 
-    function onMouseDown(e) {
+    function onMouseDown(e)
+    {
         if (!titleBar.contains(e.target)) return;
         if (e.target.tagName === 'BUTTON') return;
         
