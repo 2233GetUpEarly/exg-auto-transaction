@@ -158,6 +158,47 @@
 
     darkrp.util.appendHTML('浮动窗口日志信息区', '#dp-content', dpLog);
 
+    // 操作路径
+    const dpMenuPath = `
+        <div>
+            <span>路径:</span>
+            <span id="dpMenuPath"></span>
+        </div>
+    `;
+
+    // 更新菜单路径
+    function updateMenuPath()
+    {
+        var getMenuPath = document.getElementById('divMenuPath');
+        var floatingWindowMenuPath = document.getElementById('dpMenuPath');
+        if (getMenuPath.children.length > 0) floatingWindowMenuPath.textContent = getMenuPath.children[0].textContent;
+        for (var i = 1; i < getMenuPath.children.length; ++i)
+        {
+            floatingWindowMenuPath.textContent += " / " + getMenuPath.children[i].textContent;
+        }
+    }
+
+    //document.addEventListener('click', updateMenuPath);
+    // 监听真正变化（最可靠）
+    function bindUpdateWithObserver() {
+        const targetNode = document.getElementById('divMenuPath');
+        if (targetNode) {
+            const observer = new MutationObserver(updateMenuPath);
+            observer.observe(targetNode, {
+                childList: true,
+                subtree: true,
+                characterData: true
+            });
+        }
+        // 首次执行一次
+        updateMenuPath();
+    }
+
+    // 调用
+    bindUpdateWithObserver();
+    
+    darkrp.util.appendHTML('浮动窗口路径信息区', '#dp-content', dpMenuPath);
+
     const dpFlowSelect = `
         <!-- 流程选择 -->
         <div style="margin-bottom: ${isMobile ? '16px' : '12px'}">
