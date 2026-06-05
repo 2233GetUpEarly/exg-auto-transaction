@@ -50,7 +50,7 @@
                 font-size: ${isMobile ? '14px' : '14px'};
                 position: fixed;
                 min-width: 300px;
-                min-height: 400px;
+                min-height: 200px;
                 background: #1e1e2f;
                 box-shadow: 0 4px 20px rgba(0,0,0,0.4);
                 z-index: 999999;
@@ -261,10 +261,11 @@
             padding: ${isMobile ? '12px' : '10px'};
             border-left: 3px solid #ff9800;
         ">
-            <div style="color: #ff9800; font-size: ${isMobile ? '13px' : '12px'}; margin-bottom: 10px; font-weight: 500;">
-                💰 卖交易币参数
+            <div id="title-input-trading-panel" style="cursor: pointer; background-color: #2d2d3a; color: #ff9800; font-size: ${isMobile ? '13px' : '12px'}; margin-bottom: 10px; font-weight: 500;">
+                💰 卖交易币参数 ▶
             </div>
             
+            <div id="input-trading-panel" style="display: none">
             <!-- 交易币数量 -->
             <div style="margin-bottom: 12px;">
                 <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
@@ -324,7 +325,8 @@
                 ">
                 <div style="color: #888; font-size: 10px; margin-top: 4px;">出售商品时需要的安全密码</div>
             </div>
-            
+            </div>
+                
             <!-- 显示当前值状态 -->
             <div style="
                 margin-top: 10px; 
@@ -343,6 +345,16 @@
         </div>`;
     darkrp.util.appendHTML('浮动窗口交易币信息区', '#dp-content', dpTradingParams);
 
+    const titleInputTradingPanel = document.getElementById('title-input-trading-panel');
+    titleInputTradingPanel.addEventListener(
+        'click', 
+        () => darkrp.util.togglePanel(
+            'input-trading-panel',
+            'title-input-trading-panel',
+            '💰 卖交易币参数 ▼',
+            '💰 卖交易币参数 ▶'
+        ));
+
     const dpPointsParams = `
         <!-- ========== 积分参数输入区 ========== -->
         <div id="dp-points-params" style="
@@ -352,10 +364,11 @@
             padding: ${isMobile ? '12px' : '10px'};
             border-left: 3px solid #4caf50;
         ">
-            <div style="color: #4caf50; font-size: ${isMobile ? '13px' : '12px'}; margin-bottom: 10px; font-weight: 500;">
-                💎 卖积分参数
+            <div id="title-input-points-panel" style="cursor: pointer; background-color: #2d2d3a; color: #4caf50; font-size: ${isMobile ? '13px' : '12px'}; margin-bottom: 10px; font-weight: 500;">
+                💎 卖积分参数 ▶
             </div>
             
+            <div id="input-points-panel" style="display: none">
             <!-- 积分数量 -->
             <div style="margin-bottom: 12px;">
                 <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
@@ -415,6 +428,7 @@
                 ">
                 <div style="color: #888; font-size: 10px; margin-top: 4px;">出售积分时需要的安全密码</div>
             </div>
+            </div>
             
             <!-- 显示当前值状态 -->
             <div style="
@@ -434,12 +448,22 @@
         </div>`;
     darkrp.util.appendHTML('浮动窗口积分信息区', '#dp-content', dpPointsParams);
 
+    const titleInputPointsPanel = document.getElementById('title-input-points-panel');
+    titleInputPointsPanel.addEventListener(
+    'click', 
+    () => darkrp.util.togglePanel(
+        'input-points-panel',
+        'title-input-points-panel',
+        '💎 卖积分参数 ▼',
+        '💎 卖积分参数 ▶'
+    ));
+    
     const dpStep = `
         <!-- 快捷步骤区（滚动） -->
         <div style="margin-bottom: ${isMobile ? '16px' : '12px'}">
-            <div style="color: #aaa; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 8px;">⚡ 快捷步骤</div>
+            <div id="title-step-buttons"; style="cursor: pointer; color: #aaa; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 8px;">⚡ 快捷步骤 ▶</div>
             <div id="dp-step-buttons" style="
-                display: flex;
+                display: none;
                 flex-wrap: wrap;
                 gap: ${isMobile ? '8px' : '6px'};
                 max-height: ${isMobile ? '160px' : 'none'};
@@ -448,6 +472,16 @@
         </div>`;
 
     darkrp.util.appendHTML('浮动窗口快速步骤信息区', '#dp-content', dpStep);
+
+    const titleStepButtons = document.getElementById('title-step-buttons');
+    titleStepButtons.addEventListener(
+    'click', 
+    () => darkrp.util.togglePanel(
+        'dp-step-buttons',
+        'title-step-buttons',
+        '⚡ 快捷步骤 ▼',
+        '⚡ 快捷步骤 ▶'
+    ));
 
     // 获取元素
     const panel = document.getElementById('darkrp-control-panel');

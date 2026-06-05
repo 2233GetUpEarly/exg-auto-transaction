@@ -139,6 +139,23 @@ window.darkrp.util = {
             if (debug == true) console.error('添加HTML失败：', error);
             return false;
         }
+    },
+
+    togglePanel: function(panelContentID, panelTitleID, openText, closeText)
+    {
+        var panel = document.getElementById(panelContentID);
+        var title = document.getElementById(panelTitleID);
+
+        if (panel.style.display == 'none')
+        {
+            panel.style.display = 'block';
+            title.textContent = openText;
+        }
+        else
+        {
+            panel.style.display = 'none';
+            title.textContent = closeText;
+        }
     }
 };
 
