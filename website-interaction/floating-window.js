@@ -1,4 +1,36 @@
 
+// 队列
+window.darkrp.queue = {
+    items: [],    // 存放流程和数据的数组
+
+    enqueue(element)    // 入队
+    {    
+        this.items.push(element);
+    },
+
+    dequeue()           // 出队
+    {           
+        if (this.isEmpty()) return undefined;
+        return this.items.shift();
+    },
+
+    front()             // 查看队首元素
+    {             
+        if (this.isEmpty()) return undefined;
+        return this.items[0];
+    },
+
+    size()
+    {
+        return this.items.length;
+    },
+
+    isEmpty()
+    {
+        return this.items.length === 0;
+    }
+};
+
 (function() {
     'use strict';
 
@@ -8,6 +40,12 @@
     // 检测是否为移动端
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
 
+    // 是否正在执行流程
+    window.darkrp.processIsExecuting = false;
+
+    // 执行的流程类型：1. Immediately 2. QueueImport
+    window.darkrp.executionProcessType = 'Immediately';
+
     // 初始化存储位置
     if (!window.darkrp) window.darkrp = {};
     if (!window.darkrp.ui) window.darkrp.ui = {};
@@ -16,7 +54,6 @@
     window.darkrp.ui.tradingCoinForm = {
         tradingCoin: '',
         points: '',
-        password: '',
         pointsToTradingCoin: '',
     };
 
@@ -24,7 +61,6 @@
     window.darkrp.ui.pointsForm = {
         points: '',      // 积分数量
         tradingCoin: '', // 交易币单价
-        password: '',
         pointsToTradingCoin: '',
     };
 
@@ -247,10 +283,75 @@
                 font-size: ${isMobile ? '16px' : '13px'};
                 font-weight: 500;
                 touch-action: manipulation;
-            ">📋 列表</button>
+            "> 查看列表</button>
+            <button id="dp-queue" style="
+                flex: 1;
+                padding: ${isMobile ? '12px' : '8px'};
+                background: #ff3700;
+                color: white;
+                border: none;
+                border-radius: ${isMobile ? '10px' : '6px'};
+                cursor: pointer;
+                font-family: inherit;
+                font-size: ${isMobile ? '16px' : '13px'};
+                font-weight: 500;
+                touch-action: manipulation;
+            ">📋 执行队列</button>
         </div>`;
     
     darkrp.util.appendHTML('浮动窗口选择流程执行区', '#dp-content', dpButton);
+
+    //----------------------------------- 流程队列相关区域 ---------------------------------
+
+    const dpQueuePanel = `
+        <!-- ========== 队列面板区 ========== -->
+        <div id="dp-queue-panel" style="
+            margin-bottom: ${isMobile ? '16px' : '12px'};
+            background: #252530;
+            border-radius: ${isMobile ? '10px' : '8px'};
+            padding: ${isMobile ? '12px' : '10px'};
+            border-left: 3px solid #ff9800;
+            display: flex; 
+            flex-wrap: wrap;
+        ">
+            <div id="title-queue-panel" style="width: 50%; cursor: pointer; background-color: #2d2d3a; color: #ff9800; font-size: ${isMobile ? '13px' : '12px'}; margin-bottom: 10px; font-weight: 500;">
+                📋 队列流程 ▶
+            </div>
+            <div id="refresh-queue-button" style=" cursor: pointer; width: 50%;">
+                刷新队列
+            </div>
+            
+            <div id="queue-panel" style="display: none">
+                空
+            </div>
+        </div>`;
+    darkrp.util.appendHTML('浮动窗口队列信息区', '#dp-content', dpQueuePanel);
+    const titleQueuePanel = document.getElementById('title-queue-panel');
+    titleQueuePanel.addEventListener(
+        'click', 
+        () => darkrp.util.togglePanel(
+            'queue-panel',
+            'title-queue-panel',
+            '📋 队列流程 ▼',
+            '📋 队列流程 ▶'
+        ));
+
+    const refreshQueueButton = document.getElementById('refresh-queue-button');
+    refreshQueueButton.addEventListener(
+        'click', 
+        () => {
+            var queuePanel = document.getElementById('queue-panel');
+            var queueInnerHTML = darkrp.queue.items.length <= 0 ? '空' : '';
+            for (var i = 0; i < darkrp.queue.items.length; ++i)
+            {
+                queueInnerHTML += '>' + i + '<';
+                queueInnerHTML += '>' + darkrp.queue.items[i].flowName + '<';
+                queueInnerHTML += '>' + darkrp.queue.items[i].points + '<';
+                queueInnerHTML += '>' + darkrp.queue.items[i].tradingCoin + '<';
+                queueInnerHTML += '<br/>';
+            }
+            queuePanel.innerHTML = queueInnerHTML;
+        });
         
     // ----------------------------- 卖交易币相关区域 --------------------------------------
 
@@ -307,26 +408,6 @@
                 ">
                 <div style="color: #888; font-size: 10px; margin-top: 4px;">每个交易币要卖多少积分</div>
             </div>
-            
-            <!-- 交易密码 -->
-            <div>
-                <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
-                    🔐 交易密码 <span style="color: #ff9800;">(密码输入框)</span>
-                </label>
-                <input type="password" id="dp-password" placeholder="输入交易密码" style="
-                    width: 100%;
-                    padding: ${isMobile ? '12px' : '8px'};
-                    background: #1e1e2f;
-                    color: #fff;
-                    border: 1px solid #3a3a4a;
-                    border-radius: ${isMobile ? '8px' : '4px'};
-                    font-family: inherit;
-                    font-size: ${isMobile ? '14px' : '12px'};
-                    touch-action: manipulation;
-                    box-sizing: border-box;
-                ">
-                <div style="color: #888; font-size: 10px; margin-top: 4px;">出售商品时需要的安全密码</div>
-            </div>
             </div>
                 
             <!-- 显示当前值状态 -->
@@ -339,6 +420,19 @@
                 color: #aaa;
                 word-break: break-all;
             ">
+                <span id="enqueue-input-trading" style="
+                    flex: 1;
+                    background: #ff3700;
+                    padding: 4px 4px; 
+                    color: white;
+                    border: none;
+                    border-radius: ${isMobile ? '10px' : '6px'};
+                    cursor: pointer;
+                    font-family: inherit;
+                    font-size: ${isMobile ? '16px' : '13px'};
+                    font-weight: 500;
+                    touch-action: manipulation;
+                ">买交易币参数输入到队列</span>
                 📌 当前: 交易币=<span id="dp-trading-coin-display">10</span>
                 | 积分=<span id="dp-points-price-display">1000</span>
                 | 比例=<span id="dp-points-to-trading-coin-display1">?</span>
@@ -459,26 +553,6 @@
                 ">
                 <div style="color: #888; font-size: 10px; margin-top: 4px;">每个积分要卖多少交易币</div>
             </div>
-            
-            <!-- 交易密码 -->
-            <div>
-                <label style="display: block; color: #ccc; font-size: ${isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
-                    🔐 交易密码 <span style="color: #4caf50;">(密码输入框)</span>
-                </label>
-                <input type="password" id="dp-points-password" placeholder="输入交易密码" style="
-                    width: 100%;
-                    padding: ${isMobile ? '12px' : '8px'};
-                    background: #1e1e2f;
-                    color: #fff;
-                    border: 1px solid #3a3a4a;
-                    border-radius: ${isMobile ? '8px' : '4px'};
-                    font-family: inherit;
-                    font-size: ${isMobile ? '14px' : '12px'};
-                    touch-action: manipulation;
-                    box-sizing: border-box;
-                ">
-                <div style="color: #888; font-size: 10px; margin-top: 4px;">出售积分时需要的安全密码</div>
-            </div>
             </div>
             
             <!-- 显示当前值状态 -->
@@ -491,6 +565,19 @@
                 color: #aaa;
                 word-break: break-all;
             ">
+                <span id="enqueue-input-points" style="
+                    flex: 1;
+                    background: #ff3700;
+                    padding: 4px 4px; 
+                    color: white;
+                    border: none;
+                    border-radius: ${isMobile ? '10px' : '6px'};
+                    cursor: pointer;
+                    font-family: inherit;
+                    font-size: ${isMobile ? '16px' : '13px'};
+                    font-weight: 500;
+                    touch-action: manipulation;
+                ">买积分参数输入到队列</span>
                 📌 当前: 积分=<span id="dp-points-amount-display">1000</span> 
                 | 单价=<span id="dp-tradingcoin-price-display">10</span> 
                 | 比例=<span id="dp-points-to-trading-coin-display2">?</span>
@@ -508,6 +595,8 @@
         '💎 卖积分参数 ▼',
         '💎 卖积分参数 ▶'
     ));
+
+    //--------------------------------------------
 
     const dpPointsMarket = `
         <!-- ========== 积分市场区 ========== -->
@@ -591,6 +680,7 @@
     const flowSelect = document.getElementById('dp-flow-select');
     const runBtn = document.getElementById('dp-run');
     const listBtn = document.getElementById('dp-list');
+    const queueBtn = document.getElementById('dp-queue');
     const logDiv = document.getElementById('dp-log');
     const stepButtonsDiv = document.getElementById('dp-step-buttons');
     const resizeHandle = document.getElementById('dp-resize-handle');
@@ -598,18 +688,45 @@
     // 输入框元素 - 交易币
     const tradingCoinInput = document.getElementById('dp-trading-coin');
     const pointsPriceInput = document.getElementById('dp-points-price');
-    const passwordInput = document.getElementById('dp-password');
     const tradingCoinDisplay = document.getElementById('dp-trading-coin-display');
     const pointsPriceDisplay = document.getElementById('dp-points-price-display');
     const pointsToTradingCoinDisplay1 = document.getElementById('dp-points-to-trading-coin-display1');
 
+    // 交易币区入队列
+   const enqueueInputTrading = document.getElementById('enqueue-input-trading');
+    enqueueInputTrading.addEventListener(
+        'click',
+        () => { 
+            darkrp.queue.enqueue({
+                flowName: '卖交易币流程',
+                points: pointsPriceInput.value,
+                tradingCoin: tradingCoinInput.value
+            });
+            addLog(`✅ 导入队列：卖交易币流程->交易币：${tradingCoinInput.value}->积分：${pointsPriceInput.value}`);
+        }
+    );
+
     // 输入框元素 - 积分
     const pointsAmountInput = document.getElementById('dp-points-amount');
     const tradingcoinPriceInput = document.getElementById('dp-tradingcoin-price');
-    const pointsPasswordInput = document.getElementById('dp-points-password');
     const pointsAmountDisplay = document.getElementById('dp-points-amount-display');
     const tradingcoinPriceDisplay = document.getElementById('dp-tradingcoin-price-display');
     const pointsToTradingCoinDisplay2 = document.getElementById('dp-points-to-trading-coin-display2');
+
+    // 积分区入队列
+    const enqueueInputPoints = document.getElementById('enqueue-input-points');
+    enqueueInputPoints.addEventListener(
+        'click',
+        () => { 
+            darkrp.queue.enqueue({
+            flowName: '卖积分流程',
+            points: pointsAmountInput.value,
+            tradingCoin: tradingcoinPriceInput.value
+            });
+
+            addLog(`✅ 导入队列：卖积分流程->积分：${pointsAmountInput.value}->交易币：${tradingcoinPriceInput.value}`);
+        }
+    );
 
     // 日志函数
     function addLog(msg, isError = false)
@@ -629,7 +746,6 @@
     {
         const tradingCoin = tradingCoinInput.value;
         const points = pointsPriceInput.value;
-        const password = passwordInput.value;
         const pointsToTradingCoin = points / tradingCoin;
         
         // 更新显示
@@ -641,7 +757,6 @@
         window.darkrp.ui.tradingCoinForm = {
             tradingCoin: tradingCoin || '0',
             points: points || '0',
-            password: password || '',
             pointsToTradingCoin: pointsToTradingCoin || '0',
         };
         
@@ -652,7 +767,6 @@
     // 监听输入框变化
     tradingCoinInput.addEventListener('input', updateTradingParams);
     pointsPriceInput.addEventListener('input', updateTradingParams);
-    passwordInput.addEventListener('input', updateTradingParams);
     
     // 初始化一次
     updateTradingParams();
@@ -662,7 +776,6 @@
     {
         const pointsAmount = pointsAmountInput.value;
         const tradingcoinPrice = tradingcoinPriceInput.value;
-        const pointsPassword = pointsPasswordInput.value;
         const pointsToTradingCoin = pointsAmount / tradingcoinPrice;
         
         // 更新显示
@@ -674,7 +787,6 @@
         window.darkrp.ui.pointsForm = {
             points: pointsAmount || '0',
             tradingCoin: tradingcoinPrice || '0',
-            password: pointsPassword || '',
             pointsToTradingCoin: pointsToTradingCoin || '0',
         };
     }
@@ -682,7 +794,6 @@
     // 监听卖积分输入框变化
     pointsAmountInput.addEventListener('input', updatePointsParams);
     tradingcoinPriceInput.addEventListener('input', updatePointsParams);
-    pointsPasswordInput.addEventListener('input', updatePointsParams);
 
     // 初始化卖积分参数
     updatePointsParams();
@@ -705,36 +816,69 @@
             window.darkrp.ui._originalSellTradingCoinFillPassword = steps['卖交易币填入密码'];
         }
         
-        // 包装：卖交易币填入交易币和积分 - 从 UI 读取参数后调用原始函数
-        steps['卖交易币填入交易币和积分'] = async function() {
-            const params = window.darkrp.ui.tradingCoinForm;
+        // 包装：卖交易币填入交易币和积分：
+        // 1. 从 UI 读取参数后调用原始函数
+        // 2. 从队列读取参数后调用原始函数
+        steps['卖交易币填入交易币和积分'] = async function()
+        {
+            // const params = window.darkrp.ui.tradingCoinForm;
+            // const tradingCoin = params.tradingCoin;
+            // const points = params.points;
+
+            // 执行的流程类型：1. Immediately 2. QueueImport
+            var params = null;
+            var fromName = null;
+            if (darkrp.executionProcessType == 'Immediately')
+            {
+                params = window.darkrp.ui.tradingCoinForm;
+                fromName = 'UI';
+            }
+            else
+            {
+                params = darkrp.queue.front();
+                if (darkrp.queue.isEmpty() == true || params == undefined)
+                {
+                    addLog('❌ 队列为空', true);
+                    return;
+                }
+                fromName = '队列';
+            }
             const tradingCoin = params.tradingCoin;
             const points = params.points;
             
-            addLog(`📝 从UI读取参数: 交易币=${tradingCoin}, 积分单价=${points}`);
+            addLog(`📝 从${fromName}读取参数: 交易币=${tradingCoin}, 积分单价=${points}`);
             console.log(`✅ 步骤 卖交易币填入交易币和积分(${tradingCoin}, ${points}) 执行`);
             
             const originalFn = window.darkrp.ui._originalSellTradingCoinFill;
-            if (originalFn) {
+            if (originalFn)
+            {
                 // 调用原始函数，传入从 UI 读取的参数
                 await originalFn(tradingCoin, points);
-            } else {
+            }
+            else
+            {
                 addLog('❌ 原始函数 卖交易币填入交易币和积分 不存在', true);
             }
         };
         
         // 包装：卖交易币填入密码 - 从 UI 读取密码后调用原始函数
-        steps['卖交易币填入密码'] = async function() {
-            const password = window.darkrp.ui.tradingCoinForm.password;
+        steps['卖交易币填入密码'] = async function()
+        {
+            // const password = window.darkrp.ui.tradingCoinForm.password;
+            let password = darkrp.button.获取密码();
             
-            addLog(`🔐 从UI读取密码: 已填 (长度 ${password.length})`);
+            // addLog(`🔐 从UI读取密码: 已填 (长度 ${password.length})`);
+            addLog(`🔐 读取密码: 已填 (长度 ${password.length})`);
             console.log(`✅ 步骤 卖交易币填入密码(${'*'.repeat(password.length)}) 执行`);
             
             const originalFn = window.darkrp.ui._originalSellTradingCoinFillPassword;
-            if (originalFn) {
+            if (originalFn)
+            {
                 // 调用原始函数，传入从 UI 读取的密码
                 await originalFn(password);
-            } else {
+            }
+            else
+            {
                 addLog('❌ 原始函数 卖交易币填入密码 不存在', true);
             }
         };
@@ -754,37 +898,70 @@
         if (!window.darkrp.ui._originalSellPointsFill && steps['卖积分填入积分和交易币']) {
             window.darkrp.ui._originalSellPointsFill = steps['卖积分填入积分和交易币'];
         }
-        if (steps['卖积分填入积分和交易币']) {
-            steps['卖积分填入积分和交易币'] = async function() {
-                const params = window.darkrp.ui.pointsForm;
-                const points = params.points;
+        if (steps['卖积分填入积分和交易币'])
+        {
+            steps['卖积分填入积分和交易币'] = async function()
+            {
+                // const params = window.darkrp.ui.pointsForm;
+                // const points = params.points;
+                // const tradingCoin = params.tradingCoin;
+
+                // 执行的流程类型：1. Immediately 2. QueueImport
+                var params = null;
+                var fromName = null;
+                if (darkrp.executionProcessType == 'Immediately')
+                {
+                    params = window.darkrp.ui.pointsForm;
+                    fromName = 'UI';
+                }
+                else
+                {
+                    params = darkrp.queue.front();
+                    if (darkrp.queue.isEmpty() == true || params == undefined)
+                    {
+                        addLog('❌ 队列为空', true);
+                        return;
+                    }
+                    fromName = '队列';
+                }
                 const tradingCoin = params.tradingCoin;
+                const points = params.points;
                 
-                addLog(`📝 从UI读取积分参数: 积分数量=${points}, 交易币单价=${tradingCoin}`);
+                addLog(`📝 从${fromName}读取积分参数: 积分数量=${points}, 交易币单价=${tradingCoin}`);
                 
                 const originalFn = window.darkrp.ui._originalSellPointsFill;
-                if (originalFn) {
+                if (originalFn)
+                {
                     await originalFn(points, tradingCoin);
-                } else {
+                }
+                else
+                {
                     addLog('❌ 原始步骤函数 卖积分填入积分和交易币 不存在', true);
                 }
             };
         }
 
         // 包装：卖积分填入密码
-        if (!window.darkrp.ui._originalSellPointsFillPassword && steps['卖积分填入密码']) {
+        if (!window.darkrp.ui._originalSellPointsFillPassword && steps['卖积分填入密码'])
+        {
             window.darkrp.ui._originalSellPointsFillPassword = steps['卖积分填入密码'];
         }
-        if (steps['卖积分填入密码']) {
-            steps['卖积分填入密码'] = async function() {
-                const password = window.darkrp.ui.pointsForm.password;
+        if (steps['卖积分填入密码'])
+        {
+            steps['卖积分填入密码'] = async function()
+            {
+                // const password = window.darkrp.ui.pointsForm.password;
+                var password = darkrp.button.获取密码();
                 
-                addLog(`🔐 从UI读取积分密码: 已填 (长度 ${password.length})`);
+                addLog(`🔐 读取密码: 已填 (长度 ${password.length})`);
                 
                 const originalFn = window.darkrp.ui._originalSellPointsFillPassword;
-                if (originalFn) {
+                if (originalFn)
+                {
                     await originalFn(password);
-                } else {
+                }
+                else
+                {
                     addLog('❌ 原始步骤函数 卖积分填入密码 不存在', true);
                 }
             };
@@ -1089,6 +1266,14 @@
             addLog('❌ darkrp.trigger 未加载', true);
             return;
         }
+
+        if (window.darkrp.processIsExecuting == true)
+        {
+            addLog('❌ 正在执行流程，请等待', true);
+            return;
+        }
+        window.darkrp.processIsExecuting = true;
+        window.darkrp.executionProcessType = 'Immediately';
         
         // 执行前确保步骤函数已被 patch
         patchStepFunctions();
@@ -1097,12 +1282,17 @@
         addLog(`📋 当前参数: 交易币=${window.darkrp.ui.tradingCoinForm.tradingCoin}, 积分=${window.darkrp.ui.tradingCoinForm.points}, 密码已填`);
         
         addLog(`🚀 开始执行流程: ${flowName}`);
-        try {
+        try
+        {
             await window.darkrp.trigger.run(flowName);
             addLog(`✅ 流程执行完成: ${flowName}`);
-        } catch(e) {
+        }
+        catch(e)
+        {
             addLog(`❌ 执行出错: ${e.message}`, true);
         }
+
+        window.darkrp.processIsExecuting = false;
     });
 
     // 查看所有流程
@@ -1119,6 +1309,53 @@
         if (window.darkrp.trigger.list) {
             window.darkrp.trigger.list();
         }
+    });
+
+    // 执行队列
+    queueBtn.addEventListener('click', async () => {
+        if (darkrp.queue.size() <= 0)
+        {
+            addLog('❌ 队列为空', true);
+            return;
+        }
+        
+        if (!window.darkrp || !window.darkrp.trigger) {
+            addLog('❌ darkrp.trigger 未加载', true);
+            return;
+        }
+
+        if (window.darkrp.processIsExecuting == true)
+        {
+            addLog('❌ 正在执行流程，请等待', true);
+            return;
+        }
+        window.darkrp.processIsExecuting = true;
+        window.darkrp.executionProcessType = 'QueueImport';
+        
+        // 执行前确保步骤函数已被 patch
+        patchStepFunctions();
+        
+        // 显示当前参数
+        addLog(`📋 当前参数: 交易币=${window.darkrp.ui.tradingCoinForm.tradingCoin}, 积分=${window.darkrp.ui.tradingCoinForm.points}, 密码已填`);
+        try
+        {
+            var count = 0;
+            while (darkrp.queue.size() > 0)
+            {
+                const queueEl = darkrp.queue.front();
+                await window.darkrp.trigger.run(queueEl.flowName);
+                addLog(`✅ 队列流程 ${queueEl.flowName} 已处理完毕`);
+                ++count;
+                darkrp.queue.dequeue();
+            }
+            addLog(`✅ 队列所有流程已处理完毕，执行流程的个数 ${count}`);
+        }
+        catch(e)
+        {
+            addLog(`❌ 执行出错: ${e.message}`, true);
+        }
+
+        window.darkrp.processIsExecuting = false;
     });
 
     // 等待 darkrp 加载并更新UI

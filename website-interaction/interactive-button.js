@@ -46,6 +46,13 @@ var button = (function()
         element.click();
     }
 
+    // 直接获取登录时的密码
+    function 获取密码()
+    {
+        var txtPassword = document.getElementById('txtPassword');
+        return txtPassword.value;
+    }
+
 // --------------------- 买交易币按钮操作部分 -------------------
 
     // 买交易币
@@ -245,6 +252,7 @@ var button = (function()
         交易市场: 交易市场,
         上架我的: 上架我的,
         返回上次界面: 返回上次界面,
+        获取密码: 获取密码,
         买交易币: 买交易币,
         卖交易币: 卖交易币,
         卖交易币填入交易币和积分: 卖交易币填入交易币和积分,
