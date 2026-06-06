@@ -252,6 +252,8 @@
     
     darkrp.util.appendHTML('浮动窗口选择流程执行区', '#dp-content', dpButton);
         
+    // ----------------------------- 卖交易币相关区域 --------------------------------------
+
     const dpTradingParams = `
         <!-- ========== 交易币参数输入区 ========== -->
         <div id="dp-trading-params" style="
@@ -337,8 +339,8 @@
                 color: #aaa;
                 word-break: break-all;
             ">
-                📌 当前: 交易币=<span id="dp-trading-coin-display">100</span>
-                | 积分=<span id="dp-points-price-display">500</span>
+                📌 当前: 交易币=<span id="dp-trading-coin-display">10</span>
+                | 积分=<span id="dp-points-price-display">1000</span>
                 | 比例=<span id="dp-points-to-trading-coin-display1">?</span>
                 | 密码已填
             </div>
@@ -354,6 +356,55 @@
             '💰 卖交易币参数 ▼',
             '💰 卖交易币参数 ▶'
         ));
+
+    const dpTradingCoinMarket = `
+        <!-- ========== 交易币市场区 ========== -->
+        <div id="dp-trading-coin-market" style="
+            margin-bottom: ${isMobile ? '16px' : '12px'};
+            background: #252530;
+            border-radius: ${isMobile ? '10px' : '8px'};
+            padding: ${isMobile ? '12px' : '10px'};
+            border-left: 3px solid #ff9800;
+        ">
+            <div id="title-trading-coin-market-panel" style="cursor: pointer; background-color: #2d2d3a; color: #ff9800; font-size: ${isMobile ? '13px' : '12px'}; margin-bottom: 10px; font-weight: 500;">
+                💰 交易币交易市场 ▶
+            </div>
+            
+            <div id="trading-coin-market-panel" style="display: none">
+                <!-- 模块化插入 -->
+            </div>
+        </div>`;
+
+    darkrp.util.appendHTML('浮动窗口交易币交易信息区', '#dp-content', dpTradingCoinMarket);
+    const titleTradingCoinMarketPanel = document.getElementById('title-trading-coin-market-panel');
+    titleTradingCoinMarketPanel.addEventListener(
+    'click', 
+    () => darkrp.util.togglePanel(
+        'trading-coin-market-panel',
+        'title-trading-coin-market-panel',
+        '💰 交易币交易市场 ▼',
+        '💰 交易币交易市场 ▶'
+    ));
+
+    const dpTradingCoinMarketCurrentSale = `
+        <!-- 正在出售的交易币展示 -->
+        <div>正在出售的交易币：</div>
+        <div id="trading-coin-market-current-sale" style="margin-bottom: 12px;">
+        </div>
+    `;
+
+    darkrp.util.appendHTML('浮动窗口交易币交易信息区-正在出售的交易币展示', '#trading-coin-market-panel', dpTradingCoinMarketCurrentSale);
+
+    const dpTradingCoinMarketCurrentInfo = `
+        <!-- 已经出售的前20次交易信息 -->
+        <div>已经出售的前20次交易信息：</div>
+        <div id="trading-coin-market-current-info" style="margin-bottom: 12px;">
+        </div>
+    `;
+
+    darkrp.util.appendHTML('浮动窗口交易币交易信息区-前20次交易币的交易信息', '#trading-coin-market-panel', dpTradingCoinMarketCurrentInfo);
+    
+    // ----------------------------- 卖积分相关区域 --------------------------------------
 
     const dpPointsParams = `
         <!-- ========== 积分参数输入区 ========== -->
@@ -457,6 +508,53 @@
         '💎 卖积分参数 ▼',
         '💎 卖积分参数 ▶'
     ));
+
+    const dpPointsMarket = `
+        <!-- ========== 积分市场区 ========== -->
+        <div id="dp-points-market" style="
+            margin-bottom: ${isMobile ? '16px' : '12px'};
+            background: #252530;
+            border-radius: ${isMobile ? '10px' : '8px'};
+            padding: ${isMobile ? '12px' : '10px'};
+            border-left: 3px solid #4caf50;
+        ">
+            <div id="title-points-market-panel" style="cursor: pointer; background-color: #2d2d3a; color: #4caf50; font-size: ${isMobile ? '13px' : '12px'}; margin-bottom: 10px; font-weight: 500;">
+                💎 积分交易市场 ▶
+            </div>
+            
+            <div id="points-market-panel" style="display: none">
+                <!-- 模块化插入 -->
+            </div>
+        </div>`;
+
+    darkrp.util.appendHTML('浮动窗口积分交易信息区', '#dp-content', dpPointsMarket);
+    const titleInputMarketPanel = document.getElementById('title-points-market-panel');
+    titleInputMarketPanel.addEventListener(
+    'click', 
+    () => darkrp.util.togglePanel(
+        'points-market-panel',
+        'title-points-market-panel',
+        '💎 积分交易市场 ▼',
+        '💎 积分交易市场 ▶'
+    ));
+
+    const dpPointsMarketCurrentSale = `
+        <!-- 正在出售的积分展示 -->
+        <div>正在出售的积分：</div>
+        <div id="points-market-current-sale" style="margin-bottom: 12px;">
+        </div>
+    `;
+
+    darkrp.util.appendHTML('浮动窗口积分交易信息区-正在出售的积分展示', '#points-market-panel', dpPointsMarketCurrentSale);
+
+    const dpPointsMarketCurrentInfo = `
+        <!-- 已经出售的前20次交易信息 -->
+        <div>已经出售的前20次交易信息：</div>
+        <div id="points-market-current-info" style="margin-bottom: 12px;">
+        </div>
+    `;
+
+    darkrp.util.appendHTML('浮动窗口积分交易信息区-前20次积分的交易信息', '#points-market-panel', dpPointsMarketCurrentInfo);
     
     const dpStep = `
         <!-- 快捷步骤区（滚动） -->

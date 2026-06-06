@@ -44,13 +44,20 @@ T.step('上架我的', async function()
     await darkrp.util.stepPause(2000, 4000, 2);
 });
 
+T.step('返回上次界面', async function()
+{
+    darkrp.button.返回上次界面();
+    console.log('✅ 步骤 返回上次界面() 执行完毕，开始等待');
+    await darkrp.util.stepPause(1000, 2000, 2);
+});
+
 // ------------------ 买交易币操作部分 -----------------------
 
 T.step('买交易币', async function()
 {
     darkrp.button.买交易币();
     console.log('✅ 步骤 买交易币() 执行完毕，开始等待');
-    await darkrp.util.stepPause(10000, 20000, 10);
+    await darkrp.util.stepPause(2000, 6000, 3);
 });
 
 T.step('卖交易币', async function()
@@ -102,13 +109,27 @@ T.step('卖交易币通知成功弹窗关闭', async function()
     await darkrp.util.stepPause(2000, 4000, 2);
 });
 
+T.step('买交易币市场正在出售信息', async function()
+{
+    darkrp.button.买交易币市场正在出售信息();
+   console.log('✅ 步骤 买交易币市场正在出售信息() 执行完毕，开始等待');
+    await darkrp.util.stepPause(1000, 2000, 2);
+});
+
+T.step('买交易币市场交易信息', async function()
+{
+    darkrp.button.买交易币市场交易信息();
+   console.log('✅ 步骤 买交易币市场交易信息() 执行完毕，开始等待');
+    await darkrp.util.stepPause(1000, 2000, 2);
+});
+
 // --------------------- 买积分操作部分 -------------------
 
 T.step('买积分', async function()
 {
     darkrp.button.买积分();
     console.log('✅ 步骤 买积分() 执行完毕，开始等待');
-    await darkrp.util.stepPause(10000, 20000, 10);
+    await darkrp.util.stepPause(2000, 6000, 3);
 });
 
 T.step('卖积分', async function()
@@ -158,6 +179,20 @@ T.step('卖积分通知成功弹窗关闭', async function()
     darkrp.button.卖积分通知成功弹窗关闭();
    console.log('✅ 步骤 卖交易币通知成功弹窗关闭() 执行完毕，开始等待');
     await darkrp.util.stepPause(2000, 4000, 2);
+});
+
+T.step('买积分市场正在出售信息', async function()
+{
+    darkrp.button.买积分市场正在出售信息();
+   console.log('✅ 步骤 买积分市场正在出售信息() 执行完毕，开始等待');
+    await darkrp.util.stepPause(1000, 2000, 2);
+});
+
+T.step('买积分市场交易信息', async function()
+{
+    darkrp.button.买积分市场交易信息();
+   console.log('✅ 步骤 买积分市场交易信息() 执行完毕，开始等待');
+    await darkrp.util.stepPause(1000, 2000, 2);
 });
 
 // ----------------- 验证码处理 ------------------
