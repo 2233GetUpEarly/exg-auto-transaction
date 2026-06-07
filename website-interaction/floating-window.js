@@ -301,6 +301,48 @@ window.darkrp.queue = {
     
     darkrp.util.appendHTML('浮动窗口选择流程执行区', '#dp-content', dpButton);
 
+    // ------------------------------- 数据分析相关区域 ---------------------------------
+
+    const dpDataAnalysisPanel = `
+        <!-- ========== 数据分析面板区 ========== -->
+        <div id="dp-data-analysis-panel" style="
+            margin-bottom: ${isMobile ? '16px' : '12px'};
+            background: #252530;
+            border-radius: ${isMobile ? '10px' : '8px'};
+            padding: ${isMobile ? '12px' : '10px'};
+            border-left: 3px solid #ff9800;
+            display: flex; 
+            flex-wrap: wrap;
+        ">
+            <div id="title-data-analysis-panel" style="width: 50%; cursor: pointer; background-color: #2d2d3a; color: #ff9800; font-size: ${isMobile ? '13px' : '12px'}; margin-bottom: 10px; font-weight: 500;">
+                🔍 数据分析结果 ▶
+            </div>
+            <div style="display: flex; width: 50%;">
+                <span id="refresh-data-analysis-button" style="cursor: pointer; width: 50%;">开始分析</span>
+                <span id="data-result-enqueue-button" style="cursor: pointer; width: 50%;">导入队列</span>
+            </div>
+            
+            <div id="data-analysis-panel" style="display: none">
+                <table border="0.5">
+                    <thead>
+                        <tr><th>编号</th><th>数据</th><th>操作</th></tr>
+                    </thead>
+                    <tbody id="data-analysis-table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>`;
+    darkrp.util.appendHTML('浮动窗口数据分析信息区', '#dp-content', dpDataAnalysisPanel);
+    const titleDataAnalysisPanel = document.getElementById('title-data-analysis-panel');
+    titleDataAnalysisPanel.addEventListener(
+        'click', 
+        () => darkrp.util.togglePanel(
+            'data-analysis-panel',
+            'title-data-analysis-panel',
+            '🔍 数据分析结果 ▼',
+            '🔍 数据分析结果 ▶'
+        ));
+
     //----------------------------------- 流程队列相关区域 ---------------------------------
 
     const dpQueuePanel = `
