@@ -120,16 +120,39 @@ var button = (function()
     }
 
     // 买交易币市场交易信息
-    function 买交易币市场交易信息()
+    async function 买交易币市场交易信息()
     {
-        const el = document.getElementById('text-data');
-        if (!el.children || el.children.length <= 0)
-        {
-            console.error("未找到以出售的交易币信息");
-            return;
-        }
+        await 买交易币市场交易信息导入文件();
+
         var tradingCoinMarketInfo = document.getElementById('trading-coin-market-current-info');
-        tradingCoinMarketInfo.innerHTML = el.children[0].innerHTML;
+        var tempString = await darkrp.util.openAndReadDataForFile('交易币文字版数据');
+        tempString = tempString.replace(/\r\n/g, '\n').replace(/\n/g, '<br/>');
+        tradingCoinMarketInfo.innerHTML = tempString;
+    }
+
+    async function 买交易币市场交易信息导入文件()
+    {
+        const el = document.getElementById('store-market-chart');
+        const data = JSON.parse(el.getAttribute('data-data'));
+
+        // 按日期数据：每日均价数组
+        // 按成交数据：逐笔成交价数组
+        // 文字版数据：原始文本字符串
+        await darkrp.util.openAndWriteDataToFile('交易币文字版数据', data.Text);
+        var DateString = '';
+        for (var i = 0; i < data.MoneyByDates.length; ++i)
+        {
+            DateString += data.MoneyByDates[i].TimeStr + ' ';
+            DateString += data.MoneyByDates[i].Price + '\r\n';
+        }
+        await darkrp.util.openAndWriteDataToFile('交易币按日期数据', DateString);
+        var RecordsString = '';
+        for (var i = 0; i < data.MoneyByRecords.length; ++i)
+        {
+            RecordsString += data.MoneyByRecords[i].TimeStr + ' ';
+            RecordsString += data.MoneyByRecords[i].Price + '\r\n';
+        }
+        await darkrp.util.openAndWriteDataToFile('交易币按成交数据', RecordsString);
     }
 
 // --------------------- 买积分按钮操作部分 -------------------
@@ -199,31 +222,40 @@ var button = (function()
     }
 
     // 买积分市场交易信息
-    function 买积分市场交易信息()
+    async function 买积分市场交易信息()
     {
-        const el = document.getElementById('text-data');
-        if (!el.children || el.children.length <= 0)
-        {
-            console.error("未找到以出售的积分信息");
-            return;
-        }
+        await 买积分市场交易信息导入文件();
+
         var pointsMarketInfo = document.getElementById('points-market-current-info');
-        pointsMarketInfo.innerHTML = el.children[0].innerHTML;
+        var tempString = await darkrp.util.openAndReadDataForFile('积分文字版数据');
+        tempString = tempString.replace(/\r\n/g, '\n').replace(/\n/g, '<br/>');
+        pointsMarketInfo.innerHTML = tempString;
     }
 
-    // function 买积分市场交易信息()
-    // {
-    //     const el = document.getElementById('store-market-chart');
-    //     const data = JSON.parse(el.getAttribute('data-data'));
+    async function 买积分市场交易信息导入文件()
+    {
+        const el = document.getElementById('store-market-chart');
+        const data = JSON.parse(el.getAttribute('data-data'));
 
-    //     const result = {
-    //         按日期数据: data.CoinByDates,      // 每日均价数组
-    //         按成交数据: data.CoinByRecords,    // 逐笔成交价数组
-    //         文字版数据: data.Text              // 原始文本字符串
-    //     };
-    //     var pointsMarketInfo = document.getElementById('points-market-current-info');
-    //     pointsMarketInfo.textContent = result.文字版数据;
-    // }
+        // 按日期数据：每日均价数组
+        // 按成交数据：逐笔成交价数组
+        // 文字版数据：原始文本字符串
+        await darkrp.util.openAndWriteDataToFile('积分文字版数据', data.Text);
+        var DateString = '';
+        for (var i = 0; i < data.CoinByDates.length; ++i)
+        {
+            DateString += data.CoinByDates[i].TimeStr + ' ';
+            DateString += data.CoinByDates[i].Price + '\r\n';
+        }
+        await darkrp.util.openAndWriteDataToFile('积分按日期数据', DateString);
+        var RecordsString = '';
+        for (var i = 0; i < data.CoinByRecords.length; ++i)
+        {
+            RecordsString += data.CoinByRecords[i].TimeStr + ' ';
+            RecordsString += data.CoinByRecords[i].Price + '\r\n';
+        }
+        await darkrp.util.openAndWriteDataToFile('积分按成交数据', RecordsString);
+    }
 
     // -------------------- 验证码相关 ----------------
 
@@ -263,6 +295,7 @@ var button = (function()
         卖交易币通知成功弹窗关闭: 卖交易币通知成功弹窗关闭,
         买交易币市场正在出售信息: 买交易币市场正在出售信息,
         买交易币市场交易信息: 买交易币市场交易信息,
+        买交易币市场交易信息导入文件: 买交易币市场交易信息导入文件,
         买积分: 买积分,
         卖积分: 卖积分,
         卖积分填入积分和交易币: 卖积分填入积分和交易币,
@@ -273,6 +306,7 @@ var button = (function()
         卖积分通知成功弹窗关闭: 卖积分通知成功弹窗关闭,
         买积分市场正在出售信息: 买积分市场正在出售信息,
         买积分市场交易信息: 买积分市场交易信息,
+        买积分市场交易信息导入文件: 买积分市场交易信息导入文件,
         验证码输入框填入内容: 验证码输入框填入内容,
         验证码弹窗确认: 验证码弹窗确认
     };

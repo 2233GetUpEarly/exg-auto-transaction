@@ -156,6 +156,34 @@ window.darkrp.util = {
             panel.style.display = 'none';
             title.textContent = closeText;
         }
+    },
+
+    openAndWriteDataToFile: async function(filename, data)
+    {
+        // 获取 OPFS 根目录句柄
+        const opfsRoot = await navigator.storage.getDirectory();
+        // 获取（或创建）一个名为 filename 的文件句柄
+        const fileHandle = await opfsRoot.getFileHandle(filename, { create: true });
+        // 创建可写流
+        const writable = await fileHandle.createWritable();
+        // 写入内容
+        await writable.write(data);
+        // 关闭流，完成写入
+        await writable.close();
+
+        console.log(`写入数据成功，文件 ${filename}，数据长度 ${data.length}`);
+    },
+
+    openAndReadDataForFile: async function(filename)
+    {
+        // 获取 OPFS 根目录句柄
+        const opfsRoot = await navigator.storage.getDirectory();
+        // 获取（或创建）一个名为 filename 的文件句柄
+        const fileHandle = await opfsRoot.getFileHandle(filename);
+        const file = await fileHandle.getFile(); // 获取 File 对象
+        const content = await file.text();       // 读取文本内容
+        console.log(`读取数据成功，文件 ${filename}，数据长度 ${content.length}`);
+        return content;
     }
 };
 
