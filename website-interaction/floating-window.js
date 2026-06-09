@@ -271,7 +271,7 @@ window.darkrp.queue = {
                 font-weight: 500;
                 touch-action: manipulation;
             ">▶ 执行流程</button>
-            <button id="dp-list" style="
+            <button id="dp-enqueue" style="
                 flex: 1;
                 padding: ${isMobile ? '12px' : '8px'};
                 background: #2196f3;
@@ -283,7 +283,7 @@ window.darkrp.queue = {
                 font-size: ${isMobile ? '16px' : '13px'};
                 font-weight: 500;
                 touch-action: manipulation;
-            "> 查看列表</button>
+            "> 导入队列</button>
             <button id="dp-queue" style="
                 flex: 1;
                 padding: ${isMobile ? '12px' : '8px'};
@@ -388,8 +388,11 @@ window.darkrp.queue = {
             {
                 queueInnerHTML += '>' + i + '<';
                 queueInnerHTML += '>' + darkrp.queue.items[i].flowName + '<';
-                queueInnerHTML += '>' + darkrp.queue.items[i].points + '<';
-                queueInnerHTML += '>' + darkrp.queue.items[i].tradingCoin + '<';
+                if (darkrp.queue.items[i].flowName == '卖交易币流程' || darkrp.queue.items[i].flowName == '卖积分流程')
+                {
+                    queueInnerHTML += '>' + darkrp.queue.items[i].points + '<';
+                    queueInnerHTML += '>' + darkrp.queue.items[i].tradingCoin + '<';
+                }
                 queueInnerHTML += '<br/>';
             }
             queuePanel.innerHTML = queueInnerHTML;
@@ -740,7 +743,7 @@ window.darkrp.queue = {
     const contentDiv = document.getElementById('dp-content');
     const flowSelect = document.getElementById('dp-flow-select');
     const runBtn = document.getElementById('dp-run');
-    const listBtn = document.getElementById('dp-list');
+    const enqueueBtn = document.getElementById('dp-enqueue');
     const queueBtn = document.getElementById('dp-queue');
     const logDiv = document.getElementById('dp-log');
     const stepButtonsDiv = document.getElementById('dp-step-buttons');
@@ -1356,22 +1359,37 @@ window.darkrp.queue = {
         window.darkrp.processIsExecuting = false;
     });
 
-    // 查看所有流程
-    listBtn.addEventListener('click', () => {
+    // 将流程入队列
+    enqueueBtn.addEventListener('click', () => {
+        const flowName = flowSelect.value;
+        if (!flowName) {
+            addLog('请先选择一个流程', true);
+            return;
+        }
+        
         if (!window.darkrp || !window.darkrp.trigger) {
             addLog('❌ darkrp.trigger 未加载', true);
             return;
         }
-        addLog('📋 可用流程列表:');
-        const flows = window.darkrp.trigger._flows;
-        Object.keys(flows).forEach(name => {
-            addLog(`   • ${name} → ${flows[name].join(' → ')}`);
-        });
-        if (window.darkrp.trigger.list) {
-            window.darkrp.trigger.list();
+
+        if (flowSelect.value == '卖交易币流程')
+        {
+            enqueueInputTrading.click();
+
+        }
+        else if (flowSelect.value == '卖积分流程')
+        {
+            enqueueInputPoints.click();
+        }
+        else
+        {
+            darkrp.queue.enqueue({
+                flowName: flowSelect.value,
+            });
+            addLog(`✅ 导入队列：${flowName}`);
         }
     });
-
+    
     // 执行队列
     queueBtn.addEventListener('click', async () => {
         if (darkrp.queue.size() <= 0)
