@@ -122,12 +122,20 @@ var button = (function()
     // 买交易币市场交易信息
     async function 买交易币市场交易信息()
     {
-        await 买交易币市场交易信息导入文件();
-
         var tradingCoinMarketInfo = document.getElementById('trading-coin-market-current-info');
         var tempString = await darkrp.util.openAndReadDataForFile('交易币文字版数据');
         tempString = tempString.replace(/\r\n/g, '\n').replace(/\n/g, '<br/>');
         tradingCoinMarketInfo.innerHTML = tempString;
+
+        var tradingCoinMarketDateInfo = document.getElementById('trading-coin-market-date-info');
+        var tempString2 = await darkrp.util.openAndReadDataForFile('交易币按日期数据');
+        // tempString2 = tempString2.replace(/\r\n/g, '\n').replace(/\n/g, '<br/>');
+        var tempArr2 = tempString2.split('\r\n');
+        tradingCoinMarketDateInfo.innerHTML = '';
+        for (var i = 0; i < tempArr2.length && i < 10; ++i)
+        {
+            tradingCoinMarketDateInfo.innerHTML += tempArr2[i] + '<br/>';
+        }
     }
 
     async function 买交易币市场交易信息导入文件()
@@ -224,12 +232,20 @@ var button = (function()
     // 买积分市场交易信息
     async function 买积分市场交易信息()
     {
-        await 买积分市场交易信息导入文件();
-
         var pointsMarketInfo = document.getElementById('points-market-current-info');
-        var tempString = await darkrp.util.openAndReadDataForFile('积分文字版数据');
-        tempString = tempString.replace(/\r\n/g, '\n').replace(/\n/g, '<br/>');
-        pointsMarketInfo.innerHTML = tempString;
+        var tempString1 = await darkrp.util.openAndReadDataForFile('积分文字版数据');
+        tempString1 = tempString1.replace(/\r\n/g, '\n').replace(/\n/g, '<br/>');
+        pointsMarketInfo.innerHTML = tempString1;
+
+        var pointsMarketDateInfo = document.getElementById('points-market-date-info');
+        var tempString2 = await darkrp.util.openAndReadDataForFile('积分按日期数据');
+        // tempString2 = tempString2.replace(/\r\n/g, '\n').replace(/\n/g, '<br/>');
+        var tempArr2 = tempString2.split('\r\n');
+        pointsMarketDateInfo.innerHTML = '';
+        for (var i = 0; i < tempArr2.length && i < 10; ++i)
+        {
+            pointsMarketDateInfo.innerHTML += tempArr2[i] + '<br/>';
+        }
     }
 
     async function 买积分市场交易信息导入文件()

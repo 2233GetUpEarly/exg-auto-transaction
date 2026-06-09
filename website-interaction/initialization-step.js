@@ -123,6 +123,13 @@ T.step('买交易币市场交易信息', async function()
     await darkrp.util.stepPause(1000, 2000, 2);
 });
 
+T.step('买交易币市场交易信息导入文件', async function()
+{
+    darkrp.button.买交易币市场交易信息导入文件();
+   console.log('✅ 步骤 买交易币市场交易信息导入文件() 执行完毕，开始等待');
+    await darkrp.util.stepPause(1000, 2000, 2);
+});
+
 // --------------------- 买积分操作部分 -------------------
 
 T.step('买积分', async function()
@@ -192,6 +199,13 @@ T.step('买积分市场交易信息', async function()
 {
     darkrp.button.买积分市场交易信息();
    console.log('✅ 步骤 买积分市场交易信息() 执行完毕，开始等待');
+    await darkrp.util.stepPause(1000, 2000, 2);
+});
+
+T.step('买积分市场交易信息导入文件', async function()
+{
+    darkrp.button.买积分市场交易信息导入文件();
+   console.log('✅ 步骤 买积分市场交易信息导入文件() 执行完毕，开始等待');
     await darkrp.util.stepPause(1000, 2000, 2);
 });
 

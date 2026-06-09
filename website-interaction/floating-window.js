@@ -539,6 +539,16 @@ window.darkrp.queue = {
     `;
 
     darkrp.util.appendHTML('浮动窗口交易币交易信息区-前20次交易币的交易信息', '#trading-coin-market-panel', dpTradingCoinMarketCurrentInfo);
+
+    const dpTradingCoinMarketDateInfo = `
+        <!-- 已经出售的前10天交易币交易信息 -->
+        <div>已经出售的前10天交易币交易信息：</div>
+        <div id="trading-coin-market-date-info" style="margin-bottom: 12px;">
+        </div>
+    `;
+
+    darkrp.util.appendHTML('浮动窗口积分交易信息区-前10天交易币的交易信息', '#trading-coin-market-panel', dpTradingCoinMarketDateInfo);
+    
     
     // ----------------------------- 卖积分相关区域 --------------------------------------
 
@@ -686,6 +696,15 @@ window.darkrp.queue = {
     `;
 
     darkrp.util.appendHTML('浮动窗口积分交易信息区-前20次积分的交易信息', '#points-market-panel', dpPointsMarketCurrentInfo);
+    
+    const dpPointsMarketDateInfo = `
+        <!-- 已经出售的前10天积分交易信息 -->
+        <div>已经出售的前10天积分交易信息：</div>
+        <div id="points-market-date-info" style="margin-bottom: 12px;">
+        </div>
+    `;
+
+    darkrp.util.appendHTML('浮动窗口积分交易信息区-前10天积分的交易信息', '#points-market-panel', dpPointsMarketDateInfo);
     
     const dpStep = `
         <!-- 快捷步骤区（滚动） -->
