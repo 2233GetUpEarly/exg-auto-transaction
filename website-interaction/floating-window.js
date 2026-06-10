@@ -14,6 +14,11 @@ window.darkrp.queue = {
         return this.items.shift();
     },
 
+    pop(index)        // 数据移除并移动后续元素
+    {
+        this.items.splice(index, 1);
+    },
+
     front()             // 查看队首元素
     {             
         if (this.isEmpty()) return undefined;
@@ -379,7 +384,13 @@ window.darkrp.queue = {
             </div>
             
             <div id="queue-panel" style="display: none">
-                空
+                <table border="0.5">
+                    <thead>
+                        <tr><th>编号</th><th>数据</th><th>操作</th></tr>
+                    </thead>
+                    <tbody id="queue-table-body">
+                    </tbody>
+                </table>
             </div>
         </div>`;
     darkrp.util.appendHTML('浮动窗口队列信息区', '#dp-content', dpQueuePanel);
@@ -397,21 +408,91 @@ window.darkrp.queue = {
     refreshQueueButton.addEventListener(
         'click', 
         () => {
-            var queuePanel = document.getElementById('queue-panel');
-            var queueInnerHTML = darkrp.queue.items.length <= 0 ? '空' : '';
+            // var queuePanel = document.getElementById('queue-panel');
+            // var queueInnerHTML = darkrp.queue.items.length <= 0 ? '空' : '';
+            // for (var i = 0; i < darkrp.queue.items.length; ++i)
+            // {
+            //     queueInnerHTML += '>' + i + '<';
+            //     queueInnerHTML += '>' + darkrp.queue.items[i].flowName + '<';
+            //     if (darkrp.queue.items[i].flowName == '卖交易币流程' || darkrp.queue.items[i].flowName == '卖积分流程')
+            //     {
+            //         queueInnerHTML += '>' + darkrp.queue.items[i].points + '<';
+            //         queueInnerHTML += '>' + darkrp.queue.items[i].tradingCoin + '<';
+            //     }
+            //     queueInnerHTML += '<br/>';
+            // }
+            // queuePanel.innerHTML = queueInnerHTML;
+
+            // 前端显示
+            var queueTablePanel = document.getElementById('queue-table-body');
+            var queueTableInnerHTML = '';
+            if (darkrp.queue.items.length <= 0)
+            {
+                queueTableInnerHTML += '空';
+            }
+
             for (var i = 0; i < darkrp.queue.items.length; ++i)
             {
-                queueInnerHTML += '>' + i + '<';
-                queueInnerHTML += '>' + darkrp.queue.items[i].flowName + '<';
+                queueTableInnerHTML += `<tr><td id="dqi-${i}">${i}</td>`;
+
+                var contentString = darkrp.queue.items[i].flowName + ' | ';
                 if (darkrp.queue.items[i].flowName == '卖交易币流程' || darkrp.queue.items[i].flowName == '卖积分流程')
                 {
-                    queueInnerHTML += '>' + darkrp.queue.items[i].points + '<';
-                    queueInnerHTML += '>' + darkrp.queue.items[i].tradingCoin + '<';
+                    contentString += darkrp.queue.items[i].points + ' | ';
+                    contentString += darkrp.queue.items[i].tradingCoin;
                 }
-                queueInnerHTML += '<br/>';
+                queueTableInnerHTML += `<td>${contentString}</td>`;
+
+                queueTableInnerHTML += `<td><button class="queueDeleteBtn">❌️</button></td></tr>`;
             }
-            queuePanel.innerHTML = queueInnerHTML;
+            queueTablePanel.innerHTML = queueTableInnerHTML;
         });
+
+    const queueTableBody = document.getElementById('queue-table-body');
+    // 删除行的函数，并删除对应的数组元素
+    queueTableBody.addEventListener('click', function(e)
+    {
+        // 检查点击的目标是否是带有 .queueDeleteBtn 类的按钮
+        if (e.target.classList.contains('queueDeleteBtn'))
+        {
+            // 找到按钮所在的行 (tr)
+            const row = e.target.closest('tr');
+            
+            // 通过第一列 td 的 id 获取类型和下标 (推荐)
+            const firstTd = row.cells[0];
+            const cellId = firstTd.id;
+            
+            // 解析 id 获取类型和下标
+            let type = null;
+            let index = null;
+            
+            if (cellId && cellId.includes('-'))
+            {
+                const parts = cellId.split('-');
+                type = parts[0];     // 'rps' 或 'rtcs'
+                index = parseInt(parts[1], 10); // 下标数字
+            }
+
+            // 删除数组元素
+            if (type && index !== null)
+            {
+                if (type === 'dqi')
+                {
+                    darkrp.queue.pop(index);
+                    console.log('删除 dqi 数组元素下标:', index);
+                }
+                else
+                {
+                    console.log(`未找到此类型 ${type} 数组元素下标:`, index);
+                }
+            }
+            // 删除该行
+            row.remove();
+            // 更新队列，不然下标对应不上
+            refreshQueueButton.click();
+        }
+    });
+
         
     // ----------------------------- 卖交易币相关区域 --------------------------------------
 
