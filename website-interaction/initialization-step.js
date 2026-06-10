@@ -123,10 +123,24 @@ T.step('买交易币市场交易信息', async function()
     await darkrp.util.stepPause(1000, 2000, 2);
 });
 
+T.step('买交易币市场交易信息2', async function(tradingCoinMarketData)
+{
+   darkrp.button.买交易币市场交易信息2(tradingCoinMarketData);
+   console.log('✅ 步骤 买交易币市场交易信息2() 执行完毕，开始等待');
+    await darkrp.util.stepPause(1000, 2000, 2);
+});
+
 T.step('买交易币市场交易信息导入文件', async function()
 {
    await darkrp.button.买交易币市场交易信息导入文件();
    console.log('✅ 步骤 买交易币市场交易信息导入文件() 执行完毕，开始等待');
+    await darkrp.util.stepPause(1000, 2000, 2);
+});
+
+T.step('买交易币市场交易信息导入变量', async function(tradingCoinMarketData)
+{
+   darkrp.button.买交易币市场交易信息导入变量(tradingCoinMarketData);
+   console.log('✅ 步骤 买交易币市场交易信息导入变量() 执行完毕，开始等待');
     await darkrp.util.stepPause(1000, 2000, 2);
 });
 
@@ -202,10 +216,24 @@ T.step('买积分市场交易信息', async function()
     await darkrp.util.stepPause(1000, 2000, 2);
 });
 
+T.step('买积分市场交易信息2', async function(pointsMarketData)
+{
+   darkrp.button.买积分市场交易信息2(pointsMarketData);
+   console.log('✅ 步骤 买积分市场交易信息2() 执行完毕，开始等待');
+    await darkrp.util.stepPause(1000, 2000, 2);
+});
+
 T.step('买积分市场交易信息导入文件', async function()
 {
    await darkrp.button.买积分市场交易信息导入文件();
    console.log('✅ 步骤 买积分市场交易信息导入文件() 执行完毕，开始等待');
+    await darkrp.util.stepPause(1000, 2000, 2);
+});
+
+T.step('买积分市场交易信息导入变量', async function(pointsMarketData)
+{
+   darkrp.button.买积分市场交易信息导入变量(pointsMarketData);
+   console.log('✅ 步骤 买积分市场交易信息导入变量() 执行完毕，开始等待');
     await darkrp.util.stepPause(1000, 2000, 2);
 });
 

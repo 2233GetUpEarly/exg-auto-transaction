@@ -64,6 +64,11 @@ window.darkrp.queue = {
         pointsToTradingCoin: '',
     };
 
+    // 存储买交易币市场交易信息
+    window.darkrp.tradingCoinMarketData = {};
+    // 存储买积分市场交易信息
+    window.darkrp.pointsMarketData = {};
+
     // 用于保存原始函数（包装模式）
     window.darkrp.ui._originalSellTradingCoinFill = null;
     window.darkrp.ui._originalSellTradingCoinFillPassword = null;
@@ -71,6 +76,16 @@ window.darkrp.queue = {
     // 用于保存原始函数（包装模式）- 积分
     window.darkrp.ui._originalSellPointsFill = null;
     window.darkrp.ui._originalSellPointsFillPassword = null;
+
+    // 用于保存买交易币市场导入变量原始函数
+    window.darkrp.ui._originalTradingCoinMarketDataFunc = null;
+    // 用于保存买交易币市场交易信息原始函数
+    window.darkrp.ui._originalTradingCoinMarketInfoFunc = null;
+
+    // 用于保存买积分市场导入变量原始函数
+    window.darkrp.ui._originalPointsMarketDataFunc = null;
+    // 用于保存买积分市场交易信息原始函数
+    window.darkrp.ui._originalPointsMarketInfoFunc = null;
 
     // 创建浮动面板
     const floatingWindow = `
@@ -879,6 +894,14 @@ window.darkrp.queue = {
         if (!window.darkrp.ui._originalSellTradingCoinFillPassword) {
             window.darkrp.ui._originalSellTradingCoinFillPassword = steps['卖交易币填入密码'];
         }
+        if (!window.darkrp.ui._originalTradingCoinMarketDataFunc)
+        {
+            window.darkrp.ui._originalTradingCoinMarketDataFunc = steps['买交易币市场交易信息导入变量'];
+        }
+        if (!window.darkrp.ui._originalTradingCoinMarketInfoFunc)
+        {
+            window.darkrp.ui._originalTradingCoinMarketInfoFunc = steps['买交易币市场交易信息2'];
+        }
         
         // 包装：卖交易币填入交易币和积分：
         // 1. 从 UI 读取参数后调用原始函数
@@ -946,6 +969,39 @@ window.darkrp.queue = {
                 addLog('❌ 原始函数 卖交易币填入密码 不存在', true);
             }
         };
+
+        // 包装：卖买交易币市场导入变量 - 从变量读取数据后调用原始函数
+        steps['买交易币市场交易信息导入变量'] = async function()
+        {
+            console.log(`✅ 步骤 买交易币市场交易信息导入变量包装函数 执行`);
+            const originalFn = window.darkrp.ui._originalTradingCoinMarketDataFunc;
+            if (originalFn)
+            {
+                // 调用原始函数，传入的数据
+                await originalFn(window.darkrp.tradingCoinMarketData);
+            }
+            else
+            {
+                addLog('❌ 原始函数 买交易币市场交易信息导入变量 不存在', true);
+            }
+        };
+
+        // 包装：卖买交易币市场信息2 - 从变量读取数据后调用原始函数
+        steps['买交易币市场交易信息2'] = async function()
+        {
+            console.log(`✅ 步骤 买交易币市场交易信息2包装函数 执行`);
+            
+            const originalFn = window.darkrp.ui._originalTradingCoinMarketInfoFunc;
+            if (originalFn)
+            {
+                // 调用原始函数，传入保存的数据
+                await originalFn(window.darkrp.tradingCoinMarketData);
+            }
+            else
+            {
+                addLog('❌ 原始函数 买买交易币市场交易信息2 不存在', true);
+            }
+        };
         
         // 可选：提供一个恢复原始函数的方法
         window.darkrp.ui.restoreOriginalSteps = function() {
@@ -955,6 +1011,14 @@ window.darkrp.queue = {
             if (window.darkrp.ui._originalSellTradingCoinFillPassword) {
                 steps['卖交易币填入密码'] = window.darkrp.ui._originalSellTradingCoinFillPassword;
             }
+            if (window.darkrp.ui._originalTradingCoinMarketDataFunc)
+            {
+                steps['买交易币市场交易信息导入变量'] = window.darkrp.ui._originalTradingCoinMarketDataFunc;
+            }
+            if (window.darkrp.ui._originalTradingCoinMarketInfoFunc)
+            {
+                steps['买交易币市场交易信息2'] = window.darkrp.ui._originalTradingCoinMarketInfoFunc;
+            }
             addLog('🔁 已恢复原始步骤函数');
         };
 
@@ -962,6 +1026,20 @@ window.darkrp.queue = {
         if (!window.darkrp.ui._originalSellPointsFill && steps['卖积分填入积分和交易币']) {
             window.darkrp.ui._originalSellPointsFill = steps['卖积分填入积分和交易币'];
         }
+        // 包装：卖积分填入密码
+        if (!window.darkrp.ui._originalSellPointsFillPassword && steps['卖积分填入密码'])
+        {
+            window.darkrp.ui._originalSellPointsFillPassword = steps['卖积分填入密码'];
+        }
+        if (!window.darkrp.ui._originalPointsMarketDataFunc)
+        {
+            window.darkrp.ui._originalPointsMarketDataFunc = steps['买积分市场交易信息导入变量'];
+        }
+        if (!window.darkrp.ui._originalPointsMarketInfoFunc)
+        {
+            window.darkrp.ui._originalPointsMarketInfoFunc = steps['买积分市场交易信息2'];
+        }
+
         if (steps['卖积分填入积分和交易币'])
         {
             steps['卖积分填入积分和交易币'] = async function()
@@ -1005,11 +1083,7 @@ window.darkrp.queue = {
             };
         }
 
-        // 包装：卖积分填入密码
-        if (!window.darkrp.ui._originalSellPointsFillPassword && steps['卖积分填入密码'])
-        {
-            window.darkrp.ui._originalSellPointsFillPassword = steps['卖积分填入密码'];
-        }
+
         if (steps['卖积分填入密码'])
         {
             steps['卖积分填入密码'] = async function()
@@ -1030,6 +1104,39 @@ window.darkrp.queue = {
                 }
             };
         }
+
+        // 包装：买积分市场导入变量 - 从变量读取数据后调用原始函数
+        steps['买积分市场交易信息导入变量'] = async function()
+        {
+            console.log(`✅ 步骤 买积分市场交易信息导入变量包装函数 执行`);
+            const originalFn = window.darkrp.ui._originalPointsMarketDataFunc;
+            if (originalFn)
+            {
+                // 调用原始函数，传入的数据
+                await originalFn(window.darkrp.pointsMarketData);
+            }
+            else
+            {
+                addLog('❌ 原始函数 买积分市场交易信息导入变量 不存在', true);
+            }
+        };
+
+        // 包装：买积分市场信息2 - 从变量读取数据后调用原始函数
+        steps['买积分市场交易信息2'] = async function()
+        {
+            console.log(`✅ 步骤 买积分市场交易信息2包装函数 执行`);
+            
+            const originalFn = window.darkrp.ui._originalPointsMarketInfoFunc;
+            if (originalFn)
+            {
+                // 调用原始函数，传入保存的数据
+                await originalFn(window.darkrp.pointsMarketData);
+            }
+            else
+            {
+                addLog('❌ 原始函数 买积分市场交易信息2 不存在', true);
+            }
+        };
         
         addLog('🔧 已包装交易币步骤函数（从UI读取参数，原始函数已保留）');
         return true;
