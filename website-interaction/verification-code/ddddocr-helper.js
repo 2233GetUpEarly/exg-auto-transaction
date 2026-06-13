@@ -2,8 +2,8 @@
 // 本地 ddddocr API 封装工具库
 
 const DDDDOCR_CONFIG = {
-    apiUrl: 'http://127.0.0.1:5678/ocr',
-    detectionUrl: 'http://127.0.0.1:5678/ocr/detection',
+    apiUrl: '/api/ocr/ocr',
+    detectionUrl: '/api/ocr/ocr/detection',
     timeout: 10000,  // 超时时间（毫秒）
     retryTimes: 1     // 重试次数
 };
