@@ -1,6 +1,5 @@
-#include "LedgerCalculation.h"
-#include "LedgerCalculation2.h"
-#include "BaseFunction.h"
+#include <ledger_calculation.hpp>
+#include <base_function.hpp>
 #include <fstream>
 
 using namespace std;
@@ -107,7 +106,7 @@ void test4()
 
 void test5()
 {
-	LedgerCalculation2 testget;
+	LedgerCalculation testget;
 
 	std::fstream file;
 	//file.open("C:\\Users\\33049\\Desktop\\’À±æ.txt", std::ios::in);
@@ -118,6 +117,7 @@ void test5()
 	testget.output(std::cout);
 
 	file.close();
+	system("pause");
 }
 
 int main()

@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Common.h"
-#include "LCUnit.h"
-#include "LCSpecial.h"
+#include <common.hpp>
+#include <lc_unit.hpp>
+#include <lc_special.hpp>
 
 #include <vector>
 #include <string>
 #include <map>
 
-class LedgerCalculation2
+class LedgerCalculation
 {
 private:
 

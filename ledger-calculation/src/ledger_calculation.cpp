@@ -1,5 +1,5 @@
-#include "LedgerCalculation2.h"
-#include "BaseFunction.h"
+#include <ledger_calculation.hpp>
+#include <base_function.hpp>
 #include <iostream>
 #include <algorithm>
 
@@ -44,7 +44,7 @@ std::pair<int, int> stringSolveAboutEXG_Format(std::string& str)
 	return ans;
 }
 
-std::pair<int, int> LedgerCalculation2::stringEXG_FormatSolve(std::istream& input, std::string& str)
+std::pair<int, int> LedgerCalculation::stringEXG_FormatSolve(std::istream& input, std::string& str)
 {
 	if (str[0] != '[')
 	{
@@ -90,7 +90,7 @@ std::pair<int, int> LedgerCalculation2::stringEXG_FormatSolve(std::istream& inpu
 	return ans;
 }
 
-void LedgerCalculation2::SpecialSolve(std::pair<int, int>& ans)
+void LedgerCalculation::SpecialSolve(std::pair<int, int>& ans)
 {
 	LCSpecial temp;
 	if (ans.first >= 5000)
@@ -116,7 +116,7 @@ std::pair<bool, LCSpecial> specialStringSolve(const std::string& str)
 	return { true, LCSpecial(-std::stoi(str)) };
 }
 
-void LedgerCalculation2::input(std::istream& input)
+void LedgerCalculation::input(std::istream& input)
 {
 	std::string str;
 	while (std::getline(input, str))
@@ -149,7 +149,7 @@ void LedgerCalculation2::input(std::istream& input)
 	this->ledgerCalculation();
 }
 
-void LedgerCalculation2::showSellUnitString(std::ostream& output)
+void LedgerCalculation::showSellUnitString(std::ostream& output)
 {
 	sort(_sellUnitStringInfo.begin(), _sellUnitStringInfo.end(),
 		[](std::pair<std::string, std::string>& e1, std::pair<std::string, std::string>& e2)
@@ -172,7 +172,7 @@ void LedgerCalculation2::showSellUnitString(std::ostream& output)
 	}
 }
 
-void LedgerCalculation2::showSpecialString(std::ostream& output)
+void LedgerCalculation::showSpecialString(std::ostream& output)
 {
 	for (int i = 0; i < this->_specialStringInfo.size(); ++i)
 	{
@@ -180,7 +180,7 @@ void LedgerCalculation2::showSpecialString(std::ostream& output)
 	}
 }
 
-void LedgerCalculation2::showOtherString(std::ostream& output)
+void LedgerCalculation::showOtherString(std::ostream& output)
 {
 	for (int i = 0; i < this->_excessStringInfo.size(); ++i)
 	{
@@ -188,7 +188,7 @@ void LedgerCalculation2::showOtherString(std::ostream& output)
 	}
 }
 
-void LedgerCalculation2::output(std::ostream& output)
+void LedgerCalculation::output(std::ostream& output)
 {
 	showSellUnitString(output);
 	showSpecialString(output);
@@ -199,19 +199,19 @@ void LedgerCalculation2::output(std::ostream& output)
 	showOtherString(output);
 }
 
-void LedgerCalculation2::addSellIntegral(int integral, int transactionCoins)
+void LedgerCalculation::addSellIntegral(int integral, int transactionCoins)
 {
 	LCUnit temp(integral, transactionCoins, SellType::SellInt);
 	this->_sellInts.emplace(roundOff(temp.getProportion()), std::move(temp));
 }
 
-void LedgerCalculation2::addSellTransactionCoins(int integral, int transactionCoins)
+void LedgerCalculation::addSellTransactionCoins(int integral, int transactionCoins)
 {
 	LCUnit temp(integral, transactionCoins, SellType::SellTra);
 	this->_sellTras.emplace(roundOff(temp.getProportion()), std::move(temp));
 }
 
-void LedgerCalculation2::selectionSellType(int argument1, int argument2)
+void LedgerCalculation::selectionSellType(int argument1, int argument2)
 {
 	if (argument1 >= 5000)
 	{
@@ -264,14 +264,14 @@ static bool mergingSameProportionOfSellTra(std::multimap<int, LCUnit>& sellTras)
 	return mergingSameProportion(sellTras, SellType::SellTra);
 }
 
-bool LedgerCalculation2::mergingSameProportionSellType()
+bool LedgerCalculation::mergingSameProportionSellType()
 {
 	bool sellIntMerging = mergingSameProportionOfSellInt(this->_sellInts);
 	bool sellTraMerging = mergingSameProportionOfSellTra(this->_sellTras);
 	return sellIntMerging || sellTraMerging;
 }
 
-bool LedgerCalculation2::calIntProfit()
+bool LedgerCalculation::calIntProfit()
 {
 	bool calInt = false;
 
@@ -342,7 +342,7 @@ bool LedgerCalculation2::calIntProfit()
 	return calInt;
 }
 
-void LedgerCalculation2::calSpecial()
+void LedgerCalculation::calSpecial()
 {
 	auto it = _specials.begin();
 	while (it != _specials.end())
@@ -353,7 +353,7 @@ void LedgerCalculation2::calSpecial()
 	}
 }
 
-void LedgerCalculation2::ledgerCalculation()
+void LedgerCalculation::ledgerCalculation()
 {
 	this->mergingSameProportionSellType();
 
@@ -376,7 +376,7 @@ static void shiftExcessSell(std::multimap<int, LCUnit>& sellInfo, std::vector<st
 	}
 }
 
-void LedgerCalculation2::shiftExcessSellInfo()
+void LedgerCalculation::shiftExcessSellInfo()
 {
 	shiftExcessSell(_sellInts, _excessStringInfo);
 	shiftExcessSell(_sellTras, _excessStringInfo);

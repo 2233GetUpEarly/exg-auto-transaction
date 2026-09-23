@@ -1,4 +1,4 @@
-#include "Common.h"
+#include <common.hpp>
 
 double IntegralChargeProportion = 0.05;
 
