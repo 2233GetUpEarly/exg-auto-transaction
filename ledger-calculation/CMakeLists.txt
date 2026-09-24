@@ -1,6 +1,3 @@
-cmake_minimum_required(VERSION 3.10)
-
-project(ledger_calculation)
 
 if(MSVC)
 	add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/utf-8>)
