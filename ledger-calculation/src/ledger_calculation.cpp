@@ -25,7 +25,7 @@ std::pair<int, int> stringSolveAboutEXG_Format(std::string& str)
 
 	if (index == str.size() || str[index] == '-')
 	{
-		//std::cout << "ÓĞ×Ö·û´®ÊäÈë¸ñÊ½´íÎó" << std::endl;
+		//std::cout << "æœ‰å­—ç¬¦ä¸²è¾“å…¥æ ¼å¼é”™è¯¯" << std::endl;
 		ans.first = ans.second = -1;
 		return ans;
 	}
@@ -59,7 +59,7 @@ std::pair<int, int> LedgerCalculation::stringEXG_FormatSolve(std::istream& input
 		++index;
 	}
 
-	if (str[index + 1] < '0' || str[index + 1] > '9')		// ÎïÆ·½»Ò×²»´¦Àí
+	if (str[index + 1] < '0' || str[index + 1] > '9')		// ç‰©å“äº¤æ˜“ä¸å¤„ç†
 	{
 		++setNoSolveCount();
 		return { -1, -1 };
@@ -77,7 +77,7 @@ std::pair<int, int> LedgerCalculation::stringEXG_FormatSolve(std::istream& input
 
 	ans.second = std::stoi(str.substr(index));
 
-	std::getline(input, str);							// ´¦Àí»ØÊÕµÄ½»Ò×¼ÇÂ¼
+	std::getline(input, str);							// å¤„ç†å›æ”¶çš„äº¤æ˜“è®°å½•
 
 	int num = str[str.size() - 1];
 
@@ -193,8 +193,8 @@ void LedgerCalculation::output(std::ostream& output)
 	showSellUnitString(output);
 	showSpecialString(output);
 
-	output << "×Ü×¬£º" + std::to_string(_sum) + "»ı·Ö" << std::endl;
-	output << std::endl << "ÒÑ´¦Àí½»Ò×´ÎÊı£º" << getSolveCount() << "´Î Î´´¦Àí½»Ò×´ÎÊı£º" << getNoSolveCount() << "´Î " << "Ê£Óà½»Ò×¼ÇÂ¼Î´Æ¥Åä£º" << std::endl << std::endl;
+	output << "æ€»èµšï¼š" + std::to_string(_sum) + "ç§¯åˆ†" << std::endl;
+	output << std::endl << "å·²å¤„ç†äº¤æ˜“æ¬¡æ•°ï¼š" << getSolveCount() << "æ¬¡ æœªå¤„ç†äº¤æ˜“æ¬¡æ•°ï¼š" << getNoSolveCount() << "æ¬¡ " << "å‰©ä½™äº¤æ˜“è®°å½•æœªåŒ¹é…ï¼š" << std::endl << std::endl;
 
 	showOtherString(output);
 }
@@ -293,7 +293,7 @@ bool LedgerCalculation::calIntProfit()
 			LCUnit sellTraRemnant;
 
 			LCUnit ansInfo = ans.second.first;
-			if (ansInfo.getSellType() == Nothing)		// getTra ²»ÓÃ»Øµ½¿ªÊ¼
+			if (ansInfo.getSellType() == Nothing)		// getTra ä¸ç”¨å›åˆ°å¼€å§‹
 			{
 				sellIntRemnant = std::move(getInt->second);
 				sellTraRemnant = std::move(getTra->second);
@@ -301,7 +301,7 @@ bool LedgerCalculation::calIntProfit()
 				getInt = _sellInts.erase(getInt);
 				getTra = _sellTras.erase(getTra);
 			}
-			else if (ansInfo.getSellType() == SellInt)	// ËµÃ÷ getInt »¹ÓĞÊ£Óà
+			else if (ansInfo.getSellType() == SellInt)	// è¯´æ˜ getInt è¿˜æœ‰å‰©ä½™
 			{
 				sellIntRemnant = std::move(ansInfo);
 				sellTraRemnant = std::move(getTra->second);
@@ -309,7 +309,7 @@ bool LedgerCalculation::calIntProfit()
 				_sellTras.erase(getTra);
 				getTra = _sellTras.begin();
 			}
-			else if (ansInfo.getSellType() == SellTra)	// ËµÃ÷ getTra »¹ÓĞÊ£Óà
+			else if (ansInfo.getSellType() == SellTra)	// è¯´æ˜ getTra è¿˜æœ‰å‰©ä½™
 			{
 				sellIntRemnant = std::move(getInt->second);
 				sellTraRemnant = std::move(ansInfo);

@@ -39,7 +39,7 @@ private:
 
 	static std::pair<bool, std::pair<LCUnit, int>> _solveSellTraExcess(LCUnit& sellInt, LCUnit& sellTra)
 	{
-		if (sellTra.getTransactionCoins() - sellInt.getTransactionCoins() < 10)		// Ð¡ÓÚ 10 ½»Ò×±Ò²»Ö´ÐÐ
+		if (sellTra.getTransactionCoins() - sellInt.getTransactionCoins() < 10)		// å°äºŽ 10 äº¤æ˜“å¸ä¸æ‰§è¡Œ
 		{
 			return { false, { LCUnit(), 0 } };
 		}
@@ -58,7 +58,7 @@ private:
 
 	static std::pair<bool, std::pair<LCUnit, int>> _solveSellIntExcess(LCUnit& sellInt, LCUnit& sellTra)
 	{
-		if (sellInt._integral - sellTra._integral < 5000)		// ±£³Ö»ý·Ö¼ÇÂ¼ÖÐµÄ»ý·Ö´óÓÚµÈÓÚ 5000
+		if (sellInt._integral - sellTra._integral < 5000)		// ä¿æŒç§¯åˆ†è®°å½•ä¸­çš„ç§¯åˆ†å¤§äºŽç­‰äºŽ 5000
 		{
 			return { false, { LCUnit(), 0 } };
 		}
@@ -82,7 +82,7 @@ private:
 			return { false, 0 };
 		}
 
-		// »ñÀû = Âô½»Ò×±ÒµÃµ½µÄ»ý·Ö×ÜÊý - Âô½»Ò×±ÒµÄÊÖÐø·Ñ - ÂôµÄ»ý·Ö - Âô»ý·Ö³É±¾
+		// èŽ·åˆ© = å–äº¤æ˜“å¸å¾—åˆ°çš„ç§¯åˆ†æ€»æ•° - å–äº¤æ˜“å¸çš„æ‰‹ç»­è´¹ - å–çš„ç§¯åˆ† - å–ç§¯åˆ†æˆæœ¬
 		int profit = sellTra._integral - sellTra._cost - sellInt._integral - sellInt._cost;
 
 		sellInt._sellType = Nothing;
@@ -203,10 +203,10 @@ public:
 private:
 
 	SellType _sellType = Nothing;
-	int _integral;				// »ý·Ö
-	int _transactionCoins;		// ½»Ò×±Ò
-	std::string _stringInfo;	// ×Ö·û´®ÐÅÏ¢
-	int _cost;					// »¨·ÑµÄÊÖÐø·Ñ»ý·Ö
-	double _proportion;			// ½»Ò×±Ò : »ý·Ö µÄ±ÈÀý
-	double _addCostProportion;	// ¼ÆÈëÁË³É±¾µÄ±ÈÀý
+	int _integral;				// ç§¯åˆ†
+	int _transactionCoins;		// äº¤æ˜“å¸
+	std::string _stringInfo;	// å­—ç¬¦ä¸²ä¿¡æ¯
+	int _cost;					// èŠ±è´¹çš„æ‰‹ç»­è´¹ç§¯åˆ†
+	double _proportion;			// äº¤æ˜“å¸ : ç§¯åˆ† çš„æ¯”ä¾‹
+	double _addCostProportion;	// è®¡å…¥äº†æˆæœ¬çš„æ¯”ä¾‹
 };

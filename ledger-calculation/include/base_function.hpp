@@ -37,20 +37,20 @@ inline std::string proportion_to_string(double proportion)
 inline std::string sell_to_string(int argument1, int argument2, const char* str1, const char* str2, int cost, double proportion, double addCostProportion)
 {
 	std::string ans = std::to_string(argument1) + str1 + std::to_string(argument2) + str2;
-	ans += std::to_string(cost) + " »ı·Ö ±ÈÀı(1 : " + proportion_to_string(proportion) + ")";
-	ans += " ³É±¾±ÈÀı(1 : " + proportion_to_string(addCostProportion) + ")";
+	ans += std::to_string(cost) + " ç§¯åˆ† æ¯”ä¾‹(1 : " + proportion_to_string(proportion) + ")";
+	ans += " æˆæœ¬æ¯”ä¾‹(1 : " + proportion_to_string(addCostProportion) + ")";
 
 	return std::move(ans);
 }
 
 inline std::string sellInt_to_string(int integral, int transactionCoins, int cost, double proportion, double addCostProportion)
 {
-	return sell_to_string(integral, transactionCoins, " »ı·ÖÂô³ö»ñµÃ ", " ½»Ò×±Ò£¬»¨·ÑÁË ", cost, proportion, addCostProportion);
+	return sell_to_string(integral, transactionCoins, " ç§¯åˆ†å–å‡ºè·å¾— ", " äº¤æ˜“å¸ï¼ŒèŠ±è´¹äº† ", cost, proportion, addCostProportion);
 }
 
 inline std::string sellTra_to_string(int integral, int transactionCoins, int cost, double proportion, double addCostProportion)
 {
-	return sell_to_string(transactionCoins, integral, " ½»Ò×±ÒÂô³ö»ñµÃ ", " »ı·Ö£¬»¨·ÑÁË ", cost, proportion, addCostProportion);
+	return sell_to_string(transactionCoins, integral, " äº¤æ˜“å¸å–å‡ºè·å¾— ", " ç§¯åˆ†ï¼ŒèŠ±è´¹äº† ", cost, proportion, addCostProportion);
 }
 
 inline int getSellSameTraDifferentInt(double proportion, int transactionCoins)

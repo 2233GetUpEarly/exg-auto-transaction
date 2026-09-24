@@ -8,7 +8,7 @@ private:
 
 	void createStringInfo()
 	{
-		_stringInfo = "-" + std::to_string(_cost) + " »ý·Ö";
+		_stringInfo = "-" + std::to_string(_cost) + " ç§¯åˆ†";
 	}
 
 public:
