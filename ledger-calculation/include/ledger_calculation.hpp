@@ -12,51 +12,51 @@ class LedgerCalculation
 {
 private:
 
-	void addSellIntegral(int integral, int transactionCoins);
+	void add_sell_integral(int integral, int transaction_coins);
 
-	void addSellTransactionCoins(int integral, int transactionCoins);
+	void add_sell_transaction_coins(int integral, int transaction_coins);
 
-	void selectionSellType(int argument1, int argument2);
+	void selection_sell_type(int argument1, int argument2);
 
-	bool mergingSameProportionSellType();
+	bool merging_same_proportion_sell_type();
 
-	bool calIntProfit();
+	bool cal_int_profit();
 
-	void calSpecial();
+	void cal_special();
 
-	void ledgerCalculation();
+	void ledger_calculation_();
 
-	void shiftExcessSellInfo();
+	void shift_excess_sell_info();
 
-	size_t& setSolveCount()
+	size_t& set_solve_count()
 	{
-		return _solveCount;
+		return solve_count_;
 	}
 
-	size_t& setNoSolveCount()
+	size_t& set_no_solve_count()
 	{
-		return _noSolveCount;
+		return no_solve_count_;
 	}
 
-	size_t getSolveCount() const
+	size_t get_solve_count() const
 	{
-		return _solveCount;
+		return solve_count_;
 	}
 	
-	size_t getNoSolveCount() const
+	size_t get_no_solve_count() const
 	{
-		return _noSolveCount;
+		return no_solve_count_;
 	}
 
-	void showSellUnitString(std::ostream&);
+	void show_sell_unit_string(std::ostream&);
 
-	void showSpecialString(std::ostream&);
+	void show_special_string(std::ostream&);
 	
-	void showOtherString(std::ostream&);
+	void show_other_string(std::ostream&);
 
-	std::pair<int, int> stringEXG_FormatSolve(std::istream&, std::string&);
+	std::pair<int, int> string_exg_format_solve(std::istream&, std::string&);
 
-	void SpecialSolve(std::pair<int, int>&);
+	void special_solve(std::pair<int, int>&);
 
 public:
 
@@ -74,16 +74,16 @@ public:
 
 private:
 
-	std::multimap<int, LCUnit> _sellInts;
-	std::multimap<int, LCUnit> _sellTras;
+	std::multimap<int, LCUnit> sell_ints_;
+	std::multimap<int, LCUnit> sell_tras_;
 
-	std::vector<LCSpecial> _specials;
+	std::vector<LCSpecial> specials_;
 
-	std::vector<std::pair<std::string, std::string>> _sellUnitStringInfo;
-	std::vector<std::string> _specialStringInfo;
-	std::vector<std::string> _excessStringInfo;
+	std::vector<std::pair<std::string, std::string>> sell_unit_string_info_;
+	std::vector<std::string> special_string_info_;
+	std::vector<std::string> excess_string_info_;
 
-	size_t _solveCount = 0;
-	size_t _noSolveCount = 0;
-	int _sum = 0;
+	size_t solve_count_ = 0;
+	size_t no_solve_count_ = 0;
+	int sum_ = 0;
 };

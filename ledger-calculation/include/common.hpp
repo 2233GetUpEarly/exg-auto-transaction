@@ -1,7 +1,7 @@
 #pragma once
 
-extern double IntegralChargeProportion;
+extern double integral_charge_proportion;
 
-extern int transactionCoinsChargeProportion;
+extern int transaction_coins_charge_proportion;
 
 

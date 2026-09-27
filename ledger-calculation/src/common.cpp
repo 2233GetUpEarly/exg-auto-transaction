@@ -1,5 +1,5 @@
 #include <common.hpp>
 
-double IntegralChargeProportion = 0.05;
+double integral_charge_proportion = 0.05;
 
-int transactionCoinsChargeProportion = 10;
+int transaction_coins_charge_proportion = 10;

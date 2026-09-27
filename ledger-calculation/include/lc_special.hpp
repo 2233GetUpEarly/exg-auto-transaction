@@ -6,9 +6,9 @@ class LCSpecial
 {
 private:
 
-	void createStringInfo()
+	void create_string_info()
 	{
-		_stringInfo = "-" + std::to_string(_cost) + " 积分";
+		string_info_ = "-" + std::to_string(cost_) + " 积分";
 	}
 
 public:
@@ -16,23 +16,23 @@ public:
 	LCSpecial() = default;
 
 	LCSpecial(int cost)
-		:_cost(cost)
+		:cost_(cost)
 	{
-		createStringInfo();
+		create_string_info();
 	}
 
-	int getCost() const
+	int get_cost() const
 	{
-		return _cost;
+		return cost_;
 	}
 
-	const std::string& getStringInfo() const
+	const std::string& get_string_info() const
 	{
-		return _stringInfo;
+		return string_info_;
 	}
 
 private:
 
-	int _cost;
-	std::string _stringInfo;
+	int cost_;
+	std::string string_info_;
 };

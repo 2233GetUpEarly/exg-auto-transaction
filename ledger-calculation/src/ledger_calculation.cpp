@@ -3,7 +3,7 @@
 #include <iostream>
 #include <algorithm>
 
-std::pair<int, int> stringSolveAboutEXG_Format(std::string& str)
+std::pair<int, int> string_solve_about_exg_format(std::string& str)
 {
 	std::pair<int, int> ans;
 
@@ -44,7 +44,7 @@ std::pair<int, int> stringSolveAboutEXG_Format(std::string& str)
 	return ans;
 }
 
-std::pair<int, int> LedgerCalculation::stringEXG_FormatSolve(std::istream& input, std::string& str)
+std::pair<int, int> LedgerCalculation::string_exg_format_solve(std::istream& input, std::string& str)
 {
 	if (str[0] != '[')
 	{
@@ -61,7 +61,7 @@ std::pair<int, int> LedgerCalculation::stringEXG_FormatSolve(std::istream& input
 
 	if (str[index + 1] < '0' || str[index + 1] > '9')		// 物品交易不处理
 	{
-		++setNoSolveCount();
+		++set_no_solve_count();
 		return { -1, -1 };
 	}
 
@@ -83,30 +83,30 @@ std::pair<int, int> LedgerCalculation::stringEXG_FormatSolve(std::istream& input
 
 	if (num < '0' || num > '9')
 	{
-		SpecialSolve(ans);
+		special_solve(ans);
 		return { -1, -1 };
 	}
 
 	return ans;
 }
 
-void LedgerCalculation::SpecialSolve(std::pair<int, int>& ans)
+void LedgerCalculation::special_solve(std::pair<int, int>& ans)
 {
 	LCSpecial temp;
 	if (ans.first >= 5000)
 	{
-		temp = LCSpecial(LCUnit(ans.first, ans.second, SellType::SellInt).getCost());
+		temp = LCSpecial(LCUnit(ans.first, ans.second, SellType::sell_int).get_cost());
 	}
 	else
 	{
-		temp = LCSpecial(LCUnit(ans.second, ans.first, SellType::SellTra).getCost());
+		temp = LCSpecial(LCUnit(ans.second, ans.first, SellType::sell_tra).get_cost());
 	}
-	this->_specials.push_back(std::move(temp));
+	this->specials_.push_back(std::move(temp));
 
-	++setSolveCount();
+	++set_solve_count();
 }
 
-std::pair<bool, LCSpecial> specialStringSolve(const std::string& str)
+std::pair<bool, LCSpecial> special_string_solve(const std::string& str)
 {
 	if (str.size() < 1 || str[0] != '-')
 	{
@@ -121,35 +121,35 @@ void LedgerCalculation::input(std::istream& input)
 	std::string str;
 	while (std::getline(input, str))
 	{
-		std::pair<int, int> ans = stringEXG_FormatSolve(input, str);
+		std::pair<int, int> ans = string_exg_format_solve(input, str);
 		if (ans.first != -1 && ans.second != -1)
 		{
-			++setSolveCount();
-			this->selectionSellType(ans.first, ans.second);
+			++set_solve_count();
+			this->selection_sell_type(ans.first, ans.second);
 			continue;
 		}
 
-		ans = stringSolveAboutEXG_Format(str);
+		ans = string_solve_about_exg_format(str);
 		if (ans.first != -1 && ans.second != -1)
 		{
-			++setSolveCount();
-			this->selectionSellType(ans.first, ans.second);
+			++set_solve_count();
+			this->selection_sell_type(ans.first, ans.second);
 			continue;
 		}
 
-		auto special = specialStringSolve(str);
+		auto special = special_string_solve(str);
 		if (special.first == true)
 		{
-			++setSolveCount();
-			this->_specials.push_back(std::move(special.second));
+			++set_solve_count();
+			this->specials_.push_back(std::move(special.second));
 			continue;
 		}
 	}
 }
 
-void LedgerCalculation::showSellUnitString(std::ostream& output)
+void LedgerCalculation::show_sell_unit_string(std::ostream& output)
 {
-	sort(_sellUnitStringInfo.begin(), _sellUnitStringInfo.end(),
+	sort(sell_unit_string_info_.begin(), sell_unit_string_info_.end(),
 		[](std::pair<std::string, std::string>& e1, std::pair<std::string, std::string>& e2)
 		{
 			if (e1.second.size() < e2.second.size())
@@ -162,56 +162,56 @@ void LedgerCalculation::showSellUnitString(std::ostream& output)
 			}
 		});
 
-	for (int i = 0; i < this->_sellUnitStringInfo.size(); ++i)
+	for (int i = 0; i < this->sell_unit_string_info_.size(); ++i)
 	{
-		output << _sellUnitStringInfo[i].first << std::endl;
-		output << _sellUnitStringInfo[i].second << std::endl;
+		output << sell_unit_string_info_[i].first << std::endl;
+		output << sell_unit_string_info_[i].second << std::endl;
 		output << std::endl;
 	}
 }
 
-void LedgerCalculation::showSpecialString(std::ostream& output)
+void LedgerCalculation::show_special_string(std::ostream& output)
 {
-	for (int i = 0; i < this->_specialStringInfo.size(); ++i)
+	for (int i = 0; i < this->special_string_info_.size(); ++i)
 	{
-		output << _specialStringInfo[i] << std::endl << std::endl;;
+		output << special_string_info_[i] << std::endl << std::endl;;
 	}
 }
 
-void LedgerCalculation::showOtherString(std::ostream& output)
+void LedgerCalculation::show_other_string(std::ostream& output)
 {
-	for (int i = 0; i < this->_excessStringInfo.size(); ++i)
+	for (int i = 0; i < this->excess_string_info_.size(); ++i)
 	{
-		output << _excessStringInfo[i] << std::endl << std::endl;
+		output << excess_string_info_[i] << std::endl << std::endl;
 	}
 }
 
 void LedgerCalculation::output(std::ostream& output)
 {
-	showSellUnitString(output);
-	showSpecialString(output);
+	show_sell_unit_string(output);
+	show_special_string(output);
 
-	output << "总赚：" + std::to_string(_sum) + "积分" << std::endl;
-	output << std::endl << "已处理交易次数：" << getSolveCount() << "次 未处理交易次数：" << getNoSolveCount() << "次 剩余交易记录未匹配：" << std::endl << std::endl;
+	output << "总赚：" + std::to_string(sum_) + "积分" << std::endl;
+	output << std::endl << "已处理交易次数：" << get_solve_count() << "次 未处理交易次数：" << get_no_solve_count() << "次 剩余交易记录未匹配：" << std::endl << std::endl;
 
-	showOtherString(output);
+	show_other_string(output);
 }
 
 void LedgerCalculation::output_lc_record(std::ostream& output_record)
 {
-	output_record << "已处理交易次数：" << getSolveCount()
-		<< "次 未处理交易次数：" << getNoSolveCount()
-		<< "次 剩余交易记录未匹配次数：" << _excessStringInfo.size() << "\n\n";
+	output_record << "已处理交易次数：" << get_solve_count()
+		<< "次 未处理交易次数：" << get_no_solve_count()
+		<< "次 剩余交易记录未匹配次数：" << excess_string_info_.size() << "\n\n";
 
-	output_record << "总赚：" + std::to_string(_sum) + "积分\n\n";
+	output_record << "总赚：" + std::to_string(sum_) + "积分\n\n";
 
-	showSellUnitString(output_record);
-	showSpecialString(output_record);
+	show_sell_unit_string(output_record);
+	show_special_string(output_record);
 }
 
 void LedgerCalculation::output_lc_overflow(std::ostream& output_overflow)
 {
-	showOtherString(output_overflow);
+	show_other_string(output_overflow);
 }
 
 void LedgerCalculation::input_overflow_record(std::istream& input_overflow)
@@ -219,27 +219,27 @@ void LedgerCalculation::input_overflow_record(std::istream& input_overflow)
 	std::string str;
 	while (std::getline(input_overflow, str))
 	{
-		std::pair<int, int> ans = stringEXG_FormatSolve(input_overflow, str);
+		std::pair<int, int> ans = string_exg_format_solve(input_overflow, str);
 		if (ans.first != -1 && ans.second != -1)
 		{
-			++setSolveCount();
-			this->selectionSellType(ans.first, ans.second);
+			++set_solve_count();
+			this->selection_sell_type(ans.first, ans.second);
 			continue;
 		}
 
-		ans = stringSolveAboutEXG_Format(str);
+		ans = string_solve_about_exg_format(str);
 		if (ans.first != -1 && ans.second != -1)
 		{
-			++setSolveCount();
-			this->selectionSellType(ans.first, ans.second);
+			++set_solve_count();
+			this->selection_sell_type(ans.first, ans.second);
 			continue;
 		}
 
-		auto special = specialStringSolve(str);
+		auto special = special_string_solve(str);
 		if (special.first == true)
 		{
-			++setSolveCount();
-			this->_specials.push_back(std::move(special.second));
+			++set_solve_count();
+			this->specials_.push_back(std::move(special.second));
 			continue;
 		}
 	}
@@ -247,188 +247,188 @@ void LedgerCalculation::input_overflow_record(std::istream& input_overflow)
 
 void LedgerCalculation::ledger_calculation()
 {
-	this->ledgerCalculation();
+	this->ledger_calculation_();
 }
 
-void LedgerCalculation::addSellIntegral(int integral, int transactionCoins)
+void LedgerCalculation::add_sell_integral(int integral, int transaction_coins)
 {
-	LCUnit temp(integral, transactionCoins, SellType::SellInt);
-	this->_sellInts.emplace(roundOff(temp.getProportion()), std::move(temp));
+	LCUnit temp(integral, transaction_coins, SellType::sell_int);
+	this->sell_ints_.emplace(round_off(temp.get_proportion()), std::move(temp));
 }
 
-void LedgerCalculation::addSellTransactionCoins(int integral, int transactionCoins)
+void LedgerCalculation::add_sell_transaction_coins(int integral, int transaction_coins)
 {
-	LCUnit temp(integral, transactionCoins, SellType::SellTra);
-	this->_sellTras.emplace(roundOff(temp.getProportion()), std::move(temp));
+	LCUnit temp(integral, transaction_coins, SellType::sell_tra);
+	this->sell_tras_.emplace(round_off(temp.get_proportion()), std::move(temp));
 }
 
-void LedgerCalculation::selectionSellType(int argument1, int argument2)
+void LedgerCalculation::selection_sell_type(int argument1, int argument2)
 {
 	if (argument1 >= 5000)
 	{
-		this->addSellIntegral(argument1, argument2);
+		this->add_sell_integral(argument1, argument2);
 	}
 	else
 	{
-		this->addSellTransactionCoins(argument2, argument1);
+		this->add_sell_transaction_coins(argument2, argument1);
 	}
 }
 
-static bool mergingSameProportion(std::multimap<int, LCUnit>& sellSame, SellType sellType)
+static bool merging_same_proportion(std::multimap<int, LCUnit>& sell_same, SellType sell_type)
 {
-	bool haveMerging = false;
-	auto getOne = sellSame.begin();
-	while (getOne != sellSame.end())
+	bool have_merging = false;
+	auto get_one = sell_same.begin();
+	while (get_one != sell_same.end())
 	{
-		auto range = sellSame.equal_range(getOne->first);
-		auto nextIt = range.first;
-		if (range.first == range.second || ++nextIt == range.second)
+		auto range = sell_same.equal_range(get_one->first);
+		auto next_it = range.first;
+		if (range.first == range.second || ++next_it == range.second)
 		{
-			++getOne;
+			++get_one;
 			continue;
 		}
 
-		haveMerging = true;
-		int intSum = 0;
-		int traSum = 0;
+		have_merging = true;
+		int int_sum = 0;
+		int tra_sum = 0;
 		for (auto it = range.first; it != range.second; ++it)
 		{
-			intSum += it->second.getIntegral();
-			traSum += it->second.getTransactionCoins();
+			int_sum += it->second.get_integral();
+			tra_sum += it->second.get_transaction_coins();
 		}
 
-		int ratio = getOne->first;
-		getOne = sellSame.erase(range.first, range.second);
-		sellSame.emplace(ratio, LCUnit(intSum, traSum, sellType));
+		int ratio = get_one->first;
+		get_one = sell_same.erase(range.first, range.second);
+		sell_same.emplace(ratio, LCUnit(int_sum, tra_sum, sell_type));
 	}
 
-	return haveMerging;
+	return have_merging;
 }
 
-static bool mergingSameProportionOfSellInt(std::multimap<int, LCUnit>& sellInts)
+static bool merging_same_proportion_of_sell_int(std::multimap<int, LCUnit>& sell_ints)
 {
-	return mergingSameProportion(sellInts, SellType::SellInt);
+	return merging_same_proportion(sell_ints, SellType::sell_int);
 }
 
-static bool mergingSameProportionOfSellTra(std::multimap<int, LCUnit>& sellTras)
+static bool merging_same_proportion_of_sell_tra(std::multimap<int, LCUnit>& sell_tras)
 {
-	return mergingSameProportion(sellTras, SellType::SellTra);
+	return merging_same_proportion(sell_tras, SellType::sell_tra);
 }
 
-bool LedgerCalculation::mergingSameProportionSellType()
+bool LedgerCalculation::merging_same_proportion_sell_type()
 {
-	bool sellIntMerging = mergingSameProportionOfSellInt(this->_sellInts);
-	bool sellTraMerging = mergingSameProportionOfSellTra(this->_sellTras);
-	return sellIntMerging || sellTraMerging;
+	bool sell_int_merging = merging_same_proportion_of_sell_int(this->sell_ints_);
+	bool sell_tra_merging = merging_same_proportion_of_sell_tra(this->sell_tras_);
+	return sell_int_merging || sell_tra_merging;
 }
 
-bool LedgerCalculation::calIntProfit()
+bool LedgerCalculation::cal_int_profit()
 {
-	bool calInt = false;
+	bool cal_int = false;
 
-	auto getInt = _sellInts.begin();
-	while (getInt != _sellInts.end())
+	auto get_int = sell_ints_.begin();
+	while (get_int != sell_ints_.end())
 	{
-		auto getTra = _sellTras.begin();
-		while (getTra != _sellTras.end() && getInt != _sellInts.end())
+		auto get_tra = sell_tras_.begin();
+		while (get_tra != sell_tras_.end() && get_int != sell_ints_.end())
 		{
-			std::pair<bool, std::pair<LCUnit, int>> ans = LCUnit::calIntProfit(getInt->second, getTra->second);
+			std::pair<bool, std::pair<LCUnit, int>> ans = LCUnit::cal_int_profit(get_int->second, get_tra->second);
 			if (ans.first == false)
 			{
-				++getTra;
+				++get_tra;
 				continue;
 			}
 
-			calInt = true;
-			LCUnit sellIntRemnant;
-			LCUnit sellTraRemnant;
+			cal_int = true;
+			LCUnit sell_int_remnant;
+			LCUnit sell_tra_remnant;
 
-			LCUnit ansInfo = ans.second.first;
-			if (ansInfo.getSellType() == Nothing)		// getTra 不用回到开始
+			LCUnit ans_info = ans.second.first;
+			if (ans_info.get_sell_type() == nothing)		// get_tra 不用回到开始
 			{
-				sellIntRemnant = std::move(getInt->second);
-				sellTraRemnant = std::move(getTra->second);
+				sell_int_remnant = std::move(get_int->second);
+				sell_tra_remnant = std::move(get_tra->second);
 
-				getInt = _sellInts.erase(getInt);
-				getTra = _sellTras.erase(getTra);
+				get_int = sell_ints_.erase(get_int);
+				get_tra = sell_tras_.erase(get_tra);
 			}
-			else if (ansInfo.getSellType() == SellInt)	// 说明 getInt 还有剩余
+			else if (ans_info.get_sell_type() == sell_int)	// 说明 get_int 还有剩余
 			{
-				sellIntRemnant = std::move(ansInfo);
-				sellTraRemnant = std::move(getTra->second);
+				sell_int_remnant = std::move(ans_info);
+				sell_tra_remnant = std::move(get_tra->second);
 
-				_sellTras.erase(getTra);
-				getTra = _sellTras.begin();
+				sell_tras_.erase(get_tra);
+				get_tra = sell_tras_.begin();
 			}
-			else if (ansInfo.getSellType() == SellTra)	// 说明 getTra 还有剩余
+			else if (ans_info.get_sell_type() == sell_tra)	// 说明 get_tra 还有剩余
 			{
-				sellIntRemnant = std::move(getInt->second);
-				sellTraRemnant = std::move(ansInfo);
+				sell_int_remnant = std::move(get_int->second);
+				sell_tra_remnant = std::move(ans_info);
 
-				_sellInts.erase(getInt);
-				getInt = _sellInts.begin();
+				sell_ints_.erase(get_int);
+				get_int = sell_ints_.begin();
 			}
 			else
 			{
 				assert(false);
 			}
 
-			std::pair<std::string, std::string> sellUnit = collationSellUnit(
-				sellIntRemnant.getStringInfo(),
-				sellTraRemnant.getStringInfo(),
+			std::pair<std::string, std::string> sell_unit = collation_sell_unit(
+				sell_int_remnant.get_string_info(),
+				sell_tra_remnant.get_string_info(),
 				ans.second.second,
 				"                   ");
 
-			this->_sellUnitStringInfo.emplace_back(std::move(sellUnit.first), std::move(sellUnit.second));
+			this->sell_unit_string_info_.emplace_back(std::move(sell_unit.first), std::move(sell_unit.second));
 
-			this->_sum += ans.second.second;
+			this->sum_ += ans.second.second;
 		}
 
-		if (getInt != _sellInts.end())
+		if (get_int != sell_ints_.end())
 		{
-			++getInt;
+			++get_int;
 		}
 	}
 
-	return calInt;
+	return cal_int;
 }
 
-void LedgerCalculation::calSpecial()
+void LedgerCalculation::cal_special()
 {
-	auto it = _specials.begin();
-	while (it != _specials.end())
+	auto it = specials_.begin();
+	while (it != specials_.end())
 	{
-		this->_sum -= it->getCost();
-		this->_specialStringInfo.push_back(std::move(const_cast<std::string&>(it->getStringInfo())));
-		it = _specials.erase(it);
+		this->sum_ -= it->get_cost();
+		this->special_string_info_.push_back(std::move(const_cast<std::string&>(it->get_string_info())));
+		it = specials_.erase(it);
 	}
 }
 
-void LedgerCalculation::ledgerCalculation()
+void LedgerCalculation::ledger_calculation_()
 {
-	this->mergingSameProportionSellType();
+	this->merging_same_proportion_sell_type();
 
-	while (this->calIntProfit() == true)
+	while (this->cal_int_profit() == true)
 	{
-		this->mergingSameProportionSellType();
+		this->merging_same_proportion_sell_type();
 	}
 
-	this->shiftExcessSellInfo();
-	this->calSpecial();
+	this->shift_excess_sell_info();
+	this->cal_special();
 }
 
-static void shiftExcessSell(std::multimap<int, LCUnit>& sellInfo, std::vector<std::string>& arr)
+static void shift_excess_sell(std::multimap<int, LCUnit>& sell_info, std::vector<std::string>& arr)
 {
-	auto it = sellInfo.begin();
-	while (it != sellInfo.end())
+	auto it = sell_info.begin();
+	while (it != sell_info.end())
 	{
-		arr.push_back(std::move(const_cast<std::string&>(it->second.getStringInfo())));
-		it = sellInfo.erase(it);
+		arr.push_back(std::move(const_cast<std::string&>(it->second.get_string_info())));
+		it = sell_info.erase(it);
 	}
 }
 
-void LedgerCalculation::shiftExcessSellInfo()
+void LedgerCalculation::shift_excess_sell_info()
 {
-	shiftExcessSell(_sellInts, _excessStringInfo);
-	shiftExcessSell(_sellTras, _excessStringInfo);
+	shift_excess_sell(sell_ints_, excess_string_info_);
+	shift_excess_sell(sell_tras_, excess_string_info_);
 }
