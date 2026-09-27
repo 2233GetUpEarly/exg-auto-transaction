@@ -64,6 +64,14 @@ public:
 
 	void output(std::ostream& output);
 
+	void output_lc_record(std::ostream& output_record);
+
+	void output_lc_overflow(std::ostream& output_overflow);
+
+	void input_overflow_record(std::istream& input_overflow);
+
+	void ledger_calculation();
+
 private:
 
 	std::multimap<int, LCUnit> _sellInts;

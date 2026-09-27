@@ -110,7 +110,7 @@ std::pair<bool, LCSpecial> specialStringSolve(const std::string& str)
 {
 	if (str.size() < 1 || str[0] != '-')
 	{
-		return { false, LCSpecial()};
+		return { false, LCSpecial() };
 	}
 
 	return { true, LCSpecial(-std::stoi(str)) };
@@ -145,8 +145,6 @@ void LedgerCalculation::input(std::istream& input)
 			continue;
 		}
 	}
-
-	this->ledgerCalculation();
 }
 
 void LedgerCalculation::showSellUnitString(std::ostream& output)
@@ -194,9 +192,62 @@ void LedgerCalculation::output(std::ostream& output)
 	showSpecialString(output);
 
 	output << "总赚：" + std::to_string(_sum) + "积分" << std::endl;
-	output << std::endl << "已处理交易次数：" << getSolveCount() << "次 未处理交易次数：" << getNoSolveCount() << "次 " << "剩余交易记录未匹配：" << std::endl << std::endl;
+	output << std::endl << "已处理交易次数：" << getSolveCount() << "次 未处理交易次数：" << getNoSolveCount() << "次 剩余交易记录未匹配：" << std::endl << std::endl;
 
 	showOtherString(output);
+}
+
+void LedgerCalculation::output_lc_record(std::ostream& output_record)
+{
+	output_record << "已处理交易次数：" << getSolveCount()
+		<< "次 未处理交易次数：" << getNoSolveCount()
+		<< "次 剩余交易记录未匹配次数：" << _excessStringInfo.size() << "\n\n";
+
+	output_record << "总赚：" + std::to_string(_sum) + "积分\n\n";
+
+	showSellUnitString(output_record);
+	showSpecialString(output_record);
+}
+
+void LedgerCalculation::output_lc_overflow(std::ostream& output_overflow)
+{
+	showOtherString(output_overflow);
+}
+
+void LedgerCalculation::input_overflow_record(std::istream& input_overflow)
+{
+	std::string str;
+	while (std::getline(input_overflow, str))
+	{
+		std::pair<int, int> ans = stringEXG_FormatSolve(input_overflow, str);
+		if (ans.first != -1 && ans.second != -1)
+		{
+			++setSolveCount();
+			this->selectionSellType(ans.first, ans.second);
+			continue;
+		}
+
+		ans = stringSolveAboutEXG_Format(str);
+		if (ans.first != -1 && ans.second != -1)
+		{
+			++setSolveCount();
+			this->selectionSellType(ans.first, ans.second);
+			continue;
+		}
+
+		auto special = specialStringSolve(str);
+		if (special.first == true)
+		{
+			++setSolveCount();
+			this->_specials.push_back(std::move(special.second));
+			continue;
+		}
+	}
+}
+
+void LedgerCalculation::ledger_calculation()
+{
+	this->ledgerCalculation();
 }
 
 void LedgerCalculation::addSellIntegral(int integral, int transactionCoins)

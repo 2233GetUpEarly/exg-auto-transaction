@@ -1,27 +1,21 @@
+#include <multi_arg.hpp>
 #include <ledger_calculation.hpp>
-#include <base_function.hpp>
-#include <fstream>
 #include <filesystem>
-
+#include <fstream>
 #include <windows.h>
 
-using namespace std;
-
-void test1();
-void test2();
-
-int main()
+static void ledger_calculation_no_arg()
 {
-	SetConsoleOutputCP(65001);
-	SetConsoleCP(65001);
+	LedgerCalculation lc;
 
-	//test1();
-	test2();
+	lc.input(std::cin);
+	lc.ledger_calculation();
+	lc.output(std::cout);
 
-	return 0;
+	system("pause");
 }
 
-void test2()
+static void ledger_calculation_default_file()
 {
 	std::string new_trade = "input_data.txt";
 	std::string overflow = "overflow.txt";
@@ -75,14 +69,25 @@ void test2()
 	system("pause");
 }
 
-void test1()
+MultiArg::MultiArg(int argc, char* argv[])
 {
-	LedgerCalculation testget;
+	for (int i = 0; i < argc; ++i)
+	{
+		std::cout << argv[i] << std::endl;
+	}
 
-	std::fstream file;
-
-	testget.input(std::cin);
-	testget.output(std::cout);
-
-	system("pause");
+	if (argc == 2 && strcmp(argv[1], "-f") == 0)
+	{
+		ledger_calculation_default_file();
+	}
+	else
+	{
+		ledger_calculation_no_arg();
+	}
 }
+
+MultiArg::~MultiArg()
+{
+	;
+}
+
