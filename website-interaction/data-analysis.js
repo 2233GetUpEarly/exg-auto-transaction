@@ -375,7 +375,7 @@ var testData = (function() {
             {
                 continue;
             }
-            darkrp.queue.enqueue(el);
+            extwi.global.queue.enqueue(el);
             ++count;
             console.log(`✅ 导入队列：卖积分流程->积分：${el.points}->交易币：${el.tradingCoin}`);
         }
@@ -386,7 +386,7 @@ var testData = (function() {
             {
                 continue;
             }
-            darkrp.queue.enqueue(el);
+            extwi.global.queue.enqueue(el);
             ++count;
             console.log(`✅ 导入队列：卖交易币流程->交易币：${el.tradingCoin}->积分：${el.points}`);
         }

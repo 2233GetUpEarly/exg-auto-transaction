@@ -1,41 +1,4 @@
 
-// 队列
-window.darkrp.queue = {
-    items: [],    // 存放流程和数据的数组
-
-    enqueue(element)    // 入队
-    {    
-        this.items.push(element);
-    },
-
-    dequeue()           // 出队
-    {           
-        if (this.isEmpty()) return undefined;
-        return this.items.shift();
-    },
-
-    pop(index)        // 数据移除并移动后续元素
-    {
-        this.items.splice(index, 1);
-    },
-
-    front()             // 查看队首元素
-    {             
-        if (this.isEmpty()) return undefined;
-        return this.items[0];
-    },
-
-    size()
-    {
-        return this.items.length;
-    },
-
-    isEmpty()
-    {
-        return this.items.length === 0;
-    }
-};
-
 (function() {
     'use strict';
 
@@ -45,52 +8,9 @@ window.darkrp.queue = {
     // 检测是否为移动端
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
 
-    // 是否正在执行流程
-    window.darkrp.processIsExecuting = false;
-
-    // 执行的流程类型：1. Immediately 2. QueueImport
-    window.darkrp.executionProcessType = 'Immediately';
-
     // 初始化存储位置
     if (!window.darkrp) window.darkrp = {};
     if (!window.darkrp.ui) window.darkrp.ui = {};
-    
-    // 存储输入框的值（供步骤函数读取）
-    window.darkrp.ui.tradingCoinForm = {
-        tradingCoin: '',
-        points: '',
-        pointsToTradingCoin: '',
-    };
-
-    // 存储输入框的值 - 积分
-    window.darkrp.ui.pointsForm = {
-        points: '',      // 积分数量
-        tradingCoin: '', // 交易币单价
-        pointsToTradingCoin: '',
-    };
-
-    // 存储买交易币市场交易信息
-    window.darkrp.tradingCoinMarketData = {};
-    // 存储买积分市场交易信息
-    window.darkrp.pointsMarketData = {};
-
-    // 用于保存原始函数（包装模式）
-    window.darkrp.ui._originalSellTradingCoinFill = null;
-    window.darkrp.ui._originalSellTradingCoinFillPassword = null;
-
-    // 用于保存原始函数（包装模式）- 积分
-    window.darkrp.ui._originalSellPointsFill = null;
-    window.darkrp.ui._originalSellPointsFillPassword = null;
-
-    // 用于保存买交易币市场导入变量原始函数
-    window.darkrp.ui._originalTradingCoinMarketDataFunc = null;
-    // 用于保存买交易币市场交易信息原始函数
-    window.darkrp.ui._originalTradingCoinMarketInfoFunc = null;
-
-    // 用于保存买积分市场导入变量原始函数
-    window.darkrp.ui._originalPointsMarketDataFunc = null;
-    // 用于保存买积分市场交易信息原始函数
-    window.darkrp.ui._originalPointsMarketInfoFunc = null;
 
     // 创建浮动面板
     const floatingWindow = `
@@ -121,7 +41,7 @@ window.darkrp.queue = {
         <div>
     `;
 
-    darkrp.util.appendHTML('浮动窗口HTML', 'body', floatingWindow);
+    eatwi.util.appendHTML('浮动窗口HTML', 'body', floatingWindow);
 
     const dpResizeHandle = `
         <!-- 拉伸手柄（右下角） -->
@@ -138,7 +58,7 @@ window.darkrp.queue = {
         "></div>
     `;
 
-    darkrp.util.appendHTML('浮动窗口拉伸手柄', '#dp-main-container', dpResizeHandle);
+    eatwi.util.appendHTML('浮动窗口拉伸手柄', '#dp-main-container', dpResizeHandle);
 
     const dpTitleBar = `
         <!-- 标题栏 -->
@@ -178,7 +98,7 @@ window.darkrp.queue = {
         </div>
     `;
 
-    darkrp.util.appendHTML('浮动窗口标题栏', '#dp-main-container', dpTitleBar);
+    eatwi.util.appendHTML('浮动窗口标题栏', '#dp-main-container', dpTitleBar);
 
     const dpContent = `
         <!-- 可滚动内容区 -->
@@ -191,7 +111,7 @@ window.darkrp.queue = {
         </div>
     `;
     
-    darkrp.util.appendHTML('浮动窗口内容', '#dp-main-container', dpContent);
+    eatwi.util.appendHTML('浮动窗口内容', '#dp-main-container', dpContent);
     
     const dpLog = `
         <!-- 日志区 -->
@@ -212,7 +132,7 @@ window.darkrp.queue = {
             "></div>
         </div>`;
 
-    darkrp.util.appendHTML('浮动窗口日志信息区', '#dp-content', dpLog);
+    eatwi.util.appendHTML('浮动窗口日志信息区', '#dp-content', dpLog);
 
     // 操作路径
     const dpMenuPath = `
@@ -253,7 +173,7 @@ window.darkrp.queue = {
     // 调用
     bindUpdateWithObserver();
     
-    darkrp.util.appendHTML('浮动窗口路径信息区', '#dp-content', dpMenuPath);
+    eatwi.util.appendHTML('浮动窗口路径信息区', '#dp-content', dpMenuPath);
 
     const dpFlowSelect = `
         <!-- 流程选择 -->
@@ -273,7 +193,7 @@ window.darkrp.queue = {
             </select>
         </div>`;
 
-    darkrp.util.appendHTML('浮动窗口选择流程区', '#dp-content', dpFlowSelect);
+    eatwi.util.appendHTML('浮动窗口选择流程区', '#dp-content', dpFlowSelect);
         
     const dpButton = `
         <!-- 按钮区 -->
@@ -319,7 +239,7 @@ window.darkrp.queue = {
             ">📋 执行队列</button>
         </div>`;
     
-    darkrp.util.appendHTML('浮动窗口选择流程执行区', '#dp-content', dpButton);
+    eatwi.util.appendHTML('浮动窗口选择流程执行区', '#dp-content', dpButton);
 
     // ------------------------------- 数据分析相关区域 ---------------------------------
 
@@ -352,11 +272,11 @@ window.darkrp.queue = {
                 </table>
             </div>
         </div>`;
-    darkrp.util.appendHTML('浮动窗口数据分析信息区', '#dp-content', dpDataAnalysisPanel);
+    eatwi.util.appendHTML('浮动窗口数据分析信息区', '#dp-content', dpDataAnalysisPanel);
     const titleDataAnalysisPanel = document.getElementById('title-data-analysis-panel');
     titleDataAnalysisPanel.addEventListener(
         'click', 
-        () => darkrp.util.togglePanel(
+        () => eatwi.util.togglePanel(
             'data-analysis-panel',
             'title-data-analysis-panel',
             '🔍 数据分析结果 ▼',
@@ -393,11 +313,11 @@ window.darkrp.queue = {
                 </table>
             </div>
         </div>`;
-    darkrp.util.appendHTML('浮动窗口队列信息区', '#dp-content', dpQueuePanel);
+    eatwi.util.appendHTML('浮动窗口队列信息区', '#dp-content', dpQueuePanel);
     const titleQueuePanel = document.getElementById('title-queue-panel');
     titleQueuePanel.addEventListener(
         'click', 
-        () => darkrp.util.togglePanel(
+        () => eatwi.util.togglePanel(
             'queue-panel',
             'title-queue-panel',
             '📋 队列流程 ▼',
@@ -408,38 +328,23 @@ window.darkrp.queue = {
     refreshQueueButton.addEventListener(
         'click', 
         () => {
-            // var queuePanel = document.getElementById('queue-panel');
-            // var queueInnerHTML = darkrp.queue.items.length <= 0 ? '空' : '';
-            // for (var i = 0; i < darkrp.queue.items.length; ++i)
-            // {
-            //     queueInnerHTML += '>' + i + '<';
-            //     queueInnerHTML += '>' + darkrp.queue.items[i].flowName + '<';
-            //     if (darkrp.queue.items[i].flowName == '卖交易币流程' || darkrp.queue.items[i].flowName == '卖积分流程')
-            //     {
-            //         queueInnerHTML += '>' + darkrp.queue.items[i].points + '<';
-            //         queueInnerHTML += '>' + darkrp.queue.items[i].tradingCoin + '<';
-            //     }
-            //     queueInnerHTML += '<br/>';
-            // }
-            // queuePanel.innerHTML = queueInnerHTML;
-
             // 前端显示
             var queueTablePanel = document.getElementById('queue-table-body');
             var queueTableInnerHTML = '';
-            if (darkrp.queue.items.length <= 0)
+            if (eatwi.global.queue.getItems().length <= 0)
             {
                 queueTableInnerHTML += '空';
             }
 
-            for (var i = 0; i < darkrp.queue.items.length; ++i)
+            for (var i = 0; i < eatwi.global.queue.getItems().length; ++i)
             {
                 queueTableInnerHTML += `<tr><td id="dqi-${i}">${i}</td>`;
 
-                var contentString = darkrp.queue.items[i].flowName + ' | ';
-                if (darkrp.queue.items[i].flowName == '卖交易币流程' || darkrp.queue.items[i].flowName == '卖积分流程')
+                var contentString = eatwi.global.queue.getItems()[i].flowName + ' | ';
+                if (eatwi.global.queue.getItems()[i].flowName == '卖交易币流程' || eatwi.global.queue.getItems()[i].flowName == '卖积分流程')
                 {
-                    contentString += darkrp.queue.items[i].points + ' | ';
-                    contentString += darkrp.queue.items[i].tradingCoin;
+                    contentString += eatwi.global.queue.getItems()[i].points + ' | ';
+                    contentString += eatwi.global.queue.getItems()[i].tradingCoin;
                 }
                 queueTableInnerHTML += `<td>${contentString}</td>`;
 
@@ -478,7 +383,7 @@ window.darkrp.queue = {
             {
                 if (type === 'dqi')
                 {
-                    darkrp.queue.pop(index);
+                    eatwi.global.queue.pop(index);
                     console.log('删除 dqi 数组元素下标:', index);
                 }
                 else
@@ -580,12 +485,12 @@ window.darkrp.queue = {
                 | 密码已填
             </div>
         </div>`;
-    darkrp.util.appendHTML('浮动窗口交易币信息区', '#dp-content', dpTradingParams);
+    eatwi.util.appendHTML('浮动窗口交易币信息区', '#dp-content', dpTradingParams);
 
     const titleInputTradingPanel = document.getElementById('title-input-trading-panel');
     titleInputTradingPanel.addEventListener(
         'click', 
-        () => darkrp.util.togglePanel(
+        () => eatwi.util.togglePanel(
             'input-trading-panel',
             'title-input-trading-panel',
             '💰 卖交易币参数 ▼',
@@ -610,11 +515,11 @@ window.darkrp.queue = {
             </div>
         </div>`;
 
-    darkrp.util.appendHTML('浮动窗口交易币交易信息区', '#dp-content', dpTradingCoinMarket);
+    eatwi.util.appendHTML('浮动窗口交易币交易信息区', '#dp-content', dpTradingCoinMarket);
     const titleTradingCoinMarketPanel = document.getElementById('title-trading-coin-market-panel');
     titleTradingCoinMarketPanel.addEventListener(
     'click', 
-    () => darkrp.util.togglePanel(
+    () => eatwi.util.togglePanel(
         'trading-coin-market-panel',
         'title-trading-coin-market-panel',
         '💰 交易币交易市场 ▼',
@@ -628,7 +533,7 @@ window.darkrp.queue = {
         </div>
     `;
 
-    darkrp.util.appendHTML('浮动窗口交易币交易信息区-正在出售的交易币展示', '#trading-coin-market-panel', dpTradingCoinMarketCurrentSale);
+    eatwi.util.appendHTML('浮动窗口交易币交易信息区-正在出售的交易币展示', '#trading-coin-market-panel', dpTradingCoinMarketCurrentSale);
 
     const dpTradingCoinMarketCurrentInfo = `
         <!-- 已经出售的前20次交易信息 -->
@@ -637,7 +542,7 @@ window.darkrp.queue = {
         </div>
     `;
 
-    darkrp.util.appendHTML('浮动窗口交易币交易信息区-前20次交易币的交易信息', '#trading-coin-market-panel', dpTradingCoinMarketCurrentInfo);
+    eatwi.util.appendHTML('浮动窗口交易币交易信息区-前20次交易币的交易信息', '#trading-coin-market-panel', dpTradingCoinMarketCurrentInfo);
 
     const dpTradingCoinMarketDateInfo = `
         <!-- 已经出售的前10天交易币交易信息 -->
@@ -646,7 +551,7 @@ window.darkrp.queue = {
         </div>
     `;
 
-    darkrp.util.appendHTML('浮动窗口积分交易信息区-前10天交易币的交易信息', '#trading-coin-market-panel', dpTradingCoinMarketDateInfo);
+    eatwi.util.appendHTML('浮动窗口积分交易信息区-前10天交易币的交易信息', '#trading-coin-market-panel', dpTradingCoinMarketDateInfo);
     
     
     // ----------------------------- 卖积分相关区域 --------------------------------------
@@ -735,12 +640,12 @@ window.darkrp.queue = {
                 | 密码已填
             </div>
         </div>`;
-    darkrp.util.appendHTML('浮动窗口积分信息区', '#dp-content', dpPointsParams);
+    eatwi.util.appendHTML('浮动窗口积分信息区', '#dp-content', dpPointsParams);
 
     const titleInputPointsPanel = document.getElementById('title-input-points-panel');
     titleInputPointsPanel.addEventListener(
     'click', 
-    () => darkrp.util.togglePanel(
+    () => eatwi.util.togglePanel(
         'input-points-panel',
         'title-input-points-panel',
         '💎 卖积分参数 ▼',
@@ -767,11 +672,11 @@ window.darkrp.queue = {
             </div>
         </div>`;
 
-    darkrp.util.appendHTML('浮动窗口积分交易信息区', '#dp-content', dpPointsMarket);
+    eatwi.util.appendHTML('浮动窗口积分交易信息区', '#dp-content', dpPointsMarket);
     const titleInputMarketPanel = document.getElementById('title-points-market-panel');
     titleInputMarketPanel.addEventListener(
     'click', 
-    () => darkrp.util.togglePanel(
+    () => eatwi.util.togglePanel(
         'points-market-panel',
         'title-points-market-panel',
         '💎 积分交易市场 ▼',
@@ -785,7 +690,7 @@ window.darkrp.queue = {
         </div>
     `;
 
-    darkrp.util.appendHTML('浮动窗口积分交易信息区-正在出售的积分展示', '#points-market-panel', dpPointsMarketCurrentSale);
+    eatwi.util.appendHTML('浮动窗口积分交易信息区-正在出售的积分展示', '#points-market-panel', dpPointsMarketCurrentSale);
 
     const dpPointsMarketCurrentInfo = `
         <!-- 已经出售的前20次交易信息 -->
@@ -794,7 +699,7 @@ window.darkrp.queue = {
         </div>
     `;
 
-    darkrp.util.appendHTML('浮动窗口积分交易信息区-前20次积分的交易信息', '#points-market-panel', dpPointsMarketCurrentInfo);
+    eatwi.util.appendHTML('浮动窗口积分交易信息区-前20次积分的交易信息', '#points-market-panel', dpPointsMarketCurrentInfo);
     
     const dpPointsMarketDateInfo = `
         <!-- 已经出售的前10天积分交易信息 -->
@@ -803,7 +708,7 @@ window.darkrp.queue = {
         </div>
     `;
 
-    darkrp.util.appendHTML('浮动窗口积分交易信息区-前10天积分的交易信息', '#points-market-panel', dpPointsMarketDateInfo);
+    eatwi.util.appendHTML('浮动窗口积分交易信息区-前10天积分的交易信息', '#points-market-panel', dpPointsMarketDateInfo);
     
     const dpStep = `
         <!-- 快捷步骤区（滚动） -->
@@ -818,12 +723,12 @@ window.darkrp.queue = {
             "></div>
         </div>`;
 
-    darkrp.util.appendHTML('浮动窗口快速步骤信息区', '#dp-content', dpStep);
+    eatwi.util.appendHTML('浮动窗口快速步骤信息区', '#dp-content', dpStep);
 
     const titleStepButtons = document.getElementById('title-step-buttons');
     titleStepButtons.addEventListener(
     'click', 
-    () => darkrp.util.togglePanel(
+    () => eatwi.util.togglePanel(
         'dp-step-buttons',
         'title-step-buttons',
         '⚡ 快捷步骤 ▼',
@@ -857,7 +762,7 @@ window.darkrp.queue = {
     enqueueInputTrading.addEventListener(
         'click',
         () => { 
-            darkrp.queue.enqueue({
+            eatwi.global.queue.enqueue({
                 flowName: '卖交易币流程',
                 points: pointsPriceInput.value,
                 tradingCoin: tradingCoinInput.value
@@ -878,7 +783,7 @@ window.darkrp.queue = {
     enqueueInputPoints.addEventListener(
         'click',
         () => { 
-            darkrp.queue.enqueue({
+            eatwi.global.queue.enqueue({
             flowName: '卖积分流程',
             points: pointsAmountInput.value,
             tradingCoin: tradingcoinPriceInput.value
@@ -914,14 +819,14 @@ window.darkrp.queue = {
         pointsToTradingCoinDisplay1.textContent = pointsToTradingCoin || '0';
         
         // 更新全局存储
-        window.darkrp.ui.tradingCoinForm = {
+        window.eatwi.global.ui.tradingCoinForm = {
             tradingCoin: tradingCoin || '0',
             points: points || '0',
             pointsToTradingCoin: pointsToTradingCoin || '0',
         };
         
         // 可选：在控制台输出更新日志（调试用）
-        // console.log('📝 UI参数已更新:', window.darkrp.ui.tradingCoinForm);
+        // console.log('📝 UI参数已更新:', window.eatwi.global.ui.tradingCoinForm);
     }
     
     // 监听输入框变化
@@ -944,7 +849,7 @@ window.darkrp.queue = {
         pointsToTradingCoinDisplay2.textContent = pointsToTradingCoin || '0';
         
         // 更新全局存储
-        window.darkrp.ui.pointsForm = {
+        window.eatwi.global.ui.pointsForm = {
             points: pointsAmount || '0',
             tradingCoin: tradingcoinPrice || '0',
             pointsToTradingCoin: pointsToTradingCoin || '0',
@@ -962,26 +867,31 @@ window.darkrp.queue = {
     // 采用包装模式，保留原始函数，避免覆盖丢失
     function patchStepFunctions()
     {
-        if (!window.darkrp || !window.darkrp.trigger || !window.darkrp.trigger._steps) {
+        if (!window.eatwi.global.trigger)
+        {
+            if (window.eatwi.DEBUG)
+            {
+                console.error('触发器 trigger 未定义');
+            }
             return false;
         }
         
-        const steps = window.darkrp.trigger._steps;
+        const steps = window.eatwi.global.trigger.getSteps();
         
         // 保存原始函数引用（如果还没保存过）
-        if (!window.darkrp.ui._originalSellTradingCoinFill) {
-            window.darkrp.ui._originalSellTradingCoinFill = steps['卖交易币填入交易币和积分'];
+        if (!window.eatwi.global.ui._originalSellTradingCoinFill) {
+            window.eatwi.global.ui._originalSellTradingCoinFill = steps['卖交易币填入交易币和积分'];
         }
-        if (!window.darkrp.ui._originalSellTradingCoinFillPassword) {
-            window.darkrp.ui._originalSellTradingCoinFillPassword = steps['卖交易币填入密码'];
+        if (!window.eatwi.global.ui._originalSellTradingCoinFillPassword) {
+            window.eatwi.global.ui._originalSellTradingCoinFillPassword = steps['卖交易币填入密码'];
         }
-        if (!window.darkrp.ui._originalTradingCoinMarketDataFunc)
+        if (!window.eatwi.global.ui._originalTradingCoinMarketDataFunc)
         {
-            window.darkrp.ui._originalTradingCoinMarketDataFunc = steps['买交易币市场交易信息导入变量'];
+            window.eatwi.global.ui._originalTradingCoinMarketDataFunc = steps['买交易币市场交易信息导入变量'];
         }
-        if (!window.darkrp.ui._originalTradingCoinMarketInfoFunc)
+        if (!window.eatwi.global.ui._originalTradingCoinMarketInfoFunc)
         {
-            window.darkrp.ui._originalTradingCoinMarketInfoFunc = steps['买交易币市场交易信息2'];
+            window.eatwi.global.ui._originalTradingCoinMarketInfoFunc = steps['买交易币市场交易信息2'];
         }
         
         // 包装：卖交易币填入交易币和积分：
@@ -989,22 +899,22 @@ window.darkrp.queue = {
         // 2. 从队列读取参数后调用原始函数
         steps['卖交易币填入交易币和积分'] = async function()
         {
-            // const params = window.darkrp.ui.tradingCoinForm;
+            // const params = window.eatwi.global.ui.tradingCoinForm;
             // const tradingCoin = params.tradingCoin;
             // const points = params.points;
 
             // 执行的流程类型：1. Immediately 2. QueueImport
             var params = null;
             var fromName = null;
-            if (darkrp.executionProcessType == 'Immediately')
+            if (eatwi.global.executionProcessType == 'Immediately')
             {
-                params = window.darkrp.ui.tradingCoinForm;
+                params = window.eatwi.global.ui.tradingCoinForm;
                 fromName = 'UI';
             }
             else
             {
-                params = darkrp.queue.front();
-                if (darkrp.queue.isEmpty() == true || params == undefined)
+                params = eatwi.global.queue.front();
+                if (eatwi.global.queue.isEmpty() == true || params == undefined)
                 {
                     addLog('❌ 队列为空', true);
                     return;
@@ -1017,7 +927,7 @@ window.darkrp.queue = {
             addLog(`📝 从${fromName}读取参数: 交易币=${tradingCoin}, 积分单价=${points}`);
             console.log(`✅ 步骤 卖交易币填入交易币和积分(${tradingCoin}, ${points}) 执行`);
             
-            const originalFn = window.darkrp.ui._originalSellTradingCoinFill;
+            const originalFn = window.eatwi.global.ui._originalSellTradingCoinFill;
             if (originalFn)
             {
                 // 调用原始函数，传入从 UI 读取的参数
@@ -1032,14 +942,14 @@ window.darkrp.queue = {
         // 包装：卖交易币填入密码 - 从 UI 读取密码后调用原始函数
         steps['卖交易币填入密码'] = async function()
         {
-            // const password = window.darkrp.ui.tradingCoinForm.password;
-            let password = darkrp.button.获取密码();
+            // const password = window.eatwi.global.ui.tradingCoinForm.password;
+            let password = eatwi.button.获取密码();
             
             // addLog(`🔐 从UI读取密码: 已填 (长度 ${password.length})`);
             addLog(`🔐 读取密码: 已填 (长度 ${password.length})`);
             console.log(`✅ 步骤 卖交易币填入密码(${'*'.repeat(password.length)}) 执行`);
             
-            const originalFn = window.darkrp.ui._originalSellTradingCoinFillPassword;
+            const originalFn = window.eatwi.global.ui._originalSellTradingCoinFillPassword;
             if (originalFn)
             {
                 // 调用原始函数，传入从 UI 读取的密码
@@ -1055,11 +965,15 @@ window.darkrp.queue = {
         steps['买交易币市场交易信息导入变量'] = async function()
         {
             console.log(`✅ 步骤 买交易币市场交易信息导入变量包装函数 执行`);
-            const originalFn = window.darkrp.ui._originalTradingCoinMarketDataFunc;
+            if (!window.eatwi.global.tradingCoinMarketData)
+            {
+               window.eatwi.global.tradingCoinMarketData = {};
+            }
+            const originalFn = window.eatwi.global.ui._originalTradingCoinMarketDataFunc;
             if (originalFn)
             {
                 // 调用原始函数，传入的数据
-                await originalFn(window.darkrp.tradingCoinMarketData);
+                await originalFn(window.eatwi.global.tradingCoinMarketData);
             }
             else
             {
@@ -1072,11 +986,11 @@ window.darkrp.queue = {
         {
             console.log(`✅ 步骤 买交易币市场交易信息2包装函数 执行`);
             
-            const originalFn = window.darkrp.ui._originalTradingCoinMarketInfoFunc;
+            const originalFn = window.eatwi.global.ui._originalTradingCoinMarketInfoFunc;
             if (originalFn)
             {
                 // 调用原始函数，传入保存的数据
-                await originalFn(window.darkrp.tradingCoinMarketData);
+                await originalFn(window.eatwi.global.tradingCoinMarketData);
             }
             else
             {
@@ -1086,61 +1000,61 @@ window.darkrp.queue = {
         
         // 可选：提供一个恢复原始函数的方法
         window.darkrp.ui.restoreOriginalSteps = function() {
-            if (window.darkrp.ui._originalSellTradingCoinFill) {
-                steps['卖交易币填入交易币和积分'] = window.darkrp.ui._originalSellTradingCoinFill;
+            if (window.eatwi.global.ui._originalSellTradingCoinFill) {
+                steps['卖交易币填入交易币和积分'] = window.eatwi.global.ui._originalSellTradingCoinFill;
             }
-            if (window.darkrp.ui._originalSellTradingCoinFillPassword) {
-                steps['卖交易币填入密码'] = window.darkrp.ui._originalSellTradingCoinFillPassword;
+            if (window.eatwi.global.ui._originalSellTradingCoinFillPassword) {
+                steps['卖交易币填入密码'] = window.eatwi.global.ui._originalSellTradingCoinFillPassword;
             }
-            if (window.darkrp.ui._originalTradingCoinMarketDataFunc)
+            if (window.eatwi.global.ui._originalTradingCoinMarketDataFunc)
             {
-                steps['买交易币市场交易信息导入变量'] = window.darkrp.ui._originalTradingCoinMarketDataFunc;
+                steps['买交易币市场交易信息导入变量'] = window.eatwi.global.ui._originalTradingCoinMarketDataFunc;
             }
-            if (window.darkrp.ui._originalTradingCoinMarketInfoFunc)
+            if (window.eatwi.global.ui._originalTradingCoinMarketInfoFunc)
             {
-                steps['买交易币市场交易信息2'] = window.darkrp.ui._originalTradingCoinMarketInfoFunc;
+                steps['买交易币市场交易信息2'] = window.eatwi.global.ui._originalTradingCoinMarketInfoFunc;
             }
             addLog('🔁 已恢复原始步骤函数');
         };
 
         // 包装：卖积分填入积分和交易币
-        if (!window.darkrp.ui._originalSellPointsFill && steps['卖积分填入积分和交易币']) {
-            window.darkrp.ui._originalSellPointsFill = steps['卖积分填入积分和交易币'];
+        if (!window.eatwi.global.ui._originalSellPointsFill && steps['卖积分填入积分和交易币']) {
+            window.eatwi.global.ui._originalSellPointsFill = steps['卖积分填入积分和交易币'];
         }
         // 包装：卖积分填入密码
-        if (!window.darkrp.ui._originalSellPointsFillPassword && steps['卖积分填入密码'])
+        if (!window.eatwi.global.ui._originalSellPointsFillPassword && steps['卖积分填入密码'])
         {
-            window.darkrp.ui._originalSellPointsFillPassword = steps['卖积分填入密码'];
+            window.eatwi.global.ui._originalSellPointsFillPassword = steps['卖积分填入密码'];
         }
-        if (!window.darkrp.ui._originalPointsMarketDataFunc)
+        if (!window.eatwi.global.ui._originalPointsMarketDataFunc)
         {
-            window.darkrp.ui._originalPointsMarketDataFunc = steps['买积分市场交易信息导入变量'];
+            window.eatwi.global.ui._originalPointsMarketDataFunc = steps['买积分市场交易信息导入变量'];
         }
-        if (!window.darkrp.ui._originalPointsMarketInfoFunc)
+        if (!window.eatwi.global.ui._originalPointsMarketInfoFunc)
         {
-            window.darkrp.ui._originalPointsMarketInfoFunc = steps['买积分市场交易信息2'];
+            window.eatwi.global.ui._originalPointsMarketInfoFunc = steps['买积分市场交易信息2'];
         }
 
         if (steps['卖积分填入积分和交易币'])
         {
             steps['卖积分填入积分和交易币'] = async function()
             {
-                // const params = window.darkrp.ui.pointsForm;
+                // const params = window.eatwi.global.ui.pointsForm;
                 // const points = params.points;
                 // const tradingCoin = params.tradingCoin;
 
                 // 执行的流程类型：1. Immediately 2. QueueImport
                 var params = null;
                 var fromName = null;
-                if (darkrp.executionProcessType == 'Immediately')
+                if (eatwi.global.executionProcessType == 'Immediately')
                 {
-                    params = window.darkrp.ui.pointsForm;
+                    params = window.eatwi.global.ui.pointsForm;
                     fromName = 'UI';
                 }
                 else
                 {
-                    params = darkrp.queue.front();
-                    if (darkrp.queue.isEmpty() == true || params == undefined)
+                    params = eatwi.global.queue.front();
+                    if (eatwi.global.queue.isEmpty() == true || params == undefined)
                     {
                         addLog('❌ 队列为空', true);
                         return;
@@ -1152,7 +1066,7 @@ window.darkrp.queue = {
                 
                 addLog(`📝 从${fromName}读取积分参数: 积分数量=${points}, 交易币单价=${tradingCoin}`);
                 
-                const originalFn = window.darkrp.ui._originalSellPointsFill;
+                const originalFn = window.eatwi.global.ui._originalSellPointsFill;
                 if (originalFn)
                 {
                     await originalFn(points, tradingCoin);
@@ -1169,12 +1083,12 @@ window.darkrp.queue = {
         {
             steps['卖积分填入密码'] = async function()
             {
-                // const password = window.darkrp.ui.pointsForm.password;
-                var password = darkrp.button.获取密码();
+                // const password = window.eatwi.global.ui.pointsForm.password;
+                var password = eatwi.button.获取密码();
                 
                 addLog(`🔐 读取密码: 已填 (长度 ${password.length})`);
                 
-                const originalFn = window.darkrp.ui._originalSellPointsFillPassword;
+                const originalFn = window.eatwi.global.ui._originalSellPointsFillPassword;
                 if (originalFn)
                 {
                     await originalFn(password);
@@ -1190,11 +1104,11 @@ window.darkrp.queue = {
         steps['买积分市场交易信息导入变量'] = async function()
         {
             console.log(`✅ 步骤 买积分市场交易信息导入变量包装函数 执行`);
-            const originalFn = window.darkrp.ui._originalPointsMarketDataFunc;
+            const originalFn = window.eatwi.global.ui._originalPointsMarketDataFunc;
             if (originalFn)
             {
                 // 调用原始函数，传入的数据
-                await originalFn(window.darkrp.pointsMarketData);
+                await originalFn(window.eatwi.global.pointsMarketData);
             }
             else
             {
@@ -1207,11 +1121,11 @@ window.darkrp.queue = {
         {
             console.log(`✅ 步骤 买积分市场交易信息2包装函数 执行`);
             
-            const originalFn = window.darkrp.ui._originalPointsMarketInfoFunc;
+            const originalFn = window.eatwi.global.ui._originalPointsMarketInfoFunc;
             if (originalFn)
             {
                 // 调用原始函数，传入保存的数据
-                await originalFn(window.darkrp.pointsMarketData);
+                await originalFn(window.eatwi.global.pointsMarketData);
             }
             else
             {
@@ -1226,9 +1140,13 @@ window.darkrp.queue = {
     // 动态加载流程选项
     function loadFlowOptions()
     {
-        if (!window.darkrp || !window.darkrp.trigger || !window.darkrp.trigger._flows) return false;
+        if (!window.eatwi || !window.eatwi.global || !window.eatwi.global.trigger)
+        {
+            console.error('动态加载流程选项失败');
+            return false;
+        }
         
-        const flows = window.darkrp.trigger._flows;
+        const flows = window.eatwi.global.trigger.getFlows();
         flowSelect.innerHTML = '<option value="">-- 选择流程 --</option>';
         Object.keys(flows).forEach(name => {
             const option = document.createElement('option');
@@ -1242,9 +1160,16 @@ window.darkrp.queue = {
     // 动态加载快捷步骤按钮
     function loadStepButtons()
     {
-        if (!window.darkrp || !window.darkrp.trigger || !window.darkrp.trigger._steps) return;
+        if (!window.eatwi.global.trigger)
+        {
+            if (window.eatwi.DEBUG)
+            {
+                console.error('window.eatwi.global.trigger 未加载');
+            }
+            return;
+        }
         
-        const steps = window.darkrp.trigger._steps;
+        const steps = window.eatwi.global.trigger.getSteps();
         const stepNames = Object.keys(steps);
         const displaySteps = stepNames.slice(0, 12);
         
@@ -1294,12 +1219,17 @@ window.darkrp.queue = {
     // 执行单个步骤
     async function executeStep(stepName)
     {
-        if (!window.darkrp || !window.darkrp.trigger) {
-            addLog('❌ darkrp.trigger 未加载', true);
+        if (!window.eatwi.global.trigger)
+        {
+            addLog('❌ global.trigger 未加载', true);
+            if (window.eatwi.DEBUG)
+            {
+                console.error('executeStep() 获取 window.eatwi.global.trigger 失败');
+            }
             return;
         }
         
-        const stepFn = window.darkrp.trigger._steps[stepName];
+        const stepFn = window.eatwi.global.trigger._steps[stepName];
         if (!stepFn) {
             addLog(`❌ 步骤不存在: ${stepName}`, true);
             return;
@@ -1514,29 +1444,30 @@ window.darkrp.queue = {
             return;
         }
         
-        if (!window.darkrp || !window.darkrp.trigger) {
-            addLog('❌ darkrp.trigger 未加载', true);
+        if (!window.eatwi.global.trigger)
+        {
+            addLog('❌ eatwi.global.trigger 未加载', true);
             return;
         }
 
-        if (window.darkrp.processIsExecuting == true)
+        if (window.eatwi.global.processIsExecuting == true)
         {
             addLog('❌ 正在执行流程，请等待', true);
             return;
         }
-        window.darkrp.processIsExecuting = true;
-        window.darkrp.executionProcessType = 'Immediately';
+        window.eatwi.global.processIsExecuting = true;
+        window.eatwi.global.executionProcessType = 'Immediately';
         
         // 执行前确保步骤函数已被 patch
         patchStepFunctions();
         
         // 显示当前参数
-        addLog(`📋 当前参数: 交易币=${window.darkrp.ui.tradingCoinForm.tradingCoin}, 积分=${window.darkrp.ui.tradingCoinForm.points}, 密码已填`);
+        addLog(`📋 当前参数: 交易币=${window.eatwi.global.ui.tradingCoinForm.tradingCoin}, 积分=${window.eatwi.global.ui.tradingCoinForm.points}, 密码已填`);
         
         addLog(`🚀 开始执行流程: ${flowName}`);
         try
         {
-            await window.darkrp.trigger.run(flowName);
+            await window.eatwi.global.trigger.run(flowName);
             addLog(`✅ 流程执行完成: ${flowName}`);
         }
         catch(e)
@@ -1544,7 +1475,7 @@ window.darkrp.queue = {
             addLog(`❌ 执行出错: ${e.message}`, true);
         }
 
-        window.darkrp.processIsExecuting = false;
+        window.eatwi.global.processIsExecuting = false;
     });
 
     // 将流程入队列
@@ -1555,8 +1486,8 @@ window.darkrp.queue = {
             return;
         }
         
-        if (!window.darkrp || !window.darkrp.trigger) {
-            addLog('❌ darkrp.trigger 未加载', true);
+        if (!window.eatwi.global.trigger) {
+            addLog('❌ eatwi.global.trigger 未加载', true);
             return;
         }
 
@@ -1571,7 +1502,7 @@ window.darkrp.queue = {
         }
         else
         {
-            darkrp.queue.enqueue({
+            eatwi.global.queue.enqueue({
                 flowName: flowSelect.value,
             });
             addLog(`✅ 导入队列：${flowName}`);
@@ -1580,40 +1511,40 @@ window.darkrp.queue = {
     
     // 执行队列
     queueBtn.addEventListener('click', async () => {
-        if (darkrp.queue.size() <= 0)
+        if (window.eatwi.global.queue.size() <= 0)
         {
             addLog('❌ 队列为空', true);
             return;
         }
         
-        if (!window.darkrp || !window.darkrp.trigger) {
-            addLog('❌ darkrp.trigger 未加载', true);
+        if (!window.eatwi || !window.eatwi.global.trigger) {
+            addLog('❌ eatwi.global.trigger 未加载', true);
             return;
         }
 
-        if (window.darkrp.processIsExecuting == true)
+        if (window.eatwi.global.processIsExecuting == true)
         {
             addLog('❌ 正在执行流程，请等待', true);
             return;
         }
-        window.darkrp.processIsExecuting = true;
-        window.darkrp.executionProcessType = 'QueueImport';
+        window.eatwi.global.processIsExecuting = true;
+        window.eatwi.global.executionProcessType = 'QueueImport';
         
         // 执行前确保步骤函数已被 patch
         patchStepFunctions();
         
         // 显示当前参数
-        addLog(`📋 当前参数: 交易币=${window.darkrp.ui.tradingCoinForm.tradingCoin}, 积分=${window.darkrp.ui.tradingCoinForm.points}, 密码已填`);
+        addLog(`📋 当前参数: 交易币=${window.eatwi.global.ui.tradingCoinForm.tradingCoin}, 积分=${window.eatwi.global.ui.tradingCoinForm.points}, 密码已填`);
         try
         {
             var count = 0;
-            while (darkrp.queue.size() > 0)
+            while (eatwi.global.queue.size() > 0)
             {
-                const queueEl = darkrp.queue.front();
-                await window.darkrp.trigger.run(queueEl.flowName);
+                const queueEl = eatwi.global.queue.front();
+                await window.eatwi.global.trigger.run(queueEl.flowName);
                 addLog(`✅ 队列流程 ${queueEl.flowName} 已处理完毕`);
                 ++count;
-                darkrp.queue.dequeue();
+                eatwi.global.queue.dequeue();
             }
             addLog(`✅ 队列所有流程已处理完毕，执行流程的个数 ${count}`);
         }
@@ -1622,13 +1553,13 @@ window.darkrp.queue = {
             addLog(`❌ 执行出错: ${e.message}`, true);
         }
 
-        window.darkrp.processIsExecuting = false;
+        window.eatwi.global.processIsExecuting = false;
     });
 
     // 等待 darkrp 加载并更新UI
     let checkCount = 0;
     function checkAndUpdate() {
-        if (window.darkrp && window.darkrp.trigger) {
+        if (window.eatwi.global && window.eatwi.global.trigger) {
             addLog('✅ EXG 游戏菜单控制台 已就绪');
             loadFlowOptions();
             loadStepButtons();
