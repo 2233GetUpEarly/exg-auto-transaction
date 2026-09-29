@@ -55,4 +55,7 @@
     // 用于保存买积分市场交易信息原始函数
     window.eatwi.global.ui._originalPointsMarketInfoFunc = null;
 
+    // 检测是否为移动端
+    window.eatwi.global.ui.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+
 })();

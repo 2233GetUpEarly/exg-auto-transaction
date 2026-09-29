@@ -3,11 +3,5 @@
 
     // Your code here...
 
-    // ========== 暴露到全局 ==========
-    window.darkrp = window.darkrp || {};
-    window.eatwi.button = button;
-
-    console.log('✅ DarkRP 自动化助手已加载！使用 window.darkrp 调用');
-
-
+    console.log('✅ exg 自动交易脚本已加载！');
 })();

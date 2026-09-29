@@ -1,3 +1,5 @@
+window.darkrp = window.darkrp || {};
+window.darkrp.dataAnalysis = window.darkrp.dataAnalysis || {};
 
 window.darkrp.dataAnalysis = {
     resultsPointsSale: [],          // 存放积分销售分析结果的数组
