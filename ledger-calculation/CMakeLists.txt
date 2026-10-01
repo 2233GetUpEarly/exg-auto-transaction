@@ -1,7 +1,10 @@
 
-file(GLOB SRC_LIST "src/*.cpp")
 
-add_library(ledger_calculation_lib ${SRC_LIST})
+add_library(ledger_calculation_lib
+	src/common.cpp
+	src/ledger_calculation.cpp
+	src/multi_arg.cpp
+)
 target_include_directories(ledger_calculation_lib
 	PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/"
 )
