@@ -2,7 +2,11 @@
 #include <ledger_calculation.hpp>
 #include <filesystem>
 #include <fstream>
+#include <cstring>
+
+#ifdef _WIN32
 #include <windows.h>
+#endif
 
 static void ledger_calculation_no_arg()
 {
@@ -12,7 +16,9 @@ static void ledger_calculation_no_arg()
 	lc.ledger_calculation();
 	lc.output(std::cout);
 
+#ifdef _WIN32
 	system("pause");
+#endif
 }
 
 static void ledger_calculation_default_file()
@@ -66,7 +72,9 @@ static void ledger_calculation_default_file()
 	lc.output_lc_record(std::cout);
 	lc.output_lc_overflow(overflow_file);
 
+#ifdef _WIN32
 	system("pause");
+#endif
 }
 
 MultiArg::MultiArg(int argc, char* argv[])
