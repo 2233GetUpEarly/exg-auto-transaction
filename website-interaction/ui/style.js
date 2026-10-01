@@ -378,6 +378,17 @@
             max-height: ${eatwi.global.ui.isMobile ? '160px' : 'none'};
             overflow-y: ${eatwi.global.ui.isMobile ? 'auto' : 'visible'};
         }
+
+        #refresh-queue-button
+        {
+            cursor: pointer;
+            flex: 1;
+            background: #ff3700;
+            color: white;
+            border: none;
+            border-radius: ${eatwi.global.ui.isMobile ? '10px' : '6px'};
+            font-size: ${eatwi.global.ui.isMobile ? '16px' : '13px'};
+        }
     `;
 
     window.eatwi = window.eatwi || {};

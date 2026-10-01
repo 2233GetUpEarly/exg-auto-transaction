@@ -69,8 +69,8 @@
             <div id="title-queue-panel">
                 📋 队列流程 ▶
             </div>
-            <div id="refresh-queue-button" style="cursor: pointer; width: 50%;">
-                刷新队列
+            <div style="width: 50%;">
+            <button id="refresh-queue-button" class="btn-red">刷新队列</button>
             </div>
             
             <div id="queue-panel" style="display: none">
@@ -108,7 +108,7 @@
                     💎 积分数量
                 </label>
                 <input type="number" id="dp-points-price" placeholder="例: 500" value="500" step="1">
-                <div style="color: #888; font-size: 10px; margin-top: 4px;">填入要卖多少积分</div>
+                <div style="color: #888; font-size: 10px; margin-top: 4px;">填入要多少积分才能买你的交易币</div>
             </div>
             <span id="enqueue-input-trading">买交易币参数输入到队列</span>
             </div>
@@ -187,7 +187,7 @@
                     🪙 交易币数量
                 </label>
                 <input type="number" id="dp-tradingcoin-price" placeholder="例: 10" value="10" step="1">
-                <div style="color: #888; font-size: 10px; margin-top: 4px;">填入要卖多少交易币</div>
+                <div style="color: #888; font-size: 10px; margin-top: 4px;">填入要多少交易币才能买你的积分</div>
             </div>
             <span id="enqueue-input-points">买积分参数输入到队列</span>
             </div>
