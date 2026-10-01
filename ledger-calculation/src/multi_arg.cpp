@@ -79,10 +79,12 @@ static void ledger_calculation_default_file()
 
 MultiArg::MultiArg(int argc, char* argv[])
 {
+#ifdef _DEBUG
 	for (int i = 0; i < argc; ++i)
 	{
 		std::cout << argv[i] << std::endl;
 	}
+#endif
 
 	if (argc == 2 && strcmp(argv[1], "-f") == 0)
 	{

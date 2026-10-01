@@ -14,7 +14,10 @@ int main(int argc, char* argv[])
 	SetConsoleCP(65001);
 #endif
 
+#ifdef _DEBUG
 	std::cout << argc << std::endl;
+#endif
+
 	MultiArg ma(argc, argv);
 
 	return 0;
