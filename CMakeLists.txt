@@ -12,3 +12,4 @@ endif()
 
 add_subdirectory(website-interaction)
 add_subdirectory(ledger-calculation)
+add_subdirectory(local-server)
