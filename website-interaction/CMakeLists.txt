@@ -1,14 +1,31 @@
 
 set(JS_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/tampermonkey-user-script.js"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/core/debug.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/core/queue.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/core/flow-trigger.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/core/global.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/core/util.js"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/interaction/button.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/interaction/step.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/interaction/flow.js"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/style.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/html.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/load.js"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/interaction/panel.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/interaction/logger.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/interaction/trading-coin.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/interaction/points.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/interaction/steps.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/interaction/flow-select.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/interaction/queue.js"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/verification-code/ddddocr-helper.js"
-    "${CMAKE_CURRENT_SOURCE_DIR}/trigger.js"
-    "${CMAKE_CURRENT_SOURCE_DIR}/util.js"
-    "${CMAKE_CURRENT_SOURCE_DIR}/interactive-button.js"
-    "${CMAKE_CURRENT_SOURCE_DIR}/initialization-step.js"
-    "${CMAKE_CURRENT_SOURCE_DIR}/initialization-flow.js"
-    "${CMAKE_CURRENT_SOURCE_DIR}/floating-window.js"
-    "${CMAKE_CURRENT_SOURCE_DIR}/data-analysis.js"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/main.js"
 )
 set(JS_OUTPUT_FILE "${CMAKE_CURRENT_BINARY_DIR}/website_interaction.js")
