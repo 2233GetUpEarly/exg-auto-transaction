@@ -16,7 +16,7 @@
     const dpTitleBar = `
         <!-- 标题栏 -->
         <div id="dp-title-bar">
-            <span style="font-weight: 500;">EXG 自动交易币脚本</span>
+            <span style="font-weight: 500;">EXG 自动交易脚本</span>
             <div style="display: flex; gap: ${eatwi.global.ui.isMobile ? '16px' : '8px'}">
                 <button id="dp-minimize">−</button>
                 <button id="dp-close">✕</button>
