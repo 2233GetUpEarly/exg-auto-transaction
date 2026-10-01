@@ -46,15 +46,7 @@
     eatwi.util.appendHTML('浮动窗口选择流程区', '#dp-content', eatwi.global.ui.dpFlowSelect);
     eatwi.util.appendHTML('浮动窗口选择流程执行区', '#dp-content', eatwi.global.ui.dpButton);
 
-    eatwi.util.appendHTML('浮动窗口数据分析信息区', '#dp-content', eatwi.global.ui.dpDataAnalysisPanel);
-    const titleDataAnalysisPanel = document.getElementById('title-data-analysis-panel');
-    titleDataAnalysisPanel.addEventListener('click', 
-    () => eatwi.util.togglePanel(
-        'data-analysis-panel',
-        'title-data-analysis-panel',
-        '🔍 数据分析结果 ▼',
-        '🔍 数据分析结果 ▶'
-    ));
+
 
     eatwi.util.appendHTML('浮动窗口队列信息区', '#dp-content', eatwi.global.ui.dpQueuePanel);
     const titleQueuePanel = document.getElementById('title-queue-panel');
@@ -186,15 +178,4 @@
     eatwi.util.appendHTML('浮动窗口积分交易信息区-正在出售的积分展示', '#points-market-panel', eatwi.global.ui.dpPointsMarketCurrentSale);
     eatwi.util.appendHTML('浮动窗口积分交易信息区-前20次积分的交易信息', '#points-market-panel', eatwi.global.ui.dpPointsMarketCurrentInfo);
     eatwi.util.appendHTML('浮动窗口积分交易信息区-前10天积分的交易信息', '#points-market-panel', eatwi.global.ui.dpPointsMarketDateInfo);
-    
-    eatwi.util.appendHTML('浮动窗口快速步骤信息区', '#dp-content', eatwi.global.ui.dpStep);
-    const titleStepButtons = document.getElementById('title-step-buttons');
-    titleStepButtons.addEventListener('click', 
-    () => eatwi.util.togglePanel(
-        'dp-step-buttons',
-        'title-step-buttons',
-        '⚡ 快捷步骤 ▼',
-        '⚡ 快捷步骤 ▶'
-    ));
-
 })();

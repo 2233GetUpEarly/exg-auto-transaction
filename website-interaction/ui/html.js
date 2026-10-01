@@ -63,29 +63,6 @@
         </div>
     `;
 
-    const dpDataAnalysisPanel = `
-        <!-- ========== 数据分析面板区 ========== -->
-        <div id="dp-data-analysis-panel">
-            <div id="title-data-analysis-panel">
-                🔍 数据分析结果 ▶
-            </div>
-            <div style="display: flex; width: 50%;">
-                <span id="refresh-data-analysis-button" style="cursor: pointer; width: 50%;">开始分析</span>
-                <span id="data-result-enqueue-button" style="cursor: pointer; width: 50%;">导入队列</span>
-            </div>
-            
-            <div id="data-analysis-panel" style="display: none">
-                <table border="0.5">
-                    <thead>
-                        <tr><th>编号</th><th>数据</th><th>操作</th></tr>
-                    </thead>
-                    <tbody id="data-analysis-table-body">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    `;
-
     const dpQueuePanel = `
         <!-- ========== 队列面板区 ========== -->
         <div id="dp-queue-panel">
@@ -119,7 +96,7 @@
             <!-- 交易币数量 -->
             <div style="margin-bottom: 12px;">
                 <label style="display: block; color: #ccc; font-size: ${eatwi.global.ui.isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
-                    📊 交易币数量 <span style="color: #ff9800;">(sell 输入框)</span>
+                    📊 交易币数量
                 </label>
                 <input type="number" id="dp-trading-coin" placeholder="例: 100" value="100" step="1">
                 <div style="color: #888; font-size: 10px; margin-top: 4px;">填入你要出售的交易币数量</div>
@@ -128,11 +105,12 @@
             <!-- 积分价格 -->
             <div style="margin-bottom: 12px;">
                 <label style="display: block; color: #ccc; font-size: ${eatwi.global.ui.isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
-                    💎 积分单价 <span style="color: #ff9800;">(price 输入框)</span>
+                    💎 积分数量
                 </label>
                 <input type="number" id="dp-points-price" placeholder="例: 500" value="500" step="1">
-                <div style="color: #888; font-size: 10px; margin-top: 4px;">每个交易币要卖多少积分</div>
+                <div style="color: #888; font-size: 10px; margin-top: 4px;">填入要卖多少积分</div>
             </div>
+            <span id="enqueue-input-trading">买交易币参数输入到队列</span>
             </div>
                 
             <!-- 显示当前值状态 -->
@@ -145,11 +123,9 @@
                 color: #aaa;
                 word-break: break-all;
             ">
-                <span id="enqueue-input-trading">买交易币参数输入到队列</span>
-                📌 当前: 交易币=<span id="dp-trading-coin-display">10</span>
-                | 积分=<span id="dp-points-price-display">1000</span>
-                | 比例=<span id="dp-points-to-trading-coin-display1">?</span>
-                | 密码已填
+                交易币:<span id="dp-trading-coin-display">10</span>
+                | 积分:<span id="dp-points-price-display">1000</span>
+                | 比例:<span id="dp-points-to-trading-coin-display1">?</span>
             </div>
         </div>
     `;
@@ -199,7 +175,7 @@
             <!-- 积分数量 -->
             <div style="margin-bottom: 12px;">
                 <label style="display: block; color: #ccc; font-size: ${eatwi.global.ui.isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
-                    📊 积分数量 <span style="color: #4caf50;">(sell 输入框)</span>
+                    📊 积分数量
                 </label>
                 <input type="number" id="dp-points-amount" placeholder="例: 1000" value="1000" step="1">
                 <div style="color: #888; font-size: 10px; margin-top: 4px;">填入你要出售的积分数量</div>
@@ -208,11 +184,12 @@
             <!-- 交易币单价 -->
             <div style="margin-bottom: 12px;">
                 <label style="display: block; color: #ccc; font-size: ${eatwi.global.ui.isMobile ? '12px' : '11px'}; margin-bottom: 4px;">
-                    🪙 交易币单价 <span style="color: #4caf50;">(price 输入框)</span>
+                    🪙 交易币数量
                 </label>
                 <input type="number" id="dp-tradingcoin-price" placeholder="例: 10" value="10" step="1">
-                <div style="color: #888; font-size: 10px; margin-top: 4px;">每个积分要卖多少交易币</div>
+                <div style="color: #888; font-size: 10px; margin-top: 4px;">填入要卖多少交易币</div>
             </div>
+            <span id="enqueue-input-points">买积分参数输入到队列</span>
             </div>
             
             <!-- 显示当前值状态 -->
@@ -225,11 +202,9 @@
                 color: #aaa;
                 word-break: break-all;
             ">
-                <span id="enqueue-input-points">买积分参数输入到队列</span>
-                📌 当前: 积分=<span id="dp-points-amount-display">1000</span> 
-                | 单价=<span id="dp-tradingcoin-price-display">10</span> 
-                | 比例=<span id="dp-points-to-trading-coin-display2">?</span>
-                | 密码已填
+                积分:<span id="dp-points-amount-display">1000</span> 
+                | 交易币:<span id="dp-tradingcoin-price-display">10</span> 
+                | 比例:<span id="dp-points-to-trading-coin-display2">?</span>
             </div>
         </div>
     `;
@@ -268,14 +243,6 @@
         </div>
     `;
 
-    const dpStep = `
-        <!-- 快捷步骤区（滚动） -->
-        <div style="margin-bottom: ${eatwi.global.ui.isMobile ? '16px' : '12px'}">
-            <div id="title-step-buttons">⚡ 快捷步骤 ▶</div>
-            <div id="dp-step-buttons"></div>
-        </div>
-    `;
-
     window.eatwi = window.eatwi || {};
     window.eatwi.global = window.eatwi.global || {};
     window.eatwi.global.ui = window.eatwi.global.ui || {};
@@ -288,7 +255,6 @@
     window.eatwi.global.ui.dpMenuPath = dpMenuPath;
     window.eatwi.global.ui.dpFlowSelect = dpFlowSelect;
     window.eatwi.global.ui.dpButton = dpButton;
-    window.eatwi.global.ui.dpDataAnalysisPanel = dpDataAnalysisPanel;
     window.eatwi.global.ui.dpQueuePanel = dpQueuePanel;
     window.eatwi.global.ui.dpTradingParams = dpTradingParams;
     window.eatwi.global.ui.dpTradingCoinMarket = dpTradingCoinMarket;
@@ -300,5 +266,4 @@
     window.eatwi.global.ui.dpPointsMarketCurrentSale = dpPointsMarketCurrentSale;
     window.eatwi.global.ui.dpPointsMarketCurrentInfo = dpPointsMarketCurrentInfo;
     window.eatwi.global.ui.dpPointsMarketDateInfo = dpPointsMarketDateInfo;
-    window.eatwi.global.ui.dpStep = dpStep;
 })();
