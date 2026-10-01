@@ -4,11 +4,11 @@
     style.textContent = eatwi.global.ui.style;
     document.head.appendChild(style);
 
-    eatwi.util.appendHTML('浮动窗口HTML', 'body', eatwi.global.ui.floatingWindow);
-    eatwi.util.appendHTML('浮动窗口拉伸手柄', '#dp-main-container', eatwi.global.ui.dpResizeHandle);
-    eatwi.util.appendHTML('浮动窗口标题栏', '#dp-main-container', eatwi.global.ui.dpTitleBar);
-    eatwi.util.appendHTML('浮动窗口内容', '#dp-main-container', eatwi.global.ui.dpContent);
-    eatwi.util.appendHTML('浮动窗口日志信息区', '#dp-content', eatwi.global.ui.dpLog);
+    eatwi.util.appendHTML('浮动窗口HTML', 'body', eatwi.global.ui.floatingWindow, eatwi.DEBUG);
+    eatwi.util.appendHTML('浮动窗口拉伸手柄', '#dp-main-container', eatwi.global.ui.dpResizeHandle, eatwi.DEBUG);
+    eatwi.util.appendHTML('浮动窗口标题栏', '#dp-main-container', eatwi.global.ui.dpTitleBar, eatwi.DEBUG);
+    eatwi.util.appendHTML('浮动窗口内容', '#dp-main-container', eatwi.global.ui.dpContent, eatwi.DEBUG);
+    eatwi.util.appendHTML('浮动窗口日志信息区', '#dp-content', eatwi.global.ui.dpLog, eatwi.DEBUG);
 
     // 更新菜单路径
     function updateMenuPath()
@@ -41,14 +41,14 @@
 
     // 调用
     bindUpdateWithObserver();
-    eatwi.util.appendHTML('浮动窗口路径信息区', '#dp-content', eatwi.global.ui.dpMenuPath);
+    eatwi.util.appendHTML('浮动窗口路径信息区', '#dp-content', eatwi.global.ui.dpMenuPath, eatwi.DEBUG);
 
-    eatwi.util.appendHTML('浮动窗口选择流程区', '#dp-content', eatwi.global.ui.dpFlowSelect);
-    eatwi.util.appendHTML('浮动窗口选择流程执行区', '#dp-content', eatwi.global.ui.dpButton);
+    eatwi.util.appendHTML('浮动窗口选择流程区', '#dp-content', eatwi.global.ui.dpFlowSelect, eatwi.DEBUG);
+    eatwi.util.appendHTML('浮动窗口选择流程执行区', '#dp-content', eatwi.global.ui.dpButton, eatwi.DEBUG);
 
 
 
-    eatwi.util.appendHTML('浮动窗口队列信息区', '#dp-content', eatwi.global.ui.dpQueuePanel);
+    eatwi.util.appendHTML('浮动窗口队列信息区', '#dp-content', eatwi.global.ui.dpQueuePanel, eatwi.DEBUG);
     const titleQueuePanel = document.getElementById('title-queue-panel');
     titleQueuePanel.addEventListener('click', 
     () => eatwi.util.togglePanel(
@@ -137,7 +137,7 @@
         }
     });
 
-    eatwi.util.appendHTML('浮动窗口交易币信息区', '#dp-content', eatwi.global.ui.dpTradingParams);
+    eatwi.util.appendHTML('浮动窗口交易币信息区', '#dp-content', eatwi.global.ui.dpTradingParams, eatwi.DEBUG);
     const titleInputTradingPanel = document.getElementById('title-input-trading-panel');
     titleInputTradingPanel.addEventListener('click', 
     () => eatwi.util.togglePanel(
@@ -147,7 +147,7 @@
         '💰 卖交易币参数 ▶'
     ));
 
-    eatwi.util.appendHTML('浮动窗口交易币交易信息区', '#dp-content', eatwi.global.ui.dpTradingCoinMarket);
+    eatwi.util.appendHTML('浮动窗口交易币交易信息区', '#dp-content', eatwi.global.ui.dpTradingCoinMarket, eatwi.DEBUG);
     const titleTradingCoinMarketPanel = document.getElementById('title-trading-coin-market-panel');
     titleTradingCoinMarketPanel.addEventListener('click', 
     () => eatwi.util.togglePanel(
@@ -157,11 +157,11 @@
         '💰 交易币交易市场 ▶'
     ));
 
-    eatwi.util.appendHTML('浮动窗口交易币交易信息区-正在出售的交易币展示', '#trading-coin-market-panel', eatwi.global.ui.dpTradingCoinMarketCurrentSale);
-    eatwi.util.appendHTML('浮动窗口交易币交易信息区-前20次交易币的交易信息', '#trading-coin-market-panel', eatwi.global.ui.dpTradingCoinMarketCurrentInfo);
-    eatwi.util.appendHTML('浮动窗口积分交易信息区-前10天交易币的交易信息', '#trading-coin-market-panel', eatwi.global.ui.dpTradingCoinMarketDateInfo);
+    eatwi.util.appendHTML('浮动窗口交易币交易信息区-正在出售的交易币展示', '#trading-coin-market-panel', eatwi.global.ui.dpTradingCoinMarketCurrentSale, eatwi.DEBUG);
+    eatwi.util.appendHTML('浮动窗口交易币交易信息区-前20次交易币的交易信息', '#trading-coin-market-panel', eatwi.global.ui.dpTradingCoinMarketCurrentInfo, eatwi.DEBUG);
+    eatwi.util.appendHTML('浮动窗口积分交易信息区-前10天交易币的交易信息', '#trading-coin-market-panel', eatwi.global.ui.dpTradingCoinMarketDateInfo, eatwi.DEBUG);
 
-    eatwi.util.appendHTML('浮动窗口积分信息区', '#dp-content', eatwi.global.ui.dpPointsParams);
+    eatwi.util.appendHTML('浮动窗口积分信息区', '#dp-content', eatwi.global.ui.dpPointsParams, eatwi.DEBUG);
     const titleInputPointsPanel = document.getElementById('title-input-points-panel');
     titleInputPointsPanel.addEventListener('click', 
     () => eatwi.util.togglePanel(
@@ -171,7 +171,7 @@
         '💎 卖积分参数 ▶'
     ));
 
-    eatwi.util.appendHTML('浮动窗口积分交易信息区', '#dp-content', eatwi.global.ui.dpPointsMarket);
+    eatwi.util.appendHTML('浮动窗口积分交易信息区', '#dp-content', eatwi.global.ui.dpPointsMarket, eatwi.DEBUG);
     const titleInputMarketPanel = document.getElementById('title-points-market-panel');
     titleInputMarketPanel.addEventListener('click', 
     () => eatwi.util.togglePanel(
@@ -181,7 +181,7 @@
         '💎 积分交易市场 ▶'
     ));
 
-    eatwi.util.appendHTML('浮动窗口积分交易信息区-正在出售的积分展示', '#points-market-panel', eatwi.global.ui.dpPointsMarketCurrentSale);
-    eatwi.util.appendHTML('浮动窗口积分交易信息区-前20次积分的交易信息', '#points-market-panel', eatwi.global.ui.dpPointsMarketCurrentInfo);
-    eatwi.util.appendHTML('浮动窗口积分交易信息区-前10天积分的交易信息', '#points-market-panel', eatwi.global.ui.dpPointsMarketDateInfo);
+    eatwi.util.appendHTML('浮动窗口积分交易信息区-正在出售的积分展示', '#points-market-panel', eatwi.global.ui.dpPointsMarketCurrentSale, eatwi.DEBUG);
+    eatwi.util.appendHTML('浮动窗口积分交易信息区-前20次积分的交易信息', '#points-market-panel', eatwi.global.ui.dpPointsMarketCurrentInfo, eatwi.DEBUG);
+    eatwi.util.appendHTML('浮动窗口积分交易信息区-前10天积分的交易信息', '#points-market-panel', eatwi.global.ui.dpPointsMarketDateInfo, eatwi.DEBUG);
 })();
