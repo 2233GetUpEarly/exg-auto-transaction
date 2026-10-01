@@ -253,5 +253,8 @@ if (typeof window !== 'undefined') {
         detectObjectsByBase64,
         config: DDDDOCR_CONFIG
     };
-    console.log('[ddddocr-helper] 已加载，可通过 window.ddddocr 调用');
+    if (eatwi.DEBUG)
+    {
+        console.log('[ddddocr-helper] 已加载，可通过 window.ddddocr 调用');
+    }
 }

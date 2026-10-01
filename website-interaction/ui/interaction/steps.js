@@ -61,7 +61,10 @@
             const points = params.points;
             
             eatwi.global.ui.logger.addLog(`📝 从${fromName}读取参数: 交易币=${tradingCoin}, 积分单价=${points}`);
-            console.log(`✅ 步骤 卖交易币填入交易币和积分(${tradingCoin}, ${points}) 执行`);
+            if (eatwi.DEBUG)
+            {
+                console.log(`✅ 步骤 卖交易币填入交易币和积分(${tradingCoin}, ${points}) 执行`);
+            }
             
             const originalFn = window.eatwi.global.ui._originalSellTradingCoinFill;
             if (originalFn)
@@ -81,7 +84,10 @@
             let password = eatwi.button.获取密码();
             
             eatwi.global.ui.logger.addLog(`🔐 读取密码: 已填 (长度 ${password.length})`);
-            console.log(`✅ 步骤 卖交易币填入密码(${'*'.repeat(password.length)}) 执行`);
+            if (eatwi.DEBUG)
+            {
+                console.log(`✅ 步骤 卖交易币填入密码(${'*'.repeat(password.length)}) 执行`);
+            }
             
             const originalFn = window.eatwi.global.ui._originalSellTradingCoinFillPassword;
             if (originalFn)
@@ -98,7 +104,10 @@
         // 包装：卖买交易币市场导入变量 - 从变量读取数据后调用原始函数
         steps['买交易币市场交易信息导入变量'] = async function()
         {
-            console.log(`✅ 步骤 买交易币市场交易信息导入变量包装函数 执行`);
+            if (eatwi.DEBUG)
+            {
+                console.log(`✅ 步骤 买交易币市场交易信息导入变量包装函数 执行`);
+            }
             if (!window.eatwi.global.tradingCoinMarketData)
             {
                 window.eatwi.global.tradingCoinMarketData = {};
@@ -118,7 +127,10 @@
         // 包装：卖买交易币市场信息2 - 从变量读取数据后调用原始函数
         steps['买交易币市场交易信息2'] = async function()
         {
-            console.log(`✅ 步骤 买交易币市场交易信息2包装函数 执行`);
+            if (eatwi.DEBUG)
+            {
+                console.log(`✅ 步骤 买交易币市场交易信息2包装函数 执行`);
+            }
             
             const originalFn = window.eatwi.global.ui._originalTradingCoinMarketInfoFunc;
             if (originalFn)
@@ -235,7 +247,10 @@
         // 包装：买积分市场导入变量 - 从变量读取数据后调用原始函数
         steps['买积分市场交易信息导入变量'] = async function()
         {
-            console.log(`✅ 步骤 买积分市场交易信息导入变量包装函数 执行`);
+            if (eatwi.DEBUG)
+            {
+                console.log(`✅ 步骤 买积分市场交易信息导入变量包装函数 执行`);
+            }
             const originalFn = window.eatwi.global.ui._originalPointsMarketDataFunc;
             if (originalFn)
             {
@@ -251,7 +266,10 @@
         // 包装：买积分市场信息2 - 从变量读取数据后调用原始函数
         steps['买积分市场交易信息2'] = async function()
         {
-            console.log(`✅ 步骤 买积分市场交易信息2包装函数 执行`);
+            if (eatwi.DEBUG)
+            {
+                console.log(`✅ 步骤 买积分市场交易信息2包装函数 执行`);
+            }
             
             const originalFn = window.eatwi.global.ui._originalPointsMarketInfoFunc;
             if (originalFn)
@@ -265,7 +283,10 @@
             }
         };
         
-        eatwi.global.ui.logger.addLog('🔧 已包装交易币步骤函数（从UI读取参数，原始函数已保留）');
+        if (eatwi.DEBUG)
+        {
+            console.log('已包装交易币步骤函数（从UI读取参数，原始函数已保留）');
+        }
         return true;
     }
 

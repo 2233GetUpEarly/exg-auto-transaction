@@ -117,11 +117,17 @@
                 if (type === 'dqi')
                 {
                     eatwi.global.queue.pop(index);
-                    console.log('删除 dqi 数组元素下标:', index);
+                    if (eatwi.DEBUG)
+                    {
+                        console.log('删除 dqi 数组元素下标:', index);
+                    }
                 }
                 else
                 {
-                    console.log(`未找到此类型 ${type} 数组元素下标:`, index);
+                    if (eatwi.DEBUG)
+                    {
+                        console.log(`未找到此类型 ${type} 数组元素下标:`, index);
+                    }
                 }
             }
             // 删除该行

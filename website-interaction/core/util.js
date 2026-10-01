@@ -184,7 +184,10 @@
             // 关闭流，完成写入
             await writable.close();
 
-            console.log(`写入数据成功，文件 ${filename}，数据长度 ${data.length}`);
+            if (eatwi.DEBUG)
+            {
+                console.log(`写入数据成功，文件 ${filename}，数据长度 ${data.length}`);
+            }
         }
 
         static async openAndReadDataForFile(filename)
@@ -195,7 +198,10 @@
             const fileHandle = await opfsRoot.getFileHandle(filename);
             const file = await fileHandle.getFile(); // 获取 File 对象
             const content = await file.text();       // 读取文本内容
-            console.log(`读取数据成功，文件 ${filename}，数据长度 ${content.length}`);
+            if (eatwi.DEBUG)
+            {
+                console.log(`读取数据成功，文件 ${filename}，数据长度 ${content.length}`);
+            }
             return content;
         }
     }

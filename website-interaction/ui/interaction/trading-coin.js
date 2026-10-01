@@ -40,9 +40,6 @@
             points: points || '0',
             pointsToTradingCoin: pointsToTradingCoin || '0',
         };
-        
-        // 可选：在控制台输出更新日志（调试用）
-        // console.log('📝 UI参数已更新:', window.eatwi.global.ui.tradingCoinForm);
     }
 
     // 监听输入框变化
