@@ -2,10 +2,8 @@
 
     // 创建浮动面板
     const floatingWindow = `
-        <div id="darkrp-control-panel">
             <div id="dp-main-container">
             </div>
-        <div>
     `;
 
     const dpResizeHandle = `

@@ -4,7 +4,32 @@
     style.textContent = eatwi.global.ui.style;
     document.head.appendChild(style);
 
-    eatwi.util.appendHTML('浮动窗口HTML', 'body', eatwi.global.ui.floatingWindow, eatwi.DEBUG);
+    // 标签栏样式
+    const tabBarStyle = {
+        display: 'flex',
+        gap: '6px',
+        padding: '10px',
+        borderBottom: '1px solid rgba(255,255,255,0.08)',
+        flexShrink: '0',
+    };
+
+    eatwi.global.uiSlot.register({
+        id: 'darkrp-control-panel',
+        title: '计算',
+        icon: '🧮',
+        style: tabBarStyle,
+        mount(container)
+        {
+            const panel = document.createElement('div');
+            panel.id = 'darkrp-control-panel';
+            panel.style.display = 'inline-block';   // 或 'fit-content'
+            panel.style.width = 'fit-content';      // 让宽度贴合内容
+            panel.style.height = 'auto';            // 高度随内容
+            container.appendChild(panel);
+        }
+    });
+
+    eatwi.util.appendHTML('浮动窗口HTML', '#darkrp-control-panel', eatwi.global.ui.floatingWindow, eatwi.DEBUG);
     eatwi.util.appendHTML('浮动窗口拉伸手柄', '#dp-main-container', eatwi.global.ui.dpResizeHandle, eatwi.DEBUG);
     eatwi.util.appendHTML('浮动窗口标题栏', '#dp-main-container', eatwi.global.ui.dpTitleBar, eatwi.DEBUG);
     eatwi.util.appendHTML('浮动窗口内容', '#dp-main-container', eatwi.global.ui.dpContent, eatwi.DEBUG);
