@@ -12,8 +12,9 @@
 
     class UISlot
     {
-        constructor(panelID, buttonID, textContent, panelStyle, buttonStyle, tabBarStyle)
+        constructor(lazyLoading, panelID, buttonID, textContent, panelStyle, buttonStyle, tabBarStyle)
         {
+            this.#lazyLoading = lazyLoading;
             this.#panelID = panelID;
             this.#buttonID = buttonID;
 
@@ -94,9 +95,13 @@
                 container: pageEl,
                 tabBtn: tabBtn,
                 pageEl: pageEl,
-                mounted: false
+                mounted: this.#lazyLoading
             };
             this.#modules.push(entry);
+            if (this.#lazyLoading === false)
+            {
+                mod.mount(pageEl);
+            }
 
             // 默认激活第一个
             if (!this.#activeId) this.activate(mod.id);
@@ -182,6 +187,7 @@
 
         #buttonID = null;
         #panelID = null;
+        #lazyLoading = true;
 
         #modules = [];
     }

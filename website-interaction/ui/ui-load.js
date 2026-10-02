@@ -54,6 +54,7 @@
     };
 
     window.eatwi.global.uiSlot = new UISlot(
+        false,
         uiSlotPanelID, 
         uiSlotButtonID, 
         '⚙️', 
