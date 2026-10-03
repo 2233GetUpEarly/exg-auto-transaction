@@ -29,7 +29,27 @@
         {
             console.log('步骤 弹窗确定() 执行完毕，开始等待');
         }
-        await eatwi.util.stepPause(3000, 6000, 3);
+        await eatwi.util.stepPause(4000, 6000, 3);
+    });
+
+    trigger.step('刷新主菜单信息显示', async function()
+    {
+        eatwi.button.刷新主菜单信息显示();
+        if (eatwi.DEBUG)
+        {
+            console.log('步骤 刷新主菜单信息显示() 执行完毕，开始等待');
+        }
+        await eatwi.util.stepPause(2000, 4000, 3);
+    });
+
+    trigger.step('获取玩家当前交易币和积分信息', async function()
+    {
+       eatwi.button.获取玩家当前交易币和积分信息();
+       if (eatwi.DEBUG)
+       {
+            console.log('步骤 玩家当前交易币和积分信息() 执行完毕，开始等待');
+       }
+       await eatwi.util.stepPause(2000, 4000, 3);
     });
 
     trigger.step('积分商城', async function()

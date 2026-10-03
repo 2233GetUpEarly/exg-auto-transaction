@@ -23,6 +23,61 @@
             eatwi.util.findAndClick(".modal-dialog button.btn.btn-primary");
         }
 
+        // 刷新主菜单信息显示
+        static 刷新主菜单信息显示()
+        {
+            const a = document.querySelector('#divMenuPath a');
+            a.click();
+        }
+
+        // 获取玩家当前交易币和积分信息
+        static 获取玩家当前交易币和积分信息()
+        {
+            // 主界面上找
+            let userMoney = null;
+            let userCoin = null;
+            let toContinue = true;
+            const raw = document.getElementById('mdiv1')?.dataset.data;
+            if (raw)
+            {
+                const { Money, Coin } = JSON.parse(raw);
+                userMoney = Money;
+                userCoin = Coin;
+                toContinue = false;
+            }
+
+            if (!toContinue)
+            {
+                window.eatwi.global.userPoints = userMoney;
+                window.eatwi.global.userTradingCoin = userCoin;
+                return;
+            }
+
+            // 上架我的上找
+            const targetP = document.querySelector('#divMenuBody p');
+            if (targetP)
+            {
+                // innerText 会把 <br> 变成换行符
+                const text = targetP.innerText;
+
+                const moneyMatch = text.match(/你的积分[：:]\s*(\d+)/);
+                const coinMatch  = text.match(/你的交易币[：:]\s*(\d+)/);
+
+                userMoney = moneyMatch ? Number(moneyMatch[1]) : null;
+                userCoin = coinMatch  ? Number(coinMatch[1])  : null;
+                toContinue = false;
+            }
+
+            if (!toContinue)
+            {
+                window.eatwi.global.userPoints = userMoney;
+                window.eatwi.global.userTradingCoin = userCoin;
+                return;
+            }
+
+            //....
+        }
+
         // 积分商城
         static 积分商城()
         {

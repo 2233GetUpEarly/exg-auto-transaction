@@ -37,6 +37,10 @@
     // 存储买积分市场交易信息
     window.eatwi.global.pointsMarketData = {};
 
+    // 玩家当前积分和交易币统计
+    window.eatwi.global.userPoints = null;
+    window.eatwi.global.userTradingCoin = null;
+
     // 用于保存原始函数（包装模式）
     window.eatwi.global.ui._originalSellTradingCoinFill = null;
     window.eatwi.global.ui._originalSellTradingCoinFillPassword = null;

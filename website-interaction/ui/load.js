@@ -68,6 +68,35 @@
     bindUpdateWithObserver();
     eatwi.util.appendHTML('浮动窗口路径信息区', '#dp-content', eatwi.global.ui.dpMenuPath, eatwi.DEBUG);
 
+    eatwi.util.appendHTML('浮动窗口用户信息区', '#dp-content', eatwi.global.ui.dpUserInfo, eatwi.DEBUG);
+    // 更新玩家信息
+    function updateUserInfo()
+    {
+        var getUserPointsInfo = document.getElementById('dp-user-points');
+        var getUserTradingCoinInfo = document.getElementById('dp-user-trading-coin');
+        getUserPointsInfo.textContent = eatwi.global.userPoints;
+        getUserTradingCoinInfo.textContent = eatwi.global.userTradingCoin;
+    }
+
+    // 这里同菜单路径绑定在一起，每次变动将积分交易币全局变量的值赋值给 UI 上显示的标签
+    // 全局变量的值是否会变取决于流程步骤中是否更新当前全局变量
+    function bindUpdateWithObserverForUserInfo()
+    {
+        const targetNode = document.getElementById('divMenuPath');
+        if (targetNode)
+        {
+            const observer = new MutationObserver(updateUserInfo);
+            observer.observe(targetNode, {
+                childList: true,
+                subtree: true,
+                characterData: true
+            });
+        }
+        // 首次执行一次
+        updateUserInfo();
+    }
+    bindUpdateWithObserverForUserInfo();
+
     eatwi.util.appendHTML('浮动窗口选择流程区', '#dp-content', eatwi.global.ui.dpFlowSelect, eatwi.DEBUG);
     eatwi.util.appendHTML('浮动窗口选择流程执行区', '#dp-content', eatwi.global.ui.dpButton, eatwi.DEBUG);
 

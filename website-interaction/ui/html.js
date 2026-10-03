@@ -43,6 +43,13 @@
         </div>
     `;
 
+    const dpUserInfo = `
+        <div>
+            <span>积分:</span><span id="dp-user-points">--</span>
+            <span>交易币:</span><span id="dp-user-trading-coin">--</span>
+        </div>
+    `;
+
     const dpFlowSelect = `
         <!-- 流程选择 -->
         <div style="margin-bottom: ${eatwi.global.ui.isMobile ? '16px' : '12px'}">
@@ -251,6 +258,7 @@
     window.eatwi.global.ui.dpContent = dpContent;
     window.eatwi.global.ui.dpLog = dpLog;
     window.eatwi.global.ui.dpMenuPath = dpMenuPath;
+    window.eatwi.global.ui.dpUserInfo = dpUserInfo;
     window.eatwi.global.ui.dpFlowSelect = dpFlowSelect;
     window.eatwi.global.ui.dpButton = dpButton;
     window.eatwi.global.ui.dpQueuePanel = dpQueuePanel;
