@@ -9,6 +9,9 @@
     window.eatwi.global.queue = new Queue();
     window.eatwi.global.trigger = new FlowTrigger();
 
+    // 通信触发器
+    window.eatwi.global.communicationTrigger = new FlowTrigger();
+
     // 是否正在执行流程
     window.eatwi.global.processIsExecuting = false;
 
@@ -40,6 +43,9 @@
     // 玩家当前积分和交易币统计
     window.eatwi.global.userPoints = null;
     window.eatwi.global.userTradingCoin = null;
+
+    // 玩家已经销售的记录
+    window.eatwi.global.userSoldList = null;
 
     // 用于保存原始函数（包装模式）
     window.eatwi.global.ui._originalSellTradingCoinFill = null;

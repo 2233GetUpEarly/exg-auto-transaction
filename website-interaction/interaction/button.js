@@ -96,6 +96,12 @@
             eatwi.util.findAndClick("i.bi-database-up.d-block.text-center.align-middle.mx-auto");
         }
 
+        // 我的上架历史
+        static 我的上架历史()
+        {
+            eatwi.util.findAndClick("i.bi-file-earmark-text");
+        }
+
         // 返回上次界面
         static 返回上次界面()
         {
@@ -108,6 +114,25 @@
         {
             var txtPassword = document.getElementById('txtPassword');
             return txtPassword.value;
+        }
+
+        static 已售记录列表导入变量()
+        {
+            const container = document.getElementById('divMenuBody');
+            const allP = container.querySelectorAll('p.mb-1');
+            const list = [];
+
+            for (const p of allP)
+            {
+                // 用 innerText，<br> 会变成换行
+                const text = p.innerText.trim();
+                // 以 [数字] 开头 → 是记录行
+                if (/^\[\d+\]/.test(text))
+                {
+                    list.push(p);
+                }
+            }
+            eatwi.global.userSoldList = list;
         }
 
 // --------------------- 买交易币按钮操作部分 -------------------

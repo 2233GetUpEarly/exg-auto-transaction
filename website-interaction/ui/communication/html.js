@@ -12,6 +12,24 @@
         </div>
     `;
 
+    const flowSelect = `
+        <!-- 流程选择 -->
+        <div style="margin-bottom: ${eatwi.global.ui.isMobile ? '16px' : '12px'}">
+            <select id="eatwi-communication-flow-select">
+                <option value="">-- 选择流程 --</option>
+            </select>
+        </div>
+    `;
+
+    const button = `
+        <!-- 按钮区 -->
+        <div style="display: flex; gap: ${eatwi.global.ui.isMobile ? '12px' : '8px'}; margin-bottom: ${eatwi.global.ui.isMobile ? '16px' : '12px'}">
+            <button id="eatwi-communication-flow-run">▶ 执行流程</button>
+            <!-- <button id="dp-enqueue"> 导入队列</button> -->
+            <!-- <button id="dp-queue">📋 执行队列</button> -->
+        </div>
+    `;
+
     const websocketServer = `
         <div>
             <div id="eatwi-communication-header">
@@ -34,5 +52,7 @@
 
     window.eatwi.global.ui.communication.mainContainer = mainContainer;
     window.eatwi.global.ui.communication.log = log;
+    window.eatwi.global.ui.communication.flowSelect = flowSelect;
+    window.eatwi.global.ui.communication.button = button;
     window.eatwi.global.ui.communication.websocketServer = websocketServer;
 })();

@@ -406,3 +406,28 @@
         await eatwi.util.stepPause(6000, 10000, 5);
     });
 })();
+
+(function(){
+
+    var trigger = eatwi.global.communicationTrigger;
+
+    trigger.step('我的上架历史', async function()
+    {
+        eatwi.button.我的上架历史();
+        if (eatwi.DEBUG)
+        {
+            console.log('步骤 我的上架历史() 执行完毕，开始等待');
+        }
+        await eatwi.util.stepPause(3000, 6000, 4);
+    });
+
+    trigger.step('已售记录列表导入变量', async function()
+    {
+        eatwi.button.已售记录列表导入变量();
+        if (eatwi.DEBUG)
+        {
+            console.log('步骤 已售记录列表导入变量() 执行完毕，开始等待');
+        }
+        await eatwi.util.stepPause(3000, 6000, 4);
+    });
+})();

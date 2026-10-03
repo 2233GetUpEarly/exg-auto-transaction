@@ -28,6 +28,8 @@
 
     eatwi.util.appendHTML('通信面板区', '#eatwi-communication-control-panel', eatwi.global.ui.communication.mainContainer, eatwi.DEBUG);
     eatwi.util.appendHTML('通信日志区', '#eatwi-communication-main-container', eatwi.global.ui.communication.log, eatwi.DEBUG);
+    eatwi.util.appendHTML('通信选择流程框区', '#eatwi-communication-main-container', eatwi.global.ui.communication.flowSelect, eatwi.DEBUG);
+    eatwi.util.appendHTML('通信执行区', '#eatwi-communication-main-container', eatwi.global.ui.communication.button, eatwi.DEBUG);
     eatwi.util.appendHTML('通信发送区', '#eatwi-communication-main-container', eatwi.global.ui.communication.websocketServer, eatwi.DEBUG);
 
 })();
