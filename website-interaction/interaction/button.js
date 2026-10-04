@@ -135,6 +135,22 @@
             eatwi.global.userSoldList = list;
         }
 
+        static 已售记录变量发送本地服务()
+        {
+            const list = eatwi.global.userSoldList;
+            let content = "";
+            for (var i = 0; i < list.length; ++i)
+            {
+                content += list[i].innerText;
+                content += '\n\n';
+            }
+
+            eatwi.global.websocket.send({
+                type: 0,
+                data: content
+            });
+        }
+
 // --------------------- 买交易币按钮操作部分 -------------------
 
         // 买交易币

@@ -430,4 +430,24 @@
         }
         await eatwi.util.stepPause(3000, 6000, 4);
     });
+
+    trigger.step('已售记录变量发送本地服务', async function()
+    {
+        eatwi.button.已售记录变量发送本地服务();
+        if (eatwi.DEBUG)
+        {
+            console.log('步骤 已售记录变量发送本地服务() 执行完毕，开始等待');
+        }
+        await eatwi.util.stepPause(3000, 6000, 4);
+    });
+
+    trigger.step('返回上次界面', async function()
+    {
+        eatwi.button.返回上次界面();
+        if (eatwi.DEBUG)
+        {
+            console.log('步骤 返回上次界面() 执行完毕，开始等待');
+        }
+        await eatwi.util.stepPause(1000, 2000, 2);
+    });
 })();

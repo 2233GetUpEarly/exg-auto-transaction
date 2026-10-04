@@ -23,7 +23,7 @@
 
     var trigger = eatwi.global.communicationTrigger;
 
-    trigger.flow('销售信息导入变量流程', ['我的上架历史', '已售记录列表导入变量']);
+    trigger.flow('销售信息发送本地服务流程', ['我的上架历史', '已售记录列表导入变量', '已售记录变量发送本地服务', '返回上次界面']);
 })();
 
 

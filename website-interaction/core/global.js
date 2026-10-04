@@ -5,9 +5,11 @@
 
     const { Queue } = window.eatwi;
     const { FlowTrigger } = window.eatwi;
+    const { EatwiWebSocket } = window.eatwi;
 
     window.eatwi.global.queue = new Queue();
     window.eatwi.global.trigger = new FlowTrigger();
+    window.eatwi.global.websocket = new EatwiWebSocket();
 
     // 通信触发器
     window.eatwi.global.communicationTrigger = new FlowTrigger();
