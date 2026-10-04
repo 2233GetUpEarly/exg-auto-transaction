@@ -16,7 +16,7 @@ SaleDataHandle::~SaleDataHandle()
 
 void SaleDataHandle::task(nlohmann::json& json)
 {
-	int task_number = json["type"].get<int>();
+	int task_number = json["eat_type"].get<int>();
 	LOG(DEBUG) << "任务码[" << task_number << "]:销售记录处理";
 
 	std::string data_path = "./temp/";
@@ -36,7 +36,7 @@ void SaleDataHandle::task(nlohmann::json& json)
 		return;
 	}
 
-	std::string sale_data_str = json["data"].get<std::string>();
+	std::string sale_data_str = json["eat_data"].get<std::string>();
 	LOG(DEBUG) << "销售记录输出到销售文件中";
 
 	sale_file << sale_data_str;

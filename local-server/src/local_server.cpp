@@ -46,10 +46,10 @@ void LocalServer::set_on_connection_callback(std::shared_ptr<TaskHandler> task_h
             auto ws = wsWeak.lock();
             if (!ws) return;
 
-            LOG(DEBUG) << "新客户端连接: " << state->getRemoteIp();
+            LOG(DEBUG) << "客户端建立连接: " << state->getRemoteIp() << ":" << state->getRemotePort();
 
             ws->setOnMessageCallback(
-                [wsWeak, task_handler](const ix::WebSocketMessagePtr& msg)
+                [wsWeak, task_handler, state](const ix::WebSocketMessagePtr& msg)
                 {
                     auto ws = wsWeak.lock();
                     if (!ws) return;
@@ -58,12 +58,19 @@ void LocalServer::set_on_connection_callback(std::shared_ptr<TaskHandler> task_h
                     {
                     case ix::WebSocketMessageType::Message:
                     {
-                        task_handler->task(msg->str);
+                        if (msg->binary)
+                        {
+                            LOG(DEBUG) << "收到二进制数据并丢弃，长度: " << msg->str.size();
+                        }
+                        else
+                        {
+                            task_handler->task(msg->str);
+                        }
                         break;
                     }
                     case ix::WebSocketMessageType::Close:
                     {
-                        LOG(DEBUG) << "客户端断开连接";
+                        LOG(DEBUG) << "客户端断开连接: " << state->getRemoteIp() << ":" << state->getRemotePort();
                         break;
                     }
                     case ix::WebSocketMessageType::Error:
