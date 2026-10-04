@@ -146,8 +146,8 @@
             }
 
             eatwi.global.websocket.send({
-                type: 0,
-                data: content
+                eat_type: 0,
+                eat_data: content
             });
         }
 
