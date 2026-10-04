@@ -1,12 +1,12 @@
 #include <local_server.hpp>
 #include <iostream>
 
-LocalServer::LocalServer(int port, const std::string& host)
+LocalServer::LocalServer(int port, const std::string& host, std::shared_ptr<TaskHandler> task_handler)
     :server_(port, host)
 {
     ix::initNetSystem();
 
-    set_on_connection_callback();
+    set_on_connection_callback(task_handler);
 }
 
 LocalServer::~LocalServer()
@@ -35,11 +35,11 @@ void LocalServer::listen()
     }
 }
 
-void LocalServer::set_on_connection_callback()
+void LocalServer::set_on_connection_callback(std::shared_ptr<TaskHandler> task_handler)
 {
     // 为每个新连接设置回调
     server_.setOnConnectionCallback(
-        [this](std::weak_ptr<ix::WebSocket> wsWeak,
+        [this, task_handler](std::weak_ptr<ix::WebSocket> wsWeak,
             std::shared_ptr<ix::ConnectionState> state)
         {
             auto ws = wsWeak.lock();
@@ -48,7 +48,7 @@ void LocalServer::set_on_connection_callback()
             std::cout << "新客户端连接: " << state->getRemoteIp() << std::endl;
 
             ws->setOnMessageCallback(
-                [wsWeak](const ix::WebSocketMessagePtr& msg)
+                [wsWeak, task_handler](const ix::WebSocketMessagePtr& msg)
                 {
                     auto ws = wsWeak.lock();
                     if (!ws) return;
@@ -57,7 +57,7 @@ void LocalServer::set_on_connection_callback()
                     {
                     case ix::WebSocketMessageType::Message:
                     {
-                        std::cout << "收到消息: " << msg->str << std::endl;
+                        task_handler->task(msg->str);
                         break;
                     }
                     case ix::WebSocketMessageType::Close:
