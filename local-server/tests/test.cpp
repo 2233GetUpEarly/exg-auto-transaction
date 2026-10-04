@@ -22,8 +22,8 @@ int main()
     SetConsoleCP(65001);
 #endif
 
-    //test2();
-    test3();
+    test2();
+    //test3();
 
     return 0;
 }
@@ -55,7 +55,11 @@ void test3()
 
 void test2()
 {
-    std::shared_ptr<TaskHandler> task_handler = std::make_shared<TaskHandler>();
+    std::vector<TaskHandler::ptr> arr = {
+    std::make_shared<SaleDataHandle>()
+    };
+
+    std::shared_ptr<TaskHandler> task_handler = std::make_shared<TaskHandler>(arr);
     LocalServer server(54321, "127.0.0.1", task_handler);
 
     server.listen();

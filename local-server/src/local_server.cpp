@@ -1,5 +1,6 @@
 #include <local_server.hpp>
 #include <iostream>
+#include <core/simple_log.hpp>
 
 LocalServer::LocalServer(int port, const std::string& host, std::shared_ptr<TaskHandler> task_handler)
     :server_(port, host)
@@ -17,7 +18,7 @@ LocalServer::~LocalServer()
 void LocalServer::start()
 {
     server_.start();
-    std::cout << "服务器已启动，监听端口 " << server_.getPort() << "..." << std::endl;
+    LOG(DEBUG) << "服务器已启动，监听端口 " << server_.getPort() << "...";
 }
 
 void LocalServer::wait()
@@ -30,7 +31,7 @@ void LocalServer::listen()
     auto res = server_.listen();
     if (!res.first)
     {
-        std::cerr << "监听失败: " << res.second << std::endl;
+        LOG(DEBUG) << "监听失败: " << res.second;
         return;
     }
 }
@@ -45,7 +46,7 @@ void LocalServer::set_on_connection_callback(std::shared_ptr<TaskHandler> task_h
             auto ws = wsWeak.lock();
             if (!ws) return;
 
-            std::cout << "新客户端连接: " << state->getRemoteIp() << std::endl;
+            LOG(DEBUG) << "新客户端连接: " << state->getRemoteIp();
 
             ws->setOnMessageCallback(
                 [wsWeak, task_handler](const ix::WebSocketMessagePtr& msg)
@@ -62,12 +63,12 @@ void LocalServer::set_on_connection_callback(std::shared_ptr<TaskHandler> task_h
                     }
                     case ix::WebSocketMessageType::Close:
                     {
-                        std::cout << "客户端断开连接" << std::endl;
+                        LOG(DEBUG) << "客户端断开连接";
                         break;
                     }
                     case ix::WebSocketMessageType::Error:
                     {
-                        std::cout << "错误: " << msg->errorInfo.reason << std::endl;
+                        LOG(ERRO) << "错误: " << msg->errorInfo.reason;
                         break;
                     }
                     default:

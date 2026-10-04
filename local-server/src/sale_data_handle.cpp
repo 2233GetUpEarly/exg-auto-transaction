@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem>
+#include <core/simple_log.hpp>
 
 SaleDataHandle::SaleDataHandle()
 {
@@ -16,7 +17,7 @@ SaleDataHandle::~SaleDataHandle()
 void SaleDataHandle::task(nlohmann::json& json)
 {
 	int task_number = json["type"].get<int>();
-	std::cout << "任务码[" << task_number << "]:销售记录处理" << std::endl;
+	LOG(DEBUG) << "任务码[" << task_number << "]:销售记录处理";
 
 	std::string data_path = "./temp/";
 	std::string data_file = "sale_data.txt";
@@ -30,13 +31,13 @@ void SaleDataHandle::task(nlohmann::json& json)
 	std::ofstream sale_file(filename);
 	if (sale_file.is_open() == false)
 	{
-		std::cerr << "销售文件打开失败" << std::endl;
+		LOG(FATAL) << "销售文件打开失败";
 		assert(false);
 		return;
 	}
 
 	std::string sale_data_str = json["data"].get<std::string>();
-	std::cout << "销售记录保存到文件" << std::endl;
+	LOG(DEBUG) << "销售记录输出到销售文件中";
 
 	sale_file << sale_data_str;
 	sale_file.close();
