@@ -2,28 +2,26 @@
 
     const style = `
 
+        #darkrp-control-panel
+        {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
         #dp-main-container
         {
-            bottom: ${eatwi.global.ui.isMobile ? '10px' : '40px'};
-            right: ${eatwi.global.ui.isMobile ? '10px' : '20px'};
-            left: ${eatwi.global.ui.isMobile ? '10px' : 'auto'};
-            width: ${eatwi.global.ui.isMobile ? 'calc(100% - 20px)' : '600px'};
-            max-width: ${eatwi.global.ui.isMobile ? 'none' : '80vw'};
-            max-height: ${eatwi.global.ui.isMobile ? '90vh' : '80vh'};
-            border-radius: ${eatwi.global.ui.isMobile ? '16px' : '12px'};
-            font-size: ${eatwi.global.ui.isMobile ? '14px' : '14px'};
-            position: fixed;
-            min-width: 300px;
-            min-height: 200px;
-            background: #1e1e2f;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            z-index: 999999;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            transition: none;
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            max-height: 70vh;
+            min-width: 0;
+            min-height: 0;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            resize: both;
+            background: #1e1e2f;
         }
 
         #dp-resize-handle
@@ -377,6 +375,17 @@
             gap: ${eatwi.global.ui.isMobile ? '8px' : '6px'};
             max-height: ${eatwi.global.ui.isMobile ? '160px' : 'none'};
             overflow-y: ${eatwi.global.ui.isMobile ? 'auto' : 'visible'};
+        }
+
+        #refresh-queue-button
+        {
+            cursor: pointer;
+            flex: 1;
+            background: #ff3700;
+            color: white;
+            border: none;
+            border-radius: ${eatwi.global.ui.isMobile ? '10px' : '6px'};
+            font-size: ${eatwi.global.ui.isMobile ? '16px' : '13px'};
         }
     `;
 

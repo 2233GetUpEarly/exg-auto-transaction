@@ -4,11 +4,36 @@
     style.textContent = eatwi.global.ui.style;
     document.head.appendChild(style);
 
-    eatwi.util.appendHTML('浮动窗口HTML', 'body', eatwi.global.ui.floatingWindow);
-    eatwi.util.appendHTML('浮动窗口拉伸手柄', '#dp-main-container', eatwi.global.ui.dpResizeHandle);
-    eatwi.util.appendHTML('浮动窗口标题栏', '#dp-main-container', eatwi.global.ui.dpTitleBar);
-    eatwi.util.appendHTML('浮动窗口内容', '#dp-main-container', eatwi.global.ui.dpContent);
-    eatwi.util.appendHTML('浮动窗口日志信息区', '#dp-content', eatwi.global.ui.dpLog);
+    // 标签栏样式
+    const tabBarStyle = {
+        display: 'flex',
+        gap: '6px',
+        padding: '10px',
+        borderBottom: '1px solid rgba(255,255,255,0.08)',
+        flexShrink: '0',
+    };
+
+    eatwi.global.uiSlot.register({
+        id: 'darkrp-control-panel',
+        title: '计算',
+        icon: '🧮',
+        style: tabBarStyle,
+        mount(container)
+        {
+            const panel = document.createElement('div');
+            panel.id = 'darkrp-control-panel';
+            panel.style.display = 'inline-block';   // 或 'fit-content'
+            panel.style.width = 'fit-content';      // 让宽度贴合内容
+            panel.style.height = 'auto';            // 高度随内容
+            container.appendChild(panel);
+        }
+    });
+
+    eatwi.util.appendHTML('浮动窗口HTML', '#darkrp-control-panel', eatwi.global.ui.floatingWindow, eatwi.DEBUG);
+    eatwi.util.appendHTML('浮动窗口拉伸手柄', '#dp-main-container', eatwi.global.ui.dpResizeHandle, eatwi.DEBUG);
+    eatwi.util.appendHTML('浮动窗口标题栏', '#dp-main-container', eatwi.global.ui.dpTitleBar, eatwi.DEBUG);
+    eatwi.util.appendHTML('浮动窗口内容', '#dp-main-container', eatwi.global.ui.dpContent, eatwi.DEBUG);
+    eatwi.util.appendHTML('浮动窗口日志信息区', '#dp-content', eatwi.global.ui.dpLog, eatwi.DEBUG);
 
     // 更新菜单路径
     function updateMenuPath()
@@ -41,22 +66,43 @@
 
     // 调用
     bindUpdateWithObserver();
-    eatwi.util.appendHTML('浮动窗口路径信息区', '#dp-content', eatwi.global.ui.dpMenuPath);
+    eatwi.util.appendHTML('浮动窗口路径信息区', '#dp-content', eatwi.global.ui.dpMenuPath, eatwi.DEBUG);
 
-    eatwi.util.appendHTML('浮动窗口选择流程区', '#dp-content', eatwi.global.ui.dpFlowSelect);
-    eatwi.util.appendHTML('浮动窗口选择流程执行区', '#dp-content', eatwi.global.ui.dpButton);
+    eatwi.util.appendHTML('浮动窗口用户信息区', '#dp-content', eatwi.global.ui.dpUserInfo, eatwi.DEBUG);
+    // 更新玩家信息
+    function updateUserInfo()
+    {
+        var getUserPointsInfo = document.getElementById('dp-user-points');
+        var getUserTradingCoinInfo = document.getElementById('dp-user-trading-coin');
+        getUserPointsInfo.textContent = eatwi.global.userPoints;
+        getUserTradingCoinInfo.textContent = eatwi.global.userTradingCoin;
+    }
 
-    eatwi.util.appendHTML('浮动窗口数据分析信息区', '#dp-content', eatwi.global.ui.dpDataAnalysisPanel);
-    const titleDataAnalysisPanel = document.getElementById('title-data-analysis-panel');
-    titleDataAnalysisPanel.addEventListener('click', 
-    () => eatwi.util.togglePanel(
-        'data-analysis-panel',
-        'title-data-analysis-panel',
-        '🔍 数据分析结果 ▼',
-        '🔍 数据分析结果 ▶'
-    ));
+    // 这里同菜单路径绑定在一起，每次变动将积分交易币全局变量的值赋值给 UI 上显示的标签
+    // 全局变量的值是否会变取决于流程步骤中是否更新当前全局变量
+    function bindUpdateWithObserverForUserInfo()
+    {
+        const targetNode = document.getElementById('divMenuPath');
+        if (targetNode)
+        {
+            const observer = new MutationObserver(updateUserInfo);
+            observer.observe(targetNode, {
+                childList: true,
+                subtree: true,
+                characterData: true
+            });
+        }
+        // 首次执行一次
+        updateUserInfo();
+    }
+    bindUpdateWithObserverForUserInfo();
 
-    eatwi.util.appendHTML('浮动窗口队列信息区', '#dp-content', eatwi.global.ui.dpQueuePanel);
+    eatwi.util.appendHTML('浮动窗口选择流程区', '#dp-content', eatwi.global.ui.dpFlowSelect, eatwi.DEBUG);
+    eatwi.util.appendHTML('浮动窗口选择流程执行区', '#dp-content', eatwi.global.ui.dpButton, eatwi.DEBUG);
+
+
+
+    eatwi.util.appendHTML('浮动窗口队列信息区', '#dp-content', eatwi.global.ui.dpQueuePanel, eatwi.DEBUG);
     const titleQueuePanel = document.getElementById('title-queue-panel');
     titleQueuePanel.addEventListener('click', 
     () => eatwi.util.togglePanel(
@@ -125,11 +171,17 @@
                 if (type === 'dqi')
                 {
                     eatwi.global.queue.pop(index);
-                    console.log('删除 dqi 数组元素下标:', index);
+                    if (eatwi.DEBUG)
+                    {
+                        console.log('删除 dqi 数组元素下标:', index);
+                    }
                 }
                 else
                 {
-                    console.log(`未找到此类型 ${type} 数组元素下标:`, index);
+                    if (eatwi.DEBUG)
+                    {
+                        console.log(`未找到此类型 ${type} 数组元素下标:`, index);
+                    }
                 }
             }
             // 删除该行
@@ -139,7 +191,7 @@
         }
     });
 
-    eatwi.util.appendHTML('浮动窗口交易币信息区', '#dp-content', eatwi.global.ui.dpTradingParams);
+    eatwi.util.appendHTML('浮动窗口交易币信息区', '#dp-content', eatwi.global.ui.dpTradingParams, eatwi.DEBUG);
     const titleInputTradingPanel = document.getElementById('title-input-trading-panel');
     titleInputTradingPanel.addEventListener('click', 
     () => eatwi.util.togglePanel(
@@ -149,7 +201,7 @@
         '💰 卖交易币参数 ▶'
     ));
 
-    eatwi.util.appendHTML('浮动窗口交易币交易信息区', '#dp-content', eatwi.global.ui.dpTradingCoinMarket);
+    eatwi.util.appendHTML('浮动窗口交易币交易信息区', '#dp-content', eatwi.global.ui.dpTradingCoinMarket, eatwi.DEBUG);
     const titleTradingCoinMarketPanel = document.getElementById('title-trading-coin-market-panel');
     titleTradingCoinMarketPanel.addEventListener('click', 
     () => eatwi.util.togglePanel(
@@ -159,11 +211,11 @@
         '💰 交易币交易市场 ▶'
     ));
 
-    eatwi.util.appendHTML('浮动窗口交易币交易信息区-正在出售的交易币展示', '#trading-coin-market-panel', eatwi.global.ui.dpTradingCoinMarketCurrentSale);
-    eatwi.util.appendHTML('浮动窗口交易币交易信息区-前20次交易币的交易信息', '#trading-coin-market-panel', eatwi.global.ui.dpTradingCoinMarketCurrentInfo);
-    eatwi.util.appendHTML('浮动窗口积分交易信息区-前10天交易币的交易信息', '#trading-coin-market-panel', eatwi.global.ui.dpTradingCoinMarketDateInfo);
+    eatwi.util.appendHTML('浮动窗口交易币交易信息区-正在出售的交易币展示', '#trading-coin-market-panel', eatwi.global.ui.dpTradingCoinMarketCurrentSale, eatwi.DEBUG);
+    eatwi.util.appendHTML('浮动窗口交易币交易信息区-前20次交易币的交易信息', '#trading-coin-market-panel', eatwi.global.ui.dpTradingCoinMarketCurrentInfo, eatwi.DEBUG);
+    eatwi.util.appendHTML('浮动窗口积分交易信息区-前10天交易币的交易信息', '#trading-coin-market-panel', eatwi.global.ui.dpTradingCoinMarketDateInfo, eatwi.DEBUG);
 
-    eatwi.util.appendHTML('浮动窗口积分信息区', '#dp-content', eatwi.global.ui.dpPointsParams);
+    eatwi.util.appendHTML('浮动窗口积分信息区', '#dp-content', eatwi.global.ui.dpPointsParams, eatwi.DEBUG);
     const titleInputPointsPanel = document.getElementById('title-input-points-panel');
     titleInputPointsPanel.addEventListener('click', 
     () => eatwi.util.togglePanel(
@@ -173,7 +225,7 @@
         '💎 卖积分参数 ▶'
     ));
 
-    eatwi.util.appendHTML('浮动窗口积分交易信息区', '#dp-content', eatwi.global.ui.dpPointsMarket);
+    eatwi.util.appendHTML('浮动窗口积分交易信息区', '#dp-content', eatwi.global.ui.dpPointsMarket, eatwi.DEBUG);
     const titleInputMarketPanel = document.getElementById('title-points-market-panel');
     titleInputMarketPanel.addEventListener('click', 
     () => eatwi.util.togglePanel(
@@ -183,18 +235,7 @@
         '💎 积分交易市场 ▶'
     ));
 
-    eatwi.util.appendHTML('浮动窗口积分交易信息区-正在出售的积分展示', '#points-market-panel', eatwi.global.ui.dpPointsMarketCurrentSale);
-    eatwi.util.appendHTML('浮动窗口积分交易信息区-前20次积分的交易信息', '#points-market-panel', eatwi.global.ui.dpPointsMarketCurrentInfo);
-    eatwi.util.appendHTML('浮动窗口积分交易信息区-前10天积分的交易信息', '#points-market-panel', eatwi.global.ui.dpPointsMarketDateInfo);
-    
-    eatwi.util.appendHTML('浮动窗口快速步骤信息区', '#dp-content', eatwi.global.ui.dpStep);
-    const titleStepButtons = document.getElementById('title-step-buttons');
-    titleStepButtons.addEventListener('click', 
-    () => eatwi.util.togglePanel(
-        'dp-step-buttons',
-        'title-step-buttons',
-        '⚡ 快捷步骤 ▼',
-        '⚡ 快捷步骤 ▶'
-    ));
-
+    eatwi.util.appendHTML('浮动窗口积分交易信息区-正在出售的积分展示', '#points-market-panel', eatwi.global.ui.dpPointsMarketCurrentSale, eatwi.DEBUG);
+    eatwi.util.appendHTML('浮动窗口积分交易信息区-前20次积分的交易信息', '#points-market-panel', eatwi.global.ui.dpPointsMarketCurrentInfo, eatwi.DEBUG);
+    eatwi.util.appendHTML('浮动窗口积分交易信息区-前10天积分的交易信息', '#points-market-panel', eatwi.global.ui.dpPointsMarketDateInfo, eatwi.DEBUG);
 })();

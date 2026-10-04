@@ -29,7 +29,27 @@
         {
             console.log('步骤 弹窗确定() 执行完毕，开始等待');
         }
-        await eatwi.util.stepPause(3000, 6000, 3);
+        await eatwi.util.stepPause(4000, 6000, 3);
+    });
+
+    trigger.step('刷新主菜单信息显示', async function()
+    {
+        eatwi.button.刷新主菜单信息显示();
+        if (eatwi.DEBUG)
+        {
+            console.log('步骤 刷新主菜单信息显示() 执行完毕，开始等待');
+        }
+        await eatwi.util.stepPause(2000, 4000, 3);
+    });
+
+    trigger.step('获取玩家当前交易币和积分信息', async function()
+    {
+       eatwi.button.获取玩家当前交易币和积分信息();
+       if (eatwi.DEBUG)
+       {
+            console.log('步骤 玩家当前交易币和积分信息() 执行完毕，开始等待');
+       }
+       await eatwi.util.stepPause(2000, 4000, 3);
     });
 
     trigger.step('积分商城', async function()
@@ -384,5 +404,50 @@
             console.log('步骤 验证码弹窗确认() 执行完毕，开始等待');
         }
         await eatwi.util.stepPause(6000, 10000, 5);
+    });
+})();
+
+(function(){
+
+    var trigger = eatwi.global.communicationTrigger;
+
+    trigger.step('我的上架历史', async function()
+    {
+        eatwi.button.我的上架历史();
+        if (eatwi.DEBUG)
+        {
+            console.log('步骤 我的上架历史() 执行完毕，开始等待');
+        }
+        await eatwi.util.stepPause(3000, 6000, 4);
+    });
+
+    trigger.step('已售记录列表导入变量', async function()
+    {
+        eatwi.button.已售记录列表导入变量();
+        if (eatwi.DEBUG)
+        {
+            console.log('步骤 已售记录列表导入变量() 执行完毕，开始等待');
+        }
+        await eatwi.util.stepPause(3000, 6000, 4);
+    });
+
+    trigger.step('已售记录变量发送本地服务', async function()
+    {
+        eatwi.button.已售记录变量发送本地服务();
+        if (eatwi.DEBUG)
+        {
+            console.log('步骤 已售记录变量发送本地服务() 执行完毕，开始等待');
+        }
+        await eatwi.util.stepPause(3000, 6000, 4);
+    });
+
+    trigger.step('返回上次界面', async function()
+    {
+        eatwi.button.返回上次界面();
+        if (eatwi.DEBUG)
+        {
+            console.log('步骤 返回上次界面() 执行完毕，开始等待');
+        }
+        await eatwi.util.stepPause(1000, 2000, 2);
     });
 })();

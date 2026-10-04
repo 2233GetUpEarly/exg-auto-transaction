@@ -5,9 +5,14 @@
 
     const { Queue } = window.eatwi;
     const { FlowTrigger } = window.eatwi;
+    const { EatwiWebSocket } = window.eatwi;
 
     window.eatwi.global.queue = new Queue();
     window.eatwi.global.trigger = new FlowTrigger();
+    window.eatwi.global.websocket = new EatwiWebSocket();
+
+    // 通信触发器
+    window.eatwi.global.communicationTrigger = new FlowTrigger();
 
     // 是否正在执行流程
     window.eatwi.global.processIsExecuting = false;
@@ -36,6 +41,13 @@
     window.eatwi.global.tradingCoinMarketData = {};
     // 存储买积分市场交易信息
     window.eatwi.global.pointsMarketData = {};
+
+    // 玩家当前积分和交易币统计
+    window.eatwi.global.userPoints = null;
+    window.eatwi.global.userTradingCoin = null;
+
+    // 玩家已经销售的记录
+    window.eatwi.global.userSoldList = null;
 
     // 用于保存原始函数（包装模式）
     window.eatwi.global.ui._originalSellTradingCoinFill = null;

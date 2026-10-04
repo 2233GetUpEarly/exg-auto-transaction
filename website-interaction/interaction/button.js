@@ -23,6 +23,61 @@
             eatwi.util.findAndClick(".modal-dialog button.btn.btn-primary");
         }
 
+        // 刷新主菜单信息显示
+        static 刷新主菜单信息显示()
+        {
+            const a = document.querySelector('#divMenuPath a');
+            a.click();
+        }
+
+        // 获取玩家当前交易币和积分信息
+        static 获取玩家当前交易币和积分信息()
+        {
+            // 主界面上找
+            let userMoney = null;
+            let userCoin = null;
+            let toContinue = true;
+            const raw = document.getElementById('mdiv1')?.dataset.data;
+            if (raw)
+            {
+                const { Money, Coin } = JSON.parse(raw);
+                userMoney = Money;
+                userCoin = Coin;
+                toContinue = false;
+            }
+
+            if (!toContinue)
+            {
+                window.eatwi.global.userPoints = userMoney;
+                window.eatwi.global.userTradingCoin = userCoin;
+                return;
+            }
+
+            // 上架我的上找
+            const targetP = document.querySelector('#divMenuBody p');
+            if (targetP)
+            {
+                // innerText 会把 <br> 变成换行符
+                const text = targetP.innerText;
+
+                const moneyMatch = text.match(/你的积分[：:]\s*(\d+)/);
+                const coinMatch  = text.match(/你的交易币[：:]\s*(\d+)/);
+
+                userMoney = moneyMatch ? Number(moneyMatch[1]) : null;
+                userCoin = coinMatch  ? Number(coinMatch[1])  : null;
+                toContinue = false;
+            }
+
+            if (!toContinue)
+            {
+                window.eatwi.global.userPoints = userMoney;
+                window.eatwi.global.userTradingCoin = userCoin;
+                return;
+            }
+
+            //....
+        }
+
         // 积分商城
         static 积分商城()
         {
@@ -41,6 +96,12 @@
             eatwi.util.findAndClick("i.bi-database-up.d-block.text-center.align-middle.mx-auto");
         }
 
+        // 我的上架历史
+        static 我的上架历史()
+        {
+            eatwi.util.findAndClick("i.bi-file-earmark-text");
+        }
+
         // 返回上次界面
         static 返回上次界面()
         {
@@ -53,6 +114,41 @@
         {
             var txtPassword = document.getElementById('txtPassword');
             return txtPassword.value;
+        }
+
+        static 已售记录列表导入变量()
+        {
+            const container = document.getElementById('divMenuBody');
+            const allP = container.querySelectorAll('p.mb-1');
+            const list = [];
+
+            for (const p of allP)
+            {
+                // 用 innerText，<br> 会变成换行
+                const text = p.innerText.trim();
+                // 以 [数字] 开头 → 是记录行
+                if (/^\[\d+\]/.test(text))
+                {
+                    list.push(p);
+                }
+            }
+            eatwi.global.userSoldList = list;
+        }
+
+        static 已售记录变量发送本地服务()
+        {
+            const list = eatwi.global.userSoldList;
+            let content = "";
+            for (var i = 0; i < list.length; ++i)
+            {
+                content += list[i].innerText;
+                content += '\n\n';
+            }
+
+            eatwi.global.websocket.send({
+                eat_type: 0,
+                eat_data: content
+            });
         }
 
 // --------------------- 买交易币按钮操作部分 -------------------

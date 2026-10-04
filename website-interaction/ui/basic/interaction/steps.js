@@ -1,67 +1,5 @@
 (function(){
 
-    const stepButtonsDiv = document.getElementById('dp-step-buttons');
-    // 动态加载快捷步骤按钮
-    function loadStepButtons()
-    {
-        if (!window.eatwi.global.trigger)
-        {
-            if (window.eatwi.DEBUG)
-            {
-                console.error('window.eatwi.global.trigger 未加载');
-            }
-            return;
-        }
-        
-        const steps = window.eatwi.global.trigger.getSteps();
-        const stepNames = Object.keys(steps);
-        const displaySteps = stepNames.slice(0, 12);
-        
-        stepButtonsDiv.innerHTML = '';
-        displaySteps.forEach(stepName => {
-            const btn = document.createElement('button');
-            btn.textContent = stepName;
-            btn.setAttribute('data-step', stepName);
-            btn.style.cssText = `
-                padding: ${eatwi.global.ui.isMobile ? '10px 14px' : '6px 12px'};
-                background: #3a3a4a;
-                color: #fff;
-                border: none;
-                border-radius: ${eatwi.global.ui.isMobile ? '8px' : '4px'};
-                cursor: pointer;
-                font-size: ${eatwi.global.ui.isMobile ? '14px' : '11px'};
-                touch-action: manipulation;
-                min-height: ${eatwi.global.ui.isMobile ? '44px' : 'auto'};
-            `;
-            btn.addEventListener('click', async (e) => {
-                e.stopPropagation();
-                await executeStep(stepName);
-            });
-            stepButtonsDiv.appendChild(btn);
-        });
-        
-        if (stepNames.length > 12)
-        {
-            const moreBtn = document.createElement('button');
-            moreBtn.textContent = `+${stepNames.length - 12}更多`;
-            moreBtn.style.cssText = `
-                padding: ${eatwi.global.ui.isMobile ? '10px 14px' : '6px 12px'};
-                background: #555;
-                color: #fff;
-                border: none;
-                border-radius: ${eatwi.global.ui.isMobile ? '8px' : '4px'};
-                cursor: pointer;
-                font-size: ${eatwi.global.ui.isMobile ? '14px' : '11px'};
-                touch-action: manipulation;
-            `;
-            moreBtn.addEventListener('click', () => {
-                eatwi.global.ui.logger.addLog(`共 ${stepNames.length} 个步骤可用，可通过控制台调用`, false);
-            });
-            stepButtonsDiv.appendChild(moreBtn);
-        }
-    }
-
-    loadStepButtons();
 
     // ========== 包装步骤函数，使其读取 UI 输入框的值 ==========
     // 采用包装模式，保留原始函数，避免覆盖丢失
@@ -123,7 +61,10 @@
             const points = params.points;
             
             eatwi.global.ui.logger.addLog(`📝 从${fromName}读取参数: 交易币=${tradingCoin}, 积分单价=${points}`);
-            console.log(`✅ 步骤 卖交易币填入交易币和积分(${tradingCoin}, ${points}) 执行`);
+            if (eatwi.DEBUG)
+            {
+                console.log(`✅ 步骤 卖交易币填入交易币和积分(${tradingCoin}, ${points}) 执行`);
+            }
             
             const originalFn = window.eatwi.global.ui._originalSellTradingCoinFill;
             if (originalFn)
@@ -143,7 +84,10 @@
             let password = eatwi.button.获取密码();
             
             eatwi.global.ui.logger.addLog(`🔐 读取密码: 已填 (长度 ${password.length})`);
-            console.log(`✅ 步骤 卖交易币填入密码(${'*'.repeat(password.length)}) 执行`);
+            if (eatwi.DEBUG)
+            {
+                console.log(`✅ 步骤 卖交易币填入密码(${'*'.repeat(password.length)}) 执行`);
+            }
             
             const originalFn = window.eatwi.global.ui._originalSellTradingCoinFillPassword;
             if (originalFn)
@@ -160,7 +104,10 @@
         // 包装：卖买交易币市场导入变量 - 从变量读取数据后调用原始函数
         steps['买交易币市场交易信息导入变量'] = async function()
         {
-            console.log(`✅ 步骤 买交易币市场交易信息导入变量包装函数 执行`);
+            if (eatwi.DEBUG)
+            {
+                console.log(`✅ 步骤 买交易币市场交易信息导入变量包装函数 执行`);
+            }
             if (!window.eatwi.global.tradingCoinMarketData)
             {
                 window.eatwi.global.tradingCoinMarketData = {};
@@ -180,7 +127,10 @@
         // 包装：卖买交易币市场信息2 - 从变量读取数据后调用原始函数
         steps['买交易币市场交易信息2'] = async function()
         {
-            console.log(`✅ 步骤 买交易币市场交易信息2包装函数 执行`);
+            if (eatwi.DEBUG)
+            {
+                console.log(`✅ 步骤 买交易币市场交易信息2包装函数 执行`);
+            }
             
             const originalFn = window.eatwi.global.ui._originalTradingCoinMarketInfoFunc;
             if (originalFn)
@@ -297,7 +247,10 @@
         // 包装：买积分市场导入变量 - 从变量读取数据后调用原始函数
         steps['买积分市场交易信息导入变量'] = async function()
         {
-            console.log(`✅ 步骤 买积分市场交易信息导入变量包装函数 执行`);
+            if (eatwi.DEBUG)
+            {
+                console.log(`✅ 步骤 买积分市场交易信息导入变量包装函数 执行`);
+            }
             const originalFn = window.eatwi.global.ui._originalPointsMarketDataFunc;
             if (originalFn)
             {
@@ -313,7 +266,10 @@
         // 包装：买积分市场信息2 - 从变量读取数据后调用原始函数
         steps['买积分市场交易信息2'] = async function()
         {
-            console.log(`✅ 步骤 买积分市场交易信息2包装函数 执行`);
+            if (eatwi.DEBUG)
+            {
+                console.log(`✅ 步骤 买积分市场交易信息2包装函数 执行`);
+            }
             
             const originalFn = window.eatwi.global.ui._originalPointsMarketInfoFunc;
             if (originalFn)
@@ -327,7 +283,10 @@
             }
         };
         
-        eatwi.global.ui.logger.addLog('🔧 已包装交易币步骤函数（从UI读取参数，原始函数已保留）');
+        if (eatwi.DEBUG)
+        {
+            console.log('已包装交易币步骤函数（从UI读取参数，原始函数已保留）');
+        }
         return true;
     }
 
