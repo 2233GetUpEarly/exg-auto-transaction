@@ -6,6 +6,10 @@
 #include <filesystem>
 #include <regex>
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
 SaleDataHandle::SaleDataHandle()
 {
 
@@ -113,6 +117,71 @@ static void save_latest_time_attribute_to_file(const std::string& latest_time)
 	sale_attribute_file.close();
 }
 
+static void execute_ledger_calculation()
+{
+	std::string data_path = "./temp/";
+	std::string data_file = "sale_data.txt";
+
+	if (std::filesystem::exists(data_path) == false)
+	{
+		std::filesystem::create_directories(data_path);
+	}
+
+	std::string filename = data_path + data_file;
+	std::ifstream sale_file(filename);
+	if (sale_file.is_open() == false)
+	{
+		LOG(ERRO) << "销售文件打开失败";
+		assert(false);
+		return;
+	}
+
+	std::string input_data_file = "input_data.txt";
+	std::ofstream input_file(input_data_file);
+	auto size = std::filesystem::file_size(filename);
+
+	std::string sale_data_str(size, '\0');
+	sale_file.read(sale_data_str.data(), size);
+
+	input_file << sale_data_str;
+
+	LOG(DEBUG) << "销售文件输出到 input_data.txt 中";
+
+	STARTUPINFOW si = { sizeof(si) };
+	PROCESS_INFORMATION pi = { 0 };
+
+	std::wstring exe_path = L"..\\ledger-calculation\\ledger_calculation.exe";
+	std::wstring cmd_line = L"\"" + exe_path + L"\" -f";
+
+	// 注意：lpCommandLine 必须可写，不能传字符串字面量
+	BOOL ok = CreateProcessW(
+		exe_path.c_str(),      // 应用程序路径
+		&cmd_line[0],          // 命令行（含参数）
+		NULL, NULL,
+		FALSE,
+		0,                    // 创建标志，如 CREATE_NEW_CONSOLE
+		NULL,                 // 环境变量
+		NULL,                 // 工作目录，NULL 表示当前目录
+		&si, &pi
+	);
+
+	if (!ok)
+	{
+		// 用 GetLastError() 查看错误
+		return;
+	}
+
+	// 等待子进程结束（可选）
+	WaitForSingleObject(pi.hProcess, INFINITE);
+	DWORD exit_code;
+	GetExitCodeProcess(pi.hProcess, &exit_code);
+
+	CloseHandle(pi.hProcess);
+	CloseHandle(pi.hThread);
+
+	std::cout << exit_code << std::endl;
+}
+
 void SaleDataHandle::task(nlohmann::json& json)
 {
 	if (check_json_key(json) == false)
@@ -128,4 +197,5 @@ void SaleDataHandle::task(nlohmann::json& json)
 	save_sale_data_to_file(sale_data_str);
 	std::string latest_time = get_sale_latest_time(sale_data_str);
 	save_latest_time_attribute_to_file(latest_time);
+	execute_ledger_calculation();
 }

@@ -14,6 +14,7 @@
 
 void test2();
 void test3();
+void test4();
 
 int main()
 {
@@ -24,8 +25,46 @@ int main()
 
     test2();
     //test3();
+    //test4();
 
     return 0;
+}
+
+void test4()
+{
+    STARTUPINFOW si = { sizeof(si) };
+    PROCESS_INFORMATION pi = { 0 };
+
+    std::wstring exePath = L"D:\\code\\exg-auto-transaction\\build\\ledger-calculation\\ledger_calculation.exe";
+    std::wstring cmdLine = L"\"" + exePath + L"\" -f";
+
+    // 注意：lpCommandLine 必须可写，不能传字符串字面量
+    BOOL ok = CreateProcessW(
+        exePath.c_str(),      // 应用程序路径
+        &cmdLine[0],          // 命令行（含参数）
+        NULL, NULL,
+        FALSE,
+        0,                    // 创建标志，如 CREATE_NEW_CONSOLE
+        NULL,                 // 环境变量
+        NULL,                 // 工作目录，NULL 表示当前目录
+        &si, &pi
+    );
+
+    if (!ok)
+    {
+        // 用 GetLastError() 查看错误
+        return;
+    }
+
+    // 等待子进程结束（可选）
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    DWORD exitCode;
+    GetExitCodeProcess(pi.hProcess, &exitCode);
+
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+
+    std::cout << exitCode << std::endl;
 }
 
 void test3()
