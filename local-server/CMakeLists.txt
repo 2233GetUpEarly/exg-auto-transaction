@@ -46,5 +46,10 @@ endif()
 
 add_executable(local_server "tests/test.cpp")
 target_link_libraries(local_server PRIVATE local_server_lib)
+set_target_properties(local_server PROPERTIES
+	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+	ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+	LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+)
 
 
