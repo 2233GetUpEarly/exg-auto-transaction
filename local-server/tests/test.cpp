@@ -32,6 +32,7 @@ int main()
 
 void test4()
 {
+#ifdef _WIN32
     STARTUPINFOW si = { sizeof(si) };
     PROCESS_INFORMATION pi = { 0 };
 
@@ -65,6 +66,7 @@ void test4()
     CloseHandle(pi.hThread);
 
     std::cout << exitCode << std::endl;
+#endif
 }
 
 void test3()

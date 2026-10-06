@@ -7,6 +7,21 @@
   },
   "configurePresets": [
     {
+      "name": "default-linux",
+      "displayName": "Debug (Unix Makefiles + vcpkg) - Linux",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_TOOLCHAIN_FILE": "$env{MY_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+      }
+    },
+    {
       "name": "default",
       "displayName": "Debug (Ninja + vcpkg manifest)",
       "generator": "Ninja",

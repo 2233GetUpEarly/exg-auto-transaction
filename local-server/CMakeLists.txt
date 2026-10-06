@@ -28,11 +28,21 @@ target_include_directories(local_server_lib
 target_link_libraries(local_server_lib
     PRIVATE
         ${IXWEBSOCKET_LIBRARY}
-        Ws2_32
-        crypt32
+	OpenSSL::SSL
+        OpenSSL::Crypto
         ZLIB::ZLIB
         MbedTLS::mbedtls
 )
+if(WIN32)
+    target_link_libraries(local_server_lib 
+	PRIVATE
+        	Ws2_32
+        	crypt32
+    )
+elseif(UNIX)
+    find_package(Threads REQUIRED)
+    target_link_libraries(local_server_lib PRIVATE Threads::Threads)
+endif()
 
 add_executable(local_server "tests/test.cpp")
 target_link_libraries(local_server PRIVATE local_server_lib)

@@ -8,6 +8,12 @@
 
 #ifdef _WIN32
 #include <Windows.h>
+#elif __linux__
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <cstring>
+#include <cerrno>
 #endif
 
 SaleDataHandle::SaleDataHandle()
@@ -147,6 +153,7 @@ static void execute_ledger_calculation()
 
 	LOG(DEBUG) << "销售文件输出到 input_data.txt 中";
 
+#ifdef _WIN32
 	STARTUPINFOW si = { sizeof(si) };
 	PROCESS_INFORMATION pi = { 0 };
 
@@ -180,6 +187,49 @@ static void execute_ledger_calculation()
 	CloseHandle(pi.hThread);
 
 	std::cout << exit_code << std::endl;
+#elif __linux__
+    std::string exe_path = "../ledger-calculation/ledger_calculation";
+
+    pid_t pid = fork();
+    if (pid < 0)
+    {
+        LOG(ERRO) << "fork 失败: " << std::strerror(errno);
+        return;
+    }
+    else if (pid == 0)
+    {
+        // 子进程
+        // argv[0] 是程序名，argv[1] 是 "-f"，最后以 nullptr 结尾
+        const char* argv[] = { exe_path.c_str(), "-f", nullptr };
+        execvp(exe_path.c_str(), const_cast<char* const*>(argv));
+
+        // 只有 exec 失败才会执行到这里
+        std::cerr << "execvp 失败: " << std::strerror(errno) << std::endl;
+        _exit(127);
+    }
+    else
+    {
+        // 父进程：等待子进程结束
+        int status = 0;
+        if (waitpid(pid, &status, 0) < 0)
+        {
+            LOG(ERRO) << "waitpid 失败: " << std::strerror(errno);
+            return;
+        }
+
+        int exit_code = -1;
+        if (WIFEXITED(status))
+        {
+            exit_code = WEXITSTATUS(status);
+        }
+        else if (WIFSIGNALED(status))
+        {
+            exit_code = 128 + WTERMSIG(status);
+        }
+
+        std::cout << exit_code << std::endl;
+    }
+#endif
 }
 
 void SaleDataHandle::task(nlohmann::json& json)
