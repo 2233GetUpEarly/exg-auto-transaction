@@ -5,6 +5,7 @@ set(JS_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/core/debug.js"
     "${CMAKE_CURRENT_SOURCE_DIR}/core/queue.js"
     "${CMAKE_CURRENT_SOURCE_DIR}/core/flow-trigger.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/core/eatwi-websocket.js"
     "${CMAKE_CURRENT_SOURCE_DIR}/core/global.js"
     "${CMAKE_CURRENT_SOURCE_DIR}/core/util.js"
 
@@ -12,17 +13,29 @@ set(JS_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/interaction/step.js"
     "${CMAKE_CURRENT_SOURCE_DIR}/interaction/flow.js"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/style.js"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/html.js"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/load.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/ui-slot.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/ui-load.js"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/interaction/panel.js"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/interaction/logger.js"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/interaction/trading-coin.js"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/interaction/points.js"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/interaction/steps.js"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/interaction/flow-select.js"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/interaction/queue.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/basic/style.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/basic/html.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/basic/load.js"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/basic/interaction/panel.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/basic/interaction/logger.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/basic/interaction/trading-coin.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/basic/interaction/points.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/basic/interaction/steps.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/basic/interaction/flow-select.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/basic/interaction/queue.js"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/communication/style.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/communication/html.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/communication/load.js"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/communication/interaction/logger.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/communication/interaction/websocket-event.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/communication/interaction/flow-select.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/communication/interaction/flow-execute.js"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/verification-code/ddddocr-helper.js"
 
