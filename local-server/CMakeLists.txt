@@ -52,4 +52,6 @@ set_target_properties(local_server PROPERTIES
 	LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
 )
 
+# 安装本地服务程序
+install(TARGETS local_server)
 

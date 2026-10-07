@@ -57,3 +57,8 @@ add_custom_command(
 )
 
 add_custom_target(merge_js ALL DEPENDS "${JS_OUTPUT_FILE}")
+
+# 打包合成的 js 文件
+install(FILES "${JS_OUTPUT_FILE}"
+    DESTINATION .
+)

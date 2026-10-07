@@ -25,3 +25,5 @@ set_target_properties(base_test PROPERTIES
 	LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
 )
 
+# 安装账本计算程序
+install(TARGETS ledger_calculation)
