@@ -1,11 +1,38 @@
 #include <local_server.hpp>
 #include <iostream>
 #include <core/simple_log.hpp>
+#include <core/config.hpp>
 
-LocalServer::LocalServer(int port, const std::string& host, std::shared_ptr<TaskHandler> task_handler)
-    :server_(port, host)
+static void open_wss_mode(ix::WebSocketServer& server, const ConfigStruct& config_struct)
+{
+    ix::SocketTLSOptions tlsOptions;
+
+    // 指定服务器证书和私钥路径
+    tlsOptions.certFile = config_struct.server_cert_path + config_struct.server_cert_file_name;
+    tlsOptions.keyFile = config_struct.server_key_path + config_struct.server_key_file_name;
+
+    // 服务器模式必须显式设置为 true
+    tlsOptions.tls = true;
+
+    // 关于 CA 文件的配置
+    // - 生产环境：使用默认 "SYSTEM" 或指定具体 CA
+    // - 自签名测试：可设为 "NONE" 以跳过对客户端的证书验证
+    // - 或者指定包含自签名证书的 CA 文件路径
+    tlsOptions.caFile = "NONE"; // 仅用于本地测试
+
+    // 将 TLS 配置应用到服务器
+    server.setTLSOptions(tlsOptions);
+}
+
+LocalServer::LocalServer(const ConfigStruct& config_struct, std::shared_ptr<TaskHandler> task_handler)
+    :server_(config_struct.port, config_struct.host)
 {
     ix::initNetSystem();
+
+    if (config_struct.open_wss_mode == true)
+    {
+        open_wss_mode(server_, config_struct);
+    }
 
     set_on_connection_callback(task_handler);
 }

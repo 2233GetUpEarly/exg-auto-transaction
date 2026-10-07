@@ -7,13 +7,14 @@
 #include <string>
 #include <ixwebsocket/IXWebSocketServer.h>
 
+struct ConfigStruct;
 class TaskHandler;
 
 class LocalServer
 {
 public:
 
-	LocalServer(int port, const std::string& host, std::shared_ptr<TaskHandler> task_handler);
+	LocalServer(const ConfigStruct&, std::shared_ptr<TaskHandler> task_handler);
 
 	~LocalServer();
 

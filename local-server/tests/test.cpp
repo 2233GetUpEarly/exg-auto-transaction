@@ -108,7 +108,7 @@ void test2()
     };
 
     std::shared_ptr<TaskHandler> task_handler = std::make_shared<TaskHandler>(arr);
-    LocalServer server(port, host, task_handler);
+    LocalServer server(config_struct, task_handler);
 
     server.listen();
 
