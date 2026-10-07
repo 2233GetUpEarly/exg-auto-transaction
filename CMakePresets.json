@@ -22,6 +22,21 @@
       }
     },
     {
+	"name": "release-linux",
+	"displayName": "Release (Unix Makefiles + vcpkg) - linux",
+	"generator": "Unix Makefiles",
+	"binaryDir": "${sourceDir}/build-release",
+	"condition": {
+		"type": "equals",
+		"lhs": "${hostSystemName}",
+		"rhs": "Linux"
+	},
+	"cacheVariables": {
+		"CMAKE_BUILD_TYPE": "Release",
+		"CMAKE_TOOLCHAIN_FILE": "$env{MY_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+	}
+    },
+    {
       "name": "default",
       "displayName": "Debug (Ninja + vcpkg)",
       "generator": "Ninja",
@@ -50,6 +65,10 @@
     {
       "name": "default-linux",
       "configurePreset": "default-linux"
+    },
+    {
+	    "name": "release-linux",
+	    "configurePreset": "release-linux"
     },
     {
       "name": "default",
