@@ -94,6 +94,7 @@ static bool check_json_key(nlohmann::json& json)
 		LOG(ERRO) << "未找到 key 类型: eat_data";
 		return false;
 	}
+	return true;
 }
 
 static void save_latest_time_attribute_to_file(const std::string& latest_time)
