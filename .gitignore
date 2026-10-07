@@ -25,6 +25,7 @@ bin-release/
 Debug/
 out/
 build/
+build-release/
 .vs
 Release/
 
