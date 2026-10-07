@@ -52,6 +52,14 @@ set_target_properties(local_server PROPERTIES
 	LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
 )
 
+# 将 config/ 内文件导入构建目录中
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/config" DESTINATION "${CMAKE_BINARY_DIR}")
+
+install(DIRECTORY
+    "${CMAKE_CURRENT_SOURCE_DIR}/config"
+    DESTINATION "."
+)
+
 # 安装本地服务程序
 install(TARGETS local_server)
 

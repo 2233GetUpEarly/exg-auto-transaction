@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <nlohmann/json.hpp>
 #include <task_handle_set.hpp>
+#include <core/config.hpp>
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -96,12 +97,18 @@ void test3()
 
 void test2()
 {
+    ConfigStruct config_struct;
+    Config config(config_struct);
+
+    int port = config_struct.port;
+    std::string host = config_struct.host;
+
     std::vector<TaskHandler::ptr> arr = {
     std::make_shared<SaleDataHandle>()
     };
 
     std::shared_ptr<TaskHandler> task_handler = std::make_shared<TaskHandler>(arr);
-    LocalServer server(54321, "127.0.0.1", task_handler);
+    LocalServer server(port, host, task_handler);
 
     server.listen();
 
