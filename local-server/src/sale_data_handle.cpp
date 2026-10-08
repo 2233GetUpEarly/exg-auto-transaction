@@ -57,6 +57,76 @@ static std::string get_sale_latest_time(const std::string& str)
 	return latest_time;
 }
 
+static void remove_already_calculate_data(std::string& sale_data_str)
+{
+	std::string data_path = "../data/";
+	std::string data_file = "sale_attribute.json";
+
+	if (std::filesystem::exists(data_path) == false)
+	{
+		std::filesystem::create_directories(data_path);
+	}
+
+	std::string filename = data_path + data_file;
+	std::ifstream sale_attribute_file(filename);
+	if (sale_attribute_file.is_open() == false)
+	{
+		LOG(ERRO) << "销售属性文件打开失败，取消去除已计算数据";
+		return;
+	}
+
+	auto size = std::filesystem::file_size(filename);
+	std::string sale_attribute_str(size, '\0');
+	sale_attribute_file.read(sale_attribute_str.data(), size);
+
+	nlohmann::json json = nlohmann::json::parse(sale_attribute_str);
+	std::string already_calculate_time = json["latest_time"].get<std::string>();
+
+	LOG(DEBUG) << "获取上次计算过的销售信息时间: " << already_calculate_time;
+
+	std::string line;
+	std::stringstream sin(sale_data_str);
+
+	std::vector<size_t> starts;   // 每行起始偏移
+	size_t offset = 0;
+	bool find_time = false;
+	size_t cut_pos = 0;
+
+	while (std::getline(sin, line))
+	{
+		starts.push_back(offset);          // 记录本行起始
+
+		if (line == already_calculate_time)
+		{
+			find_time = true;
+			// 删匹配行及其前两行 => 起点是倒数第3个起始位置
+			if (starts.size() >= 3)
+			{
+				cut_pos = starts[starts.size() - 3];
+			}
+			else
+			{
+				cut_pos = 0;
+			}
+			break;
+		}
+
+		offset += line.size();
+		if (sin.peek() != EOF)
+		{
+			offset += 1;  // 补上被 getline 吃掉的 '\n'
+		}
+	}
+
+	if (find_time)
+	{
+		sale_data_str.resize(cut_pos);
+	}
+
+	LOG(DEBUG) << "销售记录移除已计算数据";
+	sale_attribute_file.close();
+}
+
 static void save_sale_data_to_file(const std::string& sale_data_str)
 {
 	std::string data_path = "../data/";
@@ -153,6 +223,8 @@ static void execute_ledger_calculation()
 	input_file << sale_data_str;
 
 	LOG(DEBUG) << "销售文件输出到 input_data.txt 中";
+	sale_file.close();
+	input_file.close();
 
 #ifdef _WIN32
 	STARTUPINFOW si = { sizeof(si) };
@@ -187,7 +259,15 @@ static void execute_ledger_calculation()
 	CloseHandle(pi.hProcess);
 	CloseHandle(pi.hThread);
 
-	std::cout << exit_code << std::endl;
+	if (exit_code == 0)
+	{
+		LOG(DEBUG) << "账本计算执行完毕";
+	}
+	else
+	{
+		LOG(ERRO) << "账本计算出错";
+	}
+
 #elif __linux__
     std::string exe_path = "../ledger-calculation/ledger_calculation";
 
@@ -245,6 +325,7 @@ void SaleDataHandle::task(nlohmann::json& json)
 	LOG(DEBUG) << "任务码[" << task_number << "]:销售记录处理";
 
 	std::string sale_data_str = json["eat_data"].get<std::string>();
+	remove_already_calculate_data(sale_data_str);
 	save_sale_data_to_file(sale_data_str);
 	std::string latest_time = get_sale_latest_time(sale_data_str);
 	save_latest_time_attribute_to_file(latest_time);
