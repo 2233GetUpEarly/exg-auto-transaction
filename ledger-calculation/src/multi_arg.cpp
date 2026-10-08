@@ -103,12 +103,10 @@ static void ledger_calculation_default_file()
 	lc.input(new_trade_file);
 	lc.ledger_calculation();
 	lc.output_lc_record(lc_record_file);
+#ifdef _DEBUG
 	lc.output_lc_record(std::cout);
-	lc.output_lc_overflow(overflow_file);
-
-#ifdef _WIN32
-	system("pause");
 #endif
+	lc.output_lc_overflow(overflow_file);
 }
 
 MultiArg::MultiArg(int argc, char* argv[])
