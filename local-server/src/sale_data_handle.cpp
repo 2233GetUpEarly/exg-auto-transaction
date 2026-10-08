@@ -59,7 +59,7 @@ static std::string get_sale_latest_time(const std::string& str)
 
 static void save_sale_data_to_file(const std::string& sale_data_str)
 {
-	std::string data_path = "./temp/";
+	std::string data_path = "../data/";
 	std::string data_file = "sale_data.txt";
 
 	if (std::filesystem::exists(data_path) == false)
@@ -99,7 +99,7 @@ static bool check_json_key(nlohmann::json& json)
 
 static void save_latest_time_attribute_to_file(const std::string& latest_time)
 {
-	std::string data_path = "./temp/";
+	std::string data_path = "../data/";
 	std::string data_file = "sale_attribute.json";
 
 	if (std::filesystem::exists(data_path) == false)
@@ -126,7 +126,7 @@ static void save_latest_time_attribute_to_file(const std::string& latest_time)
 
 static void execute_ledger_calculation()
 {
-	std::string data_path = "./temp/";
+	std::string data_path = "../data/";
 	std::string data_file = "sale_data.txt";
 
 	if (std::filesystem::exists(data_path) == false)
@@ -143,7 +143,7 @@ static void execute_ledger_calculation()
 		return;
 	}
 
-	std::string input_data_file = "input_data.txt";
+	std::string input_data_file = data_path + "input_data.txt";
 	std::ofstream input_file(input_data_file);
 	auto size = std::filesystem::file_size(filename);
 
@@ -158,7 +158,7 @@ static void execute_ledger_calculation()
 	STARTUPINFOW si = { sizeof(si) };
 	PROCESS_INFORMATION pi = { 0 };
 
-	std::wstring exe_path = L"..\\ledger-calculation\\ledger_calculation.exe";
+	std::wstring exe_path = L".\\ledger_calculation.exe";
 	std::wstring cmd_line = L"\"" + exe_path + L"\" -f";
 
 	// 注意：lpCommandLine 必须可写，不能传字符串字面量
