@@ -6,13 +6,6 @@ find_package(ZLIB CONFIG REQUIRED)
 # 查找 mbedtls（vcpkg 提供的包名）
 find_package(MbedTLS CONFIG REQUIRED)
 
-find_path(IXWEBSOCKET_INCLUDE_DIR ixwebsocket/IXWebSocket.h)
-find_library(IXWEBSOCKET_LIBRARY NAMES ixwebsocket)
-
-if(NOT IXWEBSOCKET_LIBRARY)
-    message(FATAL_ERROR "找不到 ixwebsocket.lib，请检查 vcpkg 安装路径")
-endif()
-
 # 计算当前项目根目录路径长度（注意末尾的 / 或 \），并设置预处理宏 SOURCE_PATH_SIZE 用于日志打印截断文件路径
 string(LENGTH "${CMAKE_CURRENT_SOURCE_DIR}/" SOURCE_PATH_SIZE)
 add_definitions("-DSOURCE_PATH_SIZE=${SOURCE_PATH_SIZE}")
@@ -22,13 +15,13 @@ file(GLOB LS_SRC_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 add_library(local_server_lib STATIC ${LS_SRC_LIST})
 target_include_directories(local_server_lib
     PUBLIC
-        ${IXWEBSOCKET_INCLUDE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 target_link_libraries(local_server_lib
     PRIVATE
-        ${IXWEBSOCKET_LIBRARY}
-	OpenSSL::SSL
+        nlohmann_json::nlohmann_json
+        ixwebsocket::ixwebsocket
+        OpenSSL::SSL
         OpenSSL::Crypto
         ZLIB::ZLIB
         MbedTLS::mbedtls
@@ -45,7 +38,7 @@ elseif(UNIX)
 endif()
 
 add_executable(local_server "tests/test.cpp")
-target_link_libraries(local_server PRIVATE local_server_lib)
+target_link_libraries(local_server PRIVATE local_server_lib nlohmann_json::nlohmann_json)
 set_target_properties(local_server PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
 	ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
