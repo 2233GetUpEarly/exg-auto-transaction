@@ -31,7 +31,6 @@
 
     eatwi.util.appendHTML('浮动窗口HTML', '#darkrp-control-panel', eatwi.global.ui.floatingWindow, eatwi.DEBUG);
     eatwi.util.appendHTML('浮动窗口拉伸手柄', '#dp-main-container', eatwi.global.ui.dpResizeHandle, eatwi.DEBUG);
-    eatwi.util.appendHTML('浮动窗口标题栏', '#dp-main-container', eatwi.global.ui.dpTitleBar, eatwi.DEBUG);
     eatwi.util.appendHTML('浮动窗口内容', '#dp-main-container', eatwi.global.ui.dpContent, eatwi.DEBUG);
     eatwi.util.appendHTML('浮动窗口日志信息区', '#dp-content', eatwi.global.ui.dpLog, eatwi.DEBUG);
 

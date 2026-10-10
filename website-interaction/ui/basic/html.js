@@ -11,17 +11,6 @@
         <div id="dp-resize-handle"></div>
     `;
 
-    const dpTitleBar = `
-        <!-- 标题栏 -->
-        <div id="dp-title-bar">
-            <span style="font-weight: 500;">EXG 自动交易脚本</span>
-            <div style="display: flex; gap: ${eatwi.global.ui.isMobile ? '16px' : '8px'}">
-                <button id="dp-minimize">−</button>
-                <button id="dp-close">✕</button>
-            </div>
-        </div>
-    `;
-
     const dpContent = `
         <!-- 可滚动内容区 -->
         <div id="dp-content">
@@ -254,7 +243,6 @@
 
     window.eatwi.global.ui.floatingWindow = floatingWindow;
     window.eatwi.global.ui.dpResizeHandle = dpResizeHandle;
-    window.eatwi.global.ui.dpTitleBar = dpTitleBar;
     window.eatwi.global.ui.dpContent = dpContent;
     window.eatwi.global.ui.dpLog = dpLog;
     window.eatwi.global.ui.dpMenuPath = dpMenuPath;

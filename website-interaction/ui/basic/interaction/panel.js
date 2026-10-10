@@ -1,16 +1,7 @@
 (function(){
 
-    // 关闭面板
-    const panel = document.getElementById('darkrp-control-panel');
-    const closeBtn = document.getElementById('dp-close');
-    closeBtn.addEventListener('click', () => {
-        panel.remove();
-    });
-
     // 获取元素
     const mainDiv = document.getElementById('dp-main-container');
-    const titleBar = document.getElementById('dp-title-bar');
-    const minimizeBtn = document.getElementById('dp-minimize');
     const contentDiv = document.getElementById('dp-content');
     const resizeHandle = document.getElementById('dp-resize-handle');
 
@@ -51,27 +42,6 @@
     let startX = 0, startY = 0;
     let startLeft = 0, startTop = 0;
 
-    function onTouchStart(e)
-    {
-        if (!titleBar.contains(e.target)) return;
-        if (e.target.tagName === 'BUTTON') return;
-        
-        e.preventDefault();
-        isDragging = true;
-        const touch = e.touches[0];
-        startX = touch.clientX;
-        startY = touch.clientY;
-        
-        const rect = mainDiv.getBoundingClientRect();
-        startLeft = rect.left;
-        startTop = rect.top;
-        
-        mainDiv.style.left = startLeft + 'px';
-        mainDiv.style.top = startTop + 'px';
-        mainDiv.style.right = 'auto';
-        mainDiv.style.bottom = 'auto';
-    }
-
     function onTouchMove(e)
     {
         if (!isDragging) return;
@@ -98,26 +68,6 @@
     let mouseStartX = 0, mouseStartY = 0;
     let mouseStartLeft = 0, mouseStartTop = 0;
 
-    function onMouseDown(e)
-    {
-        if (!titleBar.contains(e.target)) return;
-        if (e.target.tagName === 'BUTTON') return;
-        
-        mouseDown = true;
-        mouseStartX = e.clientX;
-        mouseStartY = e.clientY;
-        
-        const rect = mainDiv.getBoundingClientRect();
-        mouseStartLeft = rect.left;
-        mouseStartTop = rect.top;
-        
-        mainDiv.style.left = mouseStartLeft + 'px';
-        mainDiv.style.top = mouseStartTop + 'px';
-        mainDiv.style.right = 'auto';
-        mainDiv.style.bottom = 'auto';
-        document.body.style.userSelect = 'none';
-    }
-
     function onMouseMove(e)
     {
         if (!mouseDown) return;
@@ -136,20 +86,6 @@
     {
         mouseDown = false;
         document.body.style.userSelect = '';
-    }
-
-    // 注册拖动事件
-    if (eatwi.global.ui.isMobile)
-    {
-        titleBar.addEventListener('touchstart', onTouchStart, { passive: false });
-        titleBar.addEventListener('touchmove', onTouchMove, { passive: false });
-        titleBar.addEventListener('touchend', onTouchEnd);
-    }
-    else
-    {
-        titleBar.addEventListener('mousedown', onMouseDown);
-        window.addEventListener('mousemove', onMouseMove);
-        window.addEventListener('mouseup', onMouseUp);
     }
 
     // ========== 拉伸缩放功能 ==========
@@ -226,26 +162,4 @@
             window.addEventListener('mouseup', onResizeEnd);
         }
     }
-
-    // 最小化/恢复
-    let isMinimized = false;
-    minimizeBtn.addEventListener('click', () => {
-        isMinimized = !isMinimized;
-        if (isMinimized)
-        {
-            contentDiv.style.display = 'none';
-            minimizeBtn.textContent = '□';
-            mainDiv.style.height = 'auto';
-        }
-        else
-        {
-            contentDiv.style.display = 'block';
-            minimizeBtn.textContent = '−';
-            // 恢复之前保存的尺寸或默认
-            if (mainDiv.style.height === 'auto')
-            {
-                mainDiv.style.height = '500px';
-            }
-        }
-    });
 })();
