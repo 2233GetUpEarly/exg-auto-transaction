@@ -12,14 +12,13 @@
         bottom: '90px',
         width: '700px',
         maxHeight: '70vh',
-        display: 'none',                 // 初始隐藏
+        display: 'flex',
         background: 'rgba(24, 26, 42, 0.96)',
         border: '1px solid rgba(255,255,255,0.08)',
         borderRadius: '14px',
         boxShadow: '0 12px 40px rgba(0,0,0,0.5)',
         backdropFilter: 'blur(10px)',
         zIndex: 99998,
-        overflow: 'hidden',
         flexDirection: 'column',
     };
 
