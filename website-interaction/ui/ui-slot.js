@@ -33,14 +33,14 @@
             this.setPanel(panelStyle)
             this.#panel.id = this.#panelID;
 
-            // 标签栏
-            this.#tabBar = document.createElement('div');
-            this.setTabBar(tabBarStyle)
-            this.#panel.appendChild(this.#tabBar);
-
             // 内容区
             this.#pageContainer = document.createElement('div');
             this.#panel.appendChild(this.#pageContainer);
+
+            // 标签栏
+            this.#tabBar = document.createElement('div');
+            this.setTabBar(tabBarStyle);
+            this.#panel.appendChild(this.#tabBar);
 
             document.body.appendChild(this.#panel);
         }
@@ -95,7 +95,7 @@
                 container: pageEl,
                 tabBtn: tabBtn,
                 pageEl: pageEl,
-                mounted: this.#lazyLoading
+                mounted: !this.#lazyLoading
             };
             this.#modules.push(entry);
             if (this.#lazyLoading === false)
