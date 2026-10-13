@@ -6,11 +6,6 @@
             </div>
     `;
 
-    const dpResizeHandle = `
-        <!-- 拉伸手柄（右下角） -->
-        <div id="dp-resize-handle"></div>
-    `;
-
     const dpContent = `
         <!-- 可滚动内容区 -->
         <div id="dp-content">
@@ -242,7 +237,6 @@
     window.eatwi.global.ui = window.eatwi.global.ui || {};
 
     window.eatwi.global.ui.floatingWindow = floatingWindow;
-    window.eatwi.global.ui.dpResizeHandle = dpResizeHandle;
     window.eatwi.global.ui.dpContent = dpContent;
     window.eatwi.global.ui.dpLog = dpLog;
     window.eatwi.global.ui.dpMenuPath = dpMenuPath;

@@ -3,7 +3,6 @@
     // 获取元素
     const mainDiv = document.getElementById('dp-main-container');
     const contentDiv = document.getElementById('dp-content');
-    const resizeHandle = document.getElementById('dp-resize-handle');
 
     // 执行单个步骤
     async function executeStep(stepName)
@@ -144,22 +143,5 @@
     {
         isResizing = false;
         document.body.style.userSelect = '';
-    }
-    
-    // 注册拉伸事件
-    if (resizeHandle)
-    {
-        if (eatwi.global.ui.isMobile)
-        {
-            resizeHandle.addEventListener('touchstart', onResizeStart, { passive: false });
-            window.addEventListener('touchmove', onResizeMove, { passive: false });
-            window.addEventListener('touchend', onResizeEnd);
-        }
-        else
-        {
-            resizeHandle.addEventListener('mousedown', onResizeStart);
-            window.addEventListener('mousemove', onResizeMove);
-            window.addEventListener('mouseup', onResizeEnd);
-        }
     }
 })();

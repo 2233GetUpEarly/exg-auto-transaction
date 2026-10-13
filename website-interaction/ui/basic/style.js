@@ -24,19 +24,6 @@
             background: #1e1e2f;
         }
 
-        #dp-resize-handle
-        {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 20px;
-            height: 20px;
-            cursor: nw-resize;
-            background: linear-gradient(135deg, transparent 50%, #5a5a7a 50%);
-            border-bottom-right-radius: ${eatwi.global.ui.isMobile ? '16px' : '12px'};
-            z-index: 10;
-        }
-
         #dp-title-bar
         {
             background: #2a2a3a;
