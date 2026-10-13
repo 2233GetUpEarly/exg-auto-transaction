@@ -11,7 +11,7 @@
         right: '20px',
         bottom: '90px',
         width: '700px',
-        maxHeight: '70vh',
+        maxHeight: '80vh',
         display: 'flex',
         background: 'rgba(24, 26, 42, 0.96)',
         border: '1px solid rgba(255,255,255,0.08)',
