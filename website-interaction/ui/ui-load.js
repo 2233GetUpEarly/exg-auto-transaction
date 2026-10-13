@@ -18,7 +18,7 @@
         borderRadius: '14px',
         boxShadow: '0 12px 40px rgba(0,0,0,0.5)',
         backdropFilter: 'blur(10px)',
-        zIndex: 99998,
+        zIndex: 999999,
         flexDirection: 'column',
     };
 
