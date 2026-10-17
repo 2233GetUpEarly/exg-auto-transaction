@@ -1,3 +1,4 @@
+#include <core/util.hpp>
 #include <task/sale_data_handle.hpp>
 #include <core/simple_log.hpp>
 #include <iostream>
@@ -61,23 +62,14 @@ static void remove_already_calculate_data(std::string& sale_data_str)
 {
 	std::string data_path = "../data/";
 	std::string data_file = "sale_attribute.json";
-
-	if (std::filesystem::exists(data_path) == false)
-	{
-		std::filesystem::create_directories(data_path);
-	}
-
 	std::string filename = data_path + data_file;
-	std::ifstream sale_attribute_file(filename);
-	if (sale_attribute_file.is_open() == false)
+
+	std::string sale_attribute_str;
+	if (file_to_string(filename, sale_attribute_str) == false)
 	{
 		LOG(ERRO) << "销售属性文件打开失败，取消去除已计算数据";
 		return;
 	}
-
-	auto size = std::filesystem::file_size(filename);
-	std::string sale_attribute_str(size, '\0');
-	sale_attribute_file.read(sale_attribute_str.data(), size);
 
 	nlohmann::json json = nlohmann::json::parse(sale_attribute_str);
 	std::string already_calculate_time = json["latest_time"].get<std::string>();
@@ -124,21 +116,15 @@ static void remove_already_calculate_data(std::string& sale_data_str)
 	}
 
 	LOG(DEBUG) << "销售记录移除已计算数据";
-	sale_attribute_file.close();
 }
 
 static void save_sale_data_to_file(const std::string& sale_data_str)
 {
 	std::string data_path = "../data/";
 	std::string data_file = "sale_data.txt";
-
-	if (std::filesystem::exists(data_path) == false)
-	{
-		std::filesystem::create_directories(data_path);
-	}
-
 	std::string filename = data_path + data_file;
-	std::ofstream sale_file(filename);
+
+	std::ofstream sale_file = get_write_file(filename);
 	if (sale_file.is_open() == false)
 	{
 		LOG(ERRO) << "销售文件打开失败";
@@ -148,8 +134,6 @@ static void save_sale_data_to_file(const std::string& sale_data_str)
 
 	sale_file << sale_data_str;
 	LOG(DEBUG) << "销售记录输出到销售文件中";
-
-	sale_file.close();
 }
 
 static bool check_json_key(nlohmann::json& json)
@@ -171,14 +155,9 @@ static void save_latest_time_attribute_to_file(const std::string& latest_time)
 {
 	std::string data_path = "../data/";
 	std::string data_file = "sale_attribute.json";
-
-	if (std::filesystem::exists(data_path) == false)
-	{
-		std::filesystem::create_directories(data_path);
-	}
-
 	std::string filename = data_path + data_file;
-	std::ofstream sale_attribute_file(filename);
+
+	std::ofstream sale_attribute_file = get_write_file(filename);
 	if (sale_attribute_file.is_open() == false)
 	{
 		LOG(ERRO) << "销售属性文件打开失败";
@@ -190,40 +169,27 @@ static void save_latest_time_attribute_to_file(const std::string& latest_time)
 	json["latest_time"] = latest_time;
 	sale_attribute_file << json;
 	LOG(DEBUG) << "销售最新时间输出到销售属性文件中";
-	
-	sale_attribute_file.close();
 }
 
 static void execute_ledger_calculation()
 {
 	std::string data_path = "../data/";
 	std::string data_file = "sale_data.txt";
-
-	if (std::filesystem::exists(data_path) == false)
-	{
-		std::filesystem::create_directories(data_path);
-	}
-
 	std::string filename = data_path + data_file;
-	std::ifstream sale_file(filename);
-	if (sale_file.is_open() == false)
+
+	std::string sale_data_str;
+	if (file_to_string(filename, sale_data_str) == false)
 	{
-		LOG(ERRO) << "销售文件打开失败";
+		LOG(ERRO) << " file_to_string 函数执行失败";
 		assert(false);
 		return;
 	}
 
 	std::string input_data_file = data_path + "input_data.txt";
-	std::ofstream input_file(input_data_file);
-	auto size = std::filesystem::file_size(filename);
-
-	std::string sale_data_str(size, '\0');
-	sale_file.read(sale_data_str.data(), size);
+	std::ofstream input_file = get_write_file(input_data_file);
 
 	input_file << sale_data_str;
-
 	LOG(DEBUG) << "销售文件输出到 input_data.txt 中";
-	sale_file.close();
 	input_file.close();
 
 #ifdef _WIN32
