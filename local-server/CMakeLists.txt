@@ -6,6 +6,8 @@ find_package(ZLIB CONFIG REQUIRED)
 # 查找 mbedtls（vcpkg 提供的包名）
 find_package(MbedTLS CONFIG REQUIRED)
 
+find_package(catch2 CONFIG REQUIRED)
+
 # 计算当前项目根目录路径长度（注意末尾的 / 或 \），并设置预处理宏 SOURCE_PATH_SIZE 用于日志打印截断文件路径
 string(LENGTH "${CMAKE_CURRENT_SOURCE_DIR}/" SOURCE_PATH_SIZE)
 add_definitions("-DSOURCE_PATH_SIZE=${SOURCE_PATH_SIZE}")
@@ -44,6 +46,19 @@ set_target_properties(local_server PROPERTIES
 	ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
 	LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
 )
+
+include(CTest)
+if (BUILD_TESTING)
+    add_executable(local_server_unit_test "tests/unit_test.cpp")
+    target_link_libraries(local_server_unit_test PRIVATE local_server_lib Catch2::Catch2)
+    set_target_properties(local_server_unit_test PROPERTIES
+	    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+	    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+	    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+    )
+    include(Catch)
+    catch_discover_tests(local_server_unit_test)
+endif()
 
 # 将 config/ 内文件导入构建目录中
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/config" DESTINATION "${CMAKE_BINARY_DIR}")
