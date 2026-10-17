@@ -148,7 +148,7 @@ public:
 
 	static std::pair<bool, LCUnit> merge_same_proportion_sell_type(LCUnit& sell1, LCUnit& sell2)
 	{
-		if (sell1.sell_type_ != sell2.sell_type_ || sell1.compare_proportion_same(sell2))
+		if (sell1.sell_type_ != sell2.sell_type_ || sell1.compare_proportion_same(sell2) == false)
 		{
 			return { false, LCUnit() };
 		}
