@@ -40,7 +40,7 @@
         userSelect: 'none',
         boxShadow: '0 6px 20px rgba(102,126,234,0.45)',
         transition: 'transform .15s ease, box-shadow .15s ease',
-        zIndex: 99999,
+        zIndex: 999999,
     };
 
     // 标签栏样式
