@@ -16,9 +16,13 @@
         {
             if (!this.#ws || this.#ws.readyState !== WebSocket.OPEN)
             {
-                if (eatwi.DEBUG)
+                if (eatwi.DEBUG && !this.#outputToLog)
                 {
                     console.error('未连接，无法发送');
+                }
+                if (this.#outputToLog)
+                {
+                    this.#outputToLog(`未连接，无法发送`, true);
                 }
                 return false;
             }
@@ -26,17 +30,25 @@
             {
                 const text = typeof data === 'string' ? data : JSON.stringify(data);
                 this.#ws.send(text);
-                if (eatwi.DEBUG)
+                if (eatwi.DEBUG && !this.#outputToLog)
                 {
                     console.log(`→ ${text}`);
+                }
+                if (this.#outputToLog)
+                {
+                    this.#outputToLog(`→ ${text}`);
                 }
                 return true;
             }
             catch (e)
             {
-                if (eatwi.DEBUG)
+                if (eatwi.DEBUG && !this.#outputToLog)
                 {
                     console.error(`发送失败: ${e.message}`);
+                }
+                if (this.#outputToLog)
+                {
+                    this.#outputToLog(`发送失败: ${e.message}`, true);
                 }
                 return false;
             }
@@ -84,38 +96,58 @@
                 return;
             }
 
-            if (eatwi.DEBUG)
+            if (eatwi.DEBUG && !this.#outputToLog)
             {
                 console.log(`正在连接 ${WS_URL} ...`);
+            }
+            if (this.#outputToLog)
+            {
+                this.#outputToLog(`正在连接 ${WS_URL} ...`);
             }
             this.#ws = new WebSocket(WS_URL);
 
             this.#ws.onopen = () => {
-                if (eatwi.DEBUG)
+                if (eatwi.DEBUG && !this.#outputToLog)
                 {
                     console.log('已连接', 'recv');
+                }
+                if (this.#outputToLog)
+                {
+                    this.#outputToLog(`已连接`);
                 }
                 this.startHeartbeat();
             };
 
             this.#ws.onmessage = (event) => {
-                if (eatwi.DEBUG)
+                if (eatwi.DEBUG && !this.#outputToLog)
                 {
                     console.log(`← ${event.data}`, 'recv');
+                }
+                if (this.#outputToLog)
+                {
+                    this.#outputToLog(`← ${event.data}`);
                 }
             };
 
             this.#ws.onerror = () => {
-                if (eatwi.DEBUG)
+                if (eatwi.DEBUG && !this.#outputToLog)
                 {
                     console.error('连接出错');
+                }
+                if (this.#outputToLog)
+                {
+                    this.#outputToLog(`连接出错`, true);
                 }
             };
 
             this.#ws.onclose = (event) => {
-                if (eatwi.DEBUG)
+                if (eatwi.DEBUG && !this.#outputToLog)
                 {
                     console.error(`连接关闭 (code=${event.code})`);
+                }
+                if (this.#outputToLog)
+                {
+                    this.#outputToLog(`连接关闭 (code=${event.code})`);
                 }
                 this.stopHeartbeat();
                 this.#ws = null;
@@ -126,11 +158,17 @@
             };
         }
 
+        setOutputLog(logFunc)
+        {
+            this.#outputToLog = logFunc;
+        }
+
     // ============ 状态 ============
         #ws = null;
         #reconnectTimer = null;
         #heartbeatTimer = null;
         #manualClose = null;
+        #outputToLog = null;
     }
 
     window.eatwi = window.eatwi || {};

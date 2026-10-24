@@ -19,4 +19,5 @@
 
     window.eatwi.global.ui.communication = window.eatwi.global.ui.communication || {};
     window.eatwi.global.ui.communication.addLog = addLog;
+    window.eatwi.global.websocket.setOutputLog(addLog);
 })();
