@@ -22,31 +22,6 @@
             font-size: 11px;
         }
 
-        #eatwi-communication-header
-        {
-            padding: 8px 12px;
-            background: #1a1a1a;
-            cursor: move;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-        }
-
-        #eatwi-communication-input
-        {
-            width: 100%;
-            box-sizing: border-box;
-            background: #222;
-            color: #eee;
-            border: 1px solid #444;
-            border-radius: 4px;
-            padding: 4px 6px;
-            font-family: inherit;
-            font-size: 12px;
-            margin-bottom: 6px;
-        }
-
         .eatwi-communication-btn
         {
             background: #333;

@@ -32,16 +32,9 @@
 
     const websocketServer = `
         <div>
-            <div id="eatwi-communication-header">
-                <span><span id="eatwi-communication-status"></span>本地 WS</span>
-            </div>
             <div>
-                <input id="eatwi-communication-input" type="text" placeholder="输入消息，点击按钮发送..." />
-                <div>
-                    <button class="eatwi-communication-btn" id="eatwi-communication-send">发送</button>
-                    <button class="eatwi-communication-btn" id="eatwi-communication-link">连接</button>
-                </div>
-            </div>    
+                <button class="eatwi-communication-btn" id="eatwi-communication-link">连接</button>
+            </div>
         </div>
     `;
 
