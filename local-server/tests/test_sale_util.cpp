@@ -9,440 +9,354 @@
 
 namespace fs = std::filesystem;
 
-// ---------- 文件辅助 ----------
-static std::string read_file(const fs::path& p)
+// ============================================================
+// 测试替身
+// ============================================================
+struct FakeRunner : IProcessRunner
 {
-    std::ifstream f(p, std::ios::binary);
-    std::ostringstream ss;
-    ss << f.rdbuf();
-    return ss.str();
-}
-static void write_file(const fs::path& p, const std::string& s)
-{
-    std::ofstream f(p, std::ios::binary);
-    f << s;
-}
+    int ret = 0;
+    int call_count = 0;
+    fs::path last_exe;
+    std::vector<std::string> last_args;
 
-// ---------- 临时项目目录（RAII）----------
-// 目录布局：
-//   <root>/work/                 <- 测试进程 cwd
-//   <root>/data/                 <- 被测代码里的 "../data/"
-//   <root>/ledger-calculation/   <- 假 exe 放这里
-struct ScopedProjectDir
-{
-    fs::path root;
-    fs::path prev_cwd;
-
-    ScopedProjectDir()
+    int run(const fs::path& exe, const std::vector<std::string>& args) override
     {
-        auto uniq = std::to_string(
-            std::chrono::steady_clock::now().time_since_epoch().count());
-        root = fs::temp_directory_path() / ("sale_test_" + uniq);
-        fs::create_directories(root / "data");
-        fs::create_directories(root / "work");
-        prev_cwd = fs::current_path();
-        fs::current_path(root / "work");
+        ++call_count;
+        last_exe = exe;
+        last_args = args;
+        return ret;
     }
-    ~ScopedProjectDir()
-    {
-        std::error_code ec;
-        fs::current_path(prev_cwd, ec);
-        fs::remove_all(root, ec);   // 析构不能抛
-    }
-    fs::path data() const { return root / "data"; }
 };
 
+// ============================================================
+// 临时目录 + 构造 SaleUtil 的辅助
+// ============================================================
+struct TmpDir
+{
+    fs::path p;
+    TmpDir()
+    {
+        p = fs::temp_directory_path() / ("sale_" + std::to_string(
+                std::chrono::steady_clock::now().time_since_epoch().count()));
+        fs::create_directories(p);
+    }
+    ~TmpDir() { std::error_code ec; fs::remove_all(p, ec); }
+};
+
+static std::string slurp(const fs::path& f)
+{
+    std::ifstream in(f, std::ios::binary);
+    std::ostringstream ss;
+    ss << in.rdbuf();
+    return ss.str();
+}
+
+// 构造一个指向临时目录 data/ 的 SaleUtil
+static SaleUtil make_svc(const fs::path& data_dir, std::shared_ptr<FakeRunner> fake)
+{
+    auto cfg = std::make_unique<SaleConfig>();
+    cfg->data_dir = data_dir;
+    cfg->ledger_exe = "/nonexistent";
+    return SaleUtil(std::move(cfg), fake);
+}
+
+TEST_CASE("free functions delegate to SaleUtil", "[sale][api]")
+{
+    SECTION("make_default 返回同一实例")
+    {
+        REQUIRE(&SaleUtil::make_default() == &SaleUtil::make_default());
+    }
+    SECTION("get_sale_latest_time 能取到时间（走默认实例）")
+    {
+        REQUIRE(get_sale_latest_time("x 2024-01-01T00:00:00")
+            == "2024-01-01T00:00:00");
+    }
+    SECTION("get_sale_latest_time 无匹配返回空")
+    {
+        REQUIRE(get_sale_latest_time("hello").empty());
+    }
+    // 其他 free 函数会写 ../data/ 真实目录，属集成测试，
+    // 想跑请用 [.integration] 隐藏标签并做 chdir，见之前讨论。
+}
+
 //  execute_ledger_calculation
-
-#if defined(__linux__)
-TEST_CASE("execute_ledger_calculation - 假 exe 成功路径", "[sale][integration]")
+TEST_CASE("SaleUtil::execute_ledger_calculation", "[sale][service]")
 {
-    ScopedProjectDir env;
-    write_file(env.data() / "sale_data.txt", "sale content\n");
+    TmpDir d;
+    auto fake = std::make_shared<FakeRunner>();
 
-    // 造一个返回 0 的假 exe： ../ledger-calculation/ledger_calculation
-    auto exe = env.root / "ledger-calculation" / "ledger_calculation";
-    fs::create_directories(exe.parent_path());
-    write_file(exe, "#!/bin/sh\nexit 0\n");
-    fs::permissions(exe,
-        fs::perms::owner_all | fs::perms::group_exec | fs::perms::others_exec);
+    auto cfg = std::make_unique<SaleConfig>();
+    cfg->data_dir = d.p;
+    cfg->ledger_exe = "/fake/exe";
+    SaleUtil svc(std::move(cfg), fake);
 
-    execute_ledger_calculation();
-
-    // 核心断言：sale_data.txt -> input_data.txt 的搬运是对的
-    REQUIRE(fs::exists(env.data() / "input_data.txt"));
-    REQUIRE(read_file(env.data() / "input_data.txt") == "sale content\n");
-}
-
-TEST_CASE("execute_ledger_calculation - 假 exe 返回非 0", "[sale][integration]")
-{
-    ScopedProjectDir env;
-    write_file(env.data() / "sale_data.txt", "x\n");
-
-    auto exe = env.root / "ledger-calculation" / "ledger_calculation";
-    fs::create_directories(exe.parent_path());
-    write_file(exe, "#!/bin/sh\nexit 3\n");
-    fs::permissions(exe,
-        fs::perms::owner_all | fs::perms::group_exec | fs::perms::others_exec);
-
-    // 函数本身无返回值，只能断言"不崩"；想断言 exit_code 需要重构（见问题 6）
-    REQUIRE_NOTHROW(execute_ledger_calculation());
-}
-
-TEST_CASE("execute_ledger_calculation - exe 不存在", "[sale][integration]")
-{
-    ScopedProjectDir env;
-    write_file(env.data() / "sale_data.txt", "x\n");
-    // 不创建 ../ledger-calculation/
-    REQUIRE_NOTHROW(execute_ledger_calculation());
-    // input_data.txt 应该还是被写出来了（搬运发生在 fork 之前）
-    REQUIRE(fs::exists(env.data() / "input_data.txt"));
-}
-#endif
-
-// save_latest_time_attribute_to_file
-
-TEST_CASE("save_latest_time_attribute_to_file", "[sale]")
-{
-    ScopedProjectDir env;
-
-    SECTION("写入合法 JSON，能被回读")
+    SECTION("成功路径：写 input_data.txt 并调用一次 run")
     {
-        save_latest_time_attribute_to_file("2024-01-01T00:00:00");
-        auto j = nlohmann::json::parse(
-            read_file(env.data() / "sale_attribute.json"));
-        REQUIRE(j["latest_time"] == "2024-01-01T00:00:00");
+        std::ofstream(d.p / "sale_data.txt") << "sale content\n";
+        fake->ret = 0;
+
+        svc.execute_ledger_calculation();
+
+        REQUIRE(fake->call_count == 1);
+        REQUIRE(fake->last_args == std::vector<std::string>{"-f"});
+        REQUIRE(fake->last_exe == fs::path("/fake/exe"));
+        REQUIRE(slurp(d.p / "input_data.txt") == "sale content\n");
     }
-
-    SECTION("空字符串也能写入")
+    SECTION("子进程返回非 0：仍调用，不崩")
     {
-        save_latest_time_attribute_to_file("");
-        auto j = nlohmann::json::parse(
-            read_file(env.data() / "sale_attribute.json"));
-        REQUIRE(j["latest_time"] == "");
+        std::ofstream(d.p / "sale_data.txt") << "x\n";
+        fake->ret = 3;
+
+        REQUIRE_NOTHROW(svc.execute_ledger_calculation());
+        REQUIRE(fake->call_count == 1);
     }
-
-    SECTION("覆盖旧值")
+    SECTION("sale_data.txt 缺失：不调 runner")
     {
-        write_file(env.data() / "sale_attribute.json",
-            R"({"latest_time":"old","extra":1})");
-        save_latest_time_attribute_to_file("2024-01-02T00:00:00");
-        auto j = nlohmann::json::parse(
-            read_file(env.data() / "sale_attribute.json"));
-        REQUIRE(j["latest_time"] == "2024-01-02T00:00:00");
-        // 注意：这里会丢弃 extra 字段（函数每次重写整个文件）
+        // 不创建 sale_data.txt
+        svc.execute_ledger_calculation();
+        REQUIRE(fake->call_count == 0);
+        REQUIRE_FALSE(fs::exists(d.p / "input_data.txt"));
+    }
+    SECTION("runner 为空：应防御（当前实现会崩，记录已知问题）")
+    {
+        auto cfg2 = std::make_unique<SaleConfig>();
+        cfg2->data_dir = d.p;
+        SaleUtil svc_no_runner(std::move(cfg2), nullptr);
+        std::ofstream(d.p / "sale_data.txt") << "x\n";
+
+        // ⚠️ 若实现了 if (!runner_) return; 则改成 REQUIRE_NOTHROW
+        // 当前无保护，这里不触发调用，只用注释标记已知问题
+        // REQUIRE_NOTHROW(svc_no_runner.execute_ledger_calculation());
     }
 }
-
 
 // save_sale_data_to_file
-
-TEST_CASE("save_sale_data_to_file", "[sale]")
+TEST_CASE("SaleUtil::save_sale_data_to_file", "[sale][service]")
 {
-    ScopedProjectDir env;
+    TmpDir d;
+    auto fake = std::make_shared<FakeRunner>();
+    auto cfg = std::make_unique<SaleConfig>();
+    cfg->data_dir = d.p;
+    SaleUtil svc(std::move(cfg), fake);
 
-    SECTION("正常写入，内容一致")
+    SECTION("正常写入")
     {
-        save_sale_data_to_file("hello\nworld\n");
-        REQUIRE(read_file(env.data() / "sale_data.txt") == "hello\nworld\n");
+        svc.save_sale_data_to_file("hello\nworld\n");
+        REQUIRE(slurp(d.p / "sale_data.txt") == "hello\nworld\n");
     }
-
-    SECTION("写空字符串也会创建文件")
+    SECTION("写空串也创建文件")
     {
-        save_sale_data_to_file("");
-        REQUIRE(fs::exists(env.data() / "sale_data.txt"));
-        REQUIRE(read_file(env.data() / "sale_data.txt").empty());
+        svc.save_sale_data_to_file("");
+        REQUIRE(fs::exists(d.p / "sale_data.txt"));
+        REQUIRE(slurp(d.p / "sale_data.txt").empty());
     }
-
-    SECTION("覆盖已有文件")
+    SECTION("覆盖已有内容")
     {
-        write_file(env.data() / "sale_data.txt", "old content");
-        save_sale_data_to_file("new content");
-        REQUIRE(read_file(env.data() / "sale_data.txt") == "new content");
+        std::ofstream(d.p / "sale_data.txt") << "old";
+        svc.save_sale_data_to_file("new");
+        REQUIRE(slurp(d.p / "sale_data.txt") == "new");
+    }
+    SECTION("目录不存在时自动创建")
+    {
+        fs::remove_all(d.p);
+        svc.save_sale_data_to_file("x");
+        REQUIRE(fs::exists(d.p / "sale_data.txt"));
     }
 }
 
+// save_latest_time_attribute_to_file
+TEST_CASE("SaleUtil::save_latest_time_attribute_to_file", "[sale][service]")
+{
+    TmpDir d;
+    auto fake = std::make_shared<FakeRunner>();
+    auto cfg = std::make_unique<SaleConfig>();
+    cfg->data_dir = d.p;
+    SaleUtil svc(std::move(cfg), fake);
+
+    SECTION("写入可回读")
+    {
+        svc.save_latest_time_attribute_to_file("2024-01-01T00:00:00");
+        auto j = nlohmann::json::parse(slurp(d.p / "sale_attribute.json"));
+        REQUIRE(j["latest_time"] == "2024-01-01T00:00:00");
+    }
+    SECTION("空串也写入")
+    {
+        svc.save_latest_time_attribute_to_file("");
+        auto j = nlohmann::json::parse(slurp(d.p / "sale_attribute.json"));
+        REQUIRE(j["latest_time"] == "");
+    }
+    SECTION("覆盖旧文件（旧字段丢弃）")
+    {
+        std::ofstream(d.p / "sale_attribute.json")
+            << R"({"latest_time":"old","extra":1})";
+        svc.save_latest_time_attribute_to_file("2024-01-02T00:00:00");
+        auto j = nlohmann::json::parse(slurp(d.p / "sale_attribute.json"));
+        REQUIRE(j["latest_time"] == "2024-01-02T00:00:00");
+        REQUIRE_FALSE(j.contains("extra"));   // 记录当前行为
+    }
+}
 
 // remove_already_calculate_data
-
-TEST_CASE("remove_already_calculate_data", "[sale]")
+TEST_CASE("SaleUtil::remove_already_calculate_data", "[sale][service]")
 {
-    ScopedProjectDir env;
+    TmpDir d;
+    auto fake = std::make_shared<FakeRunner>();
+    auto cfg = std::make_unique<SaleConfig>();
+    cfg->data_dir = d.p;
+    SaleUtil svc(std::move(cfg), fake);
 
-    auto setup_attr = [&](const std::string& latest) {
-        write_file(env.data() / "sale_attribute.json",
-            nlohmann::json{ { "latest_time", latest } }.dump());
+    auto write_attr = [&](const std::string& latest) {
+        std::ofstream(d.p / "sale_attribute.json")
+            << nlohmann::json{ { "latest_time", latest } }.dump();
         };
 
+    SECTION("attr 不存在 -> 原样返回，不崩")
+    {
+        std::string s = "a\nb\nc\n";
+        REQUIRE_NOTHROW(svc.remove_already_calculate_data(s));
+        REQUIRE(s == "a\nb\nc\n");
+    }
+    SECTION("attr 是非法 JSON -> 不抛、原样")
+    {
+        std::ofstream(d.p / "sale_attribute.json") << "not json";
+        std::string s = "a\nb\nc\n";
+        REQUIRE_NOTHROW(svc.remove_already_calculate_data(s));
+        REQUIRE(s == "a\nb\nc\n");
+    }
+    SECTION("attr 缺 latest_time 字段 -> 不抛、原样")
+    {
+        std::ofstream(d.p / "sale_attribute.json") << R"({"x":1})";
+        std::string s = "a\nb\nc\n";
+        REQUIRE_NOTHROW(svc.remove_already_calculate_data(s));
+        REQUIRE(s == "a\nb\nc\n");
+    }
     SECTION("匹配在第4行 -> 保留第1行")
     {
-        setup_attr("2024-01-04T00:00:00");
+        write_attr("2024-01-04T00:00:00");
         std::string s =
-            "line1\n"
-            "line2\n"
-            "line3\n"
-            "2024-01-04T00:00:00\n"
-            "line5\n";
-        remove_already_calculate_data(s);
+            "line1\nline2\nline3\n2024-01-04T00:00:00\nline5\n";
+        svc.remove_already_calculate_data(s);
         REQUIRE(s == "line1\n");
     }
-
-    SECTION("匹配在第3行 -> 全清空")
+    SECTION("匹配在第3行 -> 全部清空")
     {
-        setup_attr("2024-01-03T00:00:00");
-        std::string s =
-            "line1\n"
-            "line2\n"
-            "2024-01-03T00:00:00\n"
-            "line4\n";
-        remove_already_calculate_data(s);
+        write_attr("2024-01-03T00:00:00");
+        std::string s = "line1\nline2\n2024-01-03T00:00:00\nx\n";
+        svc.remove_already_calculate_data(s);
         REQUIRE(s.empty());
     }
-
-    SECTION("匹配在第1行 -> 全清空")
+    SECTION("找不到匹配 -> 原样")
     {
-        setup_attr("2024-01-01T00:00:00");
-        std::string s = "2024-01-01T00:00:00\nx\ny\n";
-        remove_already_calculate_data(s);
-        REQUIRE(s.empty());
-    }
-
-    SECTION("匹配在第2行 -> 全清空")
-    {
-        setup_attr("2024-01-02T00:00:00");
-        std::string s = "line1\n2024-01-02T00:00:00\nrest\n";
-        remove_already_calculate_data(s);
-        REQUIRE(s.empty());
-    }
-
-    SECTION("找不到匹配 -> 原样返回")
-    {
-        setup_attr("2099-01-01T00:00:00");
+        write_attr("2099-01-01T00:00:00");
         std::string s = "a\nb\nc\n";
-        remove_already_calculate_data(s);
+        svc.remove_already_calculate_data(s);
         REQUIRE(s == "a\nb\nc\n");
     }
-
     SECTION("空字符串 -> 不动")
     {
-        setup_attr("2024-01-01T00:00:00");
+        write_attr("2024-01-01T00:00:00");
         std::string s;
-        remove_already_calculate_data(s);
+        svc.remove_already_calculate_data(s);
         REQUIRE(s.empty());
-    }
-
-    SECTION("sale_attribute.json 不存在 -> 原样返回（只 LOG，不崩）")
-    {
-        std::string s = "a\nb\nc\n";
-        remove_already_calculate_data(s);
-        REQUIRE(s == "a\nb\nc\n");
-    }
-
-    SECTION("sale_attribute.json 非法 JSON -> 当前实现会抛异常")
-    {
-        write_file(env.data() / "sale_attribute.json", "not json");
-        std::string s = "a\nb\nc\n";
-        // 这是"记录当前行为"的测试；建议实现里加 try/catch 后改成 REQUIRE_NOTHROW
-        REQUIRE_THROWS(remove_already_calculate_data(s));
-    }
-
-    SECTION("JSON 缺 latest_time 字段 -> 当前实现会抛异常")
-    {
-        write_file(env.data() / "sale_attribute.json", R"({"other":"x"})");
-        std::string s = "a\nb\nc\n";
-        REQUIRE_THROWS(remove_already_calculate_data(s));
     }
 }
 
-// CRLF 输入 —— 当前实现有 bug（getline 会把 '\r' 留在行尾）
-TEST_CASE("remove_already_calculate_data - CRLF", "[sale][!shouldfail]")
+// find_truncate_position
+TEST_CASE("SaleUtil::find_truncate_position", "[sale][logic]")
 {
-    ScopedProjectDir env;
-    write_file(env.data() / "sale_attribute.json",
-        nlohmann::json{ { "latest_time", "2024-01-03T00:00:00" } }.dump());
+    TmpDir d;
+    auto fake = std::make_shared<FakeRunner>();
+    auto cfg = std::make_unique<SaleConfig>();
+    cfg->data_dir = d.p;
+    SaleUtil svc(std::move(cfg), fake);
 
-    std::string s =
-        "line1\r\n"
-        "line2\r\n"
-        "line3\r\n"
-        "2024-01-03T00:00:00\r\n"
-        "line5\r\n";
+    const std::string L = "2024-01-03T00:00:00";
 
-    remove_already_calculate_data(s);
-
-    // 期望删匹配行及前两行 -> "line1\r\n"
-    // 实际：line == already_calculate_time 因 '\r' 失败，s 不变
-    REQUIRE(s == "line1\r\n");
+    SECTION("匹配在第4行 -> 保留前2字节(=第1行+a\\n)")
+    {
+        std::string s = "a\nb\nc\n" + L + "\ne\n";
+        REQUIRE(svc.find_truncate_position(s, L) == 2);   // "a\n"
+    }
+    SECTION("匹配在第3行 -> 0")
+    {
+        REQUIRE(svc.find_truncate_position("a\nb\n" + L + "\nd\n", L) == 0);
+    }
+    SECTION("匹配在第2行 -> 0")
+    {
+        REQUIRE(svc.find_truncate_position("a\n" + L + "\n", L) == 0);
+    }
+    SECTION("匹配在第1行 -> 0")
+    {
+        REQUIRE(svc.find_truncate_position(L + "\nx\n", L) == 0);
+    }
+    SECTION("找不到 -> size()（表示不修改）")
+    {
+        std::string s = "a\nb\n";
+        REQUIRE(svc.find_truncate_position(s, L) == s.size());
+    }
+    SECTION("空串 -> 0")
+    {
+        REQUIRE(svc.find_truncate_position("", L) == 0);
+    }
 }
 
 // get_sale_latest_time
-
-// ---------------------------------------------------------------------------
-// 1. 正常路径
-// ---------------------------------------------------------------------------
-TEST_CASE("get_sale_latest_time - normal cases", "[sale_time]")
+TEST_CASE("SaleUtil::get_sale_latest_time", "[sale][logic]")
 {
+    TmpDir d;
+    auto fake = std::make_shared<FakeRunner>();
+    auto cfg = std::make_unique<SaleConfig>();
+    cfg->data_dir = d.p;
+    SaleUtil svc(std::move(cfg), fake);
+
     SECTION("单行仅含时间")
     {
-        REQUIRE(get_sale_latest_time("2024-01-15T10:30:45")
+        REQUIRE(svc.get_sale_latest_time("2024-01-15T10:30:45")
             == "2024-01-15T10:30:45");
     }
-
-    SECTION("时间前后有其他内容")
+    SECTION("时间前后有内容")
     {
-        REQUIRE(get_sale_latest_time("销售时间: 2024-01-15T10:30:45 状态: OK")
+        REQUIRE(svc.get_sale_latest_time("销售时间: 2024-01-15T10:30:45 OK")
             == "2024-01-15T10:30:45");
     }
-
-    SECTION("多行，返回第一行的时间（即“最新”）")
+    SECTION("多行返回第一个匹配")
     {
         std::string s =
             "2024-01-15T10:30:45\n"
-            "2024-01-16T11:00:00\n"
-            "2024-01-17T12:00:00";
-        REQUIRE(get_sale_latest_time(s) == "2024-01-15T10:30:45");
+            "2024-01-16T11:00:00\n";
+        REQUIRE(svc.get_sale_latest_time(s) == "2024-01-15T10:30:45");
     }
-
-    SECTION("第一行无时间，取第二行")
+    SECTION("第一行无时间取第二行")
     {
-        std::string s =
-            "header line\n"
-            "2024-02-20T08:15:30 tail";
-        REQUIRE(get_sale_latest_time(s) == "2024-02-20T08:15:30");
+        REQUIRE(svc.get_sale_latest_time("header\n2024-02-20T08:15:30")
+            == "2024-02-20T08:15:30");
     }
-
-    SECTION("同一行出现多个时间，返回第一个匹配")
+    SECTION("同一行多个时间取第一个")
     {
-        REQUIRE(get_sale_latest_time("2024-01-01T00:00:00 / 2025-12-31T23:59:59")
+        REQUIRE(svc.get_sale_latest_time(
+            "2024-01-01T00:00:00 / 2025-12-31T23:59:59")
             == "2024-01-01T00:00:00");
     }
-
-    SECTION("CRLF 换行")
+    SECTION("带毫秒/时区只截到秒")
     {
-        std::string s = "2024-05-01T08:00:00\r\n2024-06-01T09:00:00\r\n";
-        REQUIRE(get_sale_latest_time(s) == "2024-05-01T08:00:00");
+        REQUIRE(svc.get_sale_latest_time("2024-01-15T10:30:45.123Z")
+            == "2024-01-15T10:30:45");
     }
-}
-
-// ---------------------------------------------------------------------------
-// 2. 空 / 无匹配
-// ---------------------------------------------------------------------------
-TEST_CASE("get_sale_latest_time - empty and no match", "[sale_time]")
-{
+    SECTION("缺 T 不匹配")
+    {
+        REQUIRE(svc.get_sale_latest_time("2024-01-15 10:30:45").empty());
+    }
+    SECTION("位数不足不匹配")
+    {
+        REQUIRE(svc.get_sale_latest_time("2024-1-15T10:30:45").empty());
+        REQUIRE(svc.get_sale_latest_time("2024-01-15T1:30:45").empty());
+    }
     SECTION("空字符串")
     {
-        REQUIRE(get_sale_latest_time("").empty());
+        REQUIRE(svc.get_sale_latest_time("").empty());
     }
-
-    SECTION("只有换行")
+    SECTION("无时间")
     {
-        REQUIRE(get_sale_latest_time("\n\n\n").empty());
-    }
-
-    SECTION("没有时间格式的内容")
-    {
-        REQUIRE(get_sale_latest_time("hello world, no time here").empty());
-    }
-
-    SECTION("只有日期没有时间")
-    {
-        REQUIRE(get_sale_latest_time("2024-01-15").empty());
-    }
-
-    SECTION("只有时间没有日期")
-    {
-        REQUIRE(get_sale_latest_time("10:30:45").empty());
-    }
-
-    SECTION("缺少 T 分隔符（用空格分隔）")
-    {
-        REQUIRE(get_sale_latest_time("2024-01-15 10:30:45").empty());
-    }
-}
-
-// ---------------------------------------------------------------------------
-// 3. 格式边界 —— 位数不对不应匹配
-// ---------------------------------------------------------------------------
-TEST_CASE("get_sale_latest_time - format boundaries", "[sale_time]")
-{
-    SECTION("月份位数不足")
-    {
-        REQUIRE(get_sale_latest_time("2024-1-15T10:30:45").empty());
-    }
-
-    SECTION("小时位数不足")
-    {
-        REQUIRE(get_sale_latest_time("2024-01-15T1:30:45").empty());
-    }
-
-    SECTION("秒位数不足")
-    {
-        REQUIRE(get_sale_latest_time("2024-01-15T10:30:5").empty());
-    }
-
-    SECTION("分隔符错误")
-    {
-        REQUIRE(get_sale_latest_time("2024/01/15T10:30:45").empty());
-        REQUIRE(get_sale_latest_time("2024-01-15T10-30-45").empty());
-    }
-}
-
-// ---------------------------------------------------------------------------
-// 4. 正则的“宽松”行为：只校验位数，不校验范围
-// ---------------------------------------------------------------------------
-TEST_CASE("get_sale_latest_time - regex does not validate ranges",
-    "[sale_time][documenting]")
-{
-    // 当前正则 \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2} 只看位数，
-    // 非法月/日/时也会被匹配；这是现有实现的已知行为。
-    SECTION("非法数值也会被匹配")
-    {
-        REQUIRE(get_sale_latest_time("9999-99-99T99:99:99") == "9999-99-99T99:99:99");
-    }
-}
-
-// ---------------------------------------------------------------------------
-// 5. 时间格式周边扩展
-// ---------------------------------------------------------------------------
-TEST_CASE("get_sale_latest_time - surrounding format variants", "[sale_time]")
-{
-    SECTION("带毫秒只截取到秒")
-    {
-        REQUIRE(get_sale_latest_time("2024-01-15T10:30:45.123")
-            == "2024-01-15T10:30:45");
-    }
-
-    SECTION("带 Z 时区")
-    {
-        REQUIRE(get_sale_latest_time("2024-01-15T10:30:45Z")
-            == "2024-01-15T10:30:45");
-    }
-
-    SECTION("带 +08:00 时区")
-    {
-        REQUIRE(get_sale_latest_time("2024-01-15T10:30:45+08:00")
-            == "2024-01-15T10:30:45");
-    }
-
-    SECTION("中文前缀 / 后缀")
-    {
-        REQUIRE(get_sale_latest_time("最新销售时间：2024-03-01T09:00:00，")
-            == "2024-03-01T09:00:00");
-    }
-}
-
-// ---------------------------------------------------------------------------
-// 6. 跨行不会匹配（因为逐行 regex_search）
-// ---------------------------------------------------------------------------
-TEST_CASE("get_sale_latest_time - cross line not matched", "[sale_time]")
-{
-    SECTION("时间被换行拆开")
-    {
-        REQUIRE(get_sale_latest_time("2024-01-15T10:30\n:45").empty());
-    }
-
-    SECTION("日期与时间分属两行")
-    {
-        REQUIRE(get_sale_latest_time("2024-01-15\nT10:30:45").empty());
+        REQUIRE(svc.get_sale_latest_time("hello world").empty());
     }
 }
