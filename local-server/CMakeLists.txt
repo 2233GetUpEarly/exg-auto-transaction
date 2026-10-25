@@ -49,7 +49,7 @@ set_target_properties(local_server PROPERTIES
 
 include(CTest)
 if (BUILD_TESTING)
-    add_executable(local_server_unit_test "tests/unit_test.cpp")
+    add_executable(local_server_unit_test "tests/unit_test.cpp" "tests/test_sale_util.cpp")
     target_link_libraries(local_server_unit_test PRIVATE local_server_lib Catch2::Catch2)
     set_target_properties(local_server_unit_test PROPERTIES
 	    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
